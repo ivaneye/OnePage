@@ -47,7 +47,7 @@ OnePage 是一款基于 [Cupertino](https://github.com/aaaaalexis/Obsidian-Cuper
 ### 方式二：BRAT 插件
 
 1. 安装 [BRAT](https://github.com/TfTHacker/obsidian42-brat) 插件
-2. 添加仓库：`<你的 GitHub 用户名>/OnePage`
+2. 添加仓库：`ivaneye/OnePage`
 3. 安装后在外观里启用
 
 ### 方式三：官方主题目录
