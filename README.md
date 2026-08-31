@@ -26,13 +26,9 @@ OnePage 是一款基于 [Cupertino](https://github.com/aaaaalexis/Obsidian-Cuper
 
 ![OnePage · 编辑模式 · 暖白纸张](preview.png)
 
-| 阅读模式 · 浅色 | 阅读模式 · 深色 |
-| --- | --- |
-| ![阅读·浅色](preview-read-light.png) | ![阅读·深色](preview-read-dark.png) |
+![OnePage · 编辑模式 · 暖棕·冷锚](preview-dark.png)
 
-| 最近文件 | 演示模式 |
-| --- | --- |
-| ![最近文件](preview-recent.png) | ![演示模式](preview-demo.png) |
+![OnePage · 演示模式（投屏）](preview-demo.png)
 
 > 官方目录缩略图：[浅色 512×288](screenshot.png) · [深色 512×288](screenshot-dark.png)
 
