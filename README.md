@@ -32,7 +32,9 @@ OnePage 是一款基于 [Cupertino](https://github.com/aaaaalexis/Obsidian-Cuper
 
 **演示模式**（一键投屏：放大字号，隐藏侧栏 / 标签栏 / 状态栏）
 
-![](preview-demo.png)
+<div align="center">
+  <img src="preview-demo.png" width="480" alt="演示模式">
+</div>
 
 > 官方目录缩略图：[浅色 512×288](screenshot.png) · [深色 512×288](screenshot-dark.png)
 
