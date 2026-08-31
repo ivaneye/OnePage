@@ -24,11 +24,15 @@ OnePage 是一款基于 [Cupertino](https://github.com/aaaaalexis/Obsidian-Cuper
 
 ## 截图
 
-![OnePage · 编辑模式 · 暖白纸张](preview.png)
+> macOS 原生质感 × 极客编辑器细节，两套配色开箱即用。
 
-![OnePage · 编辑模式 · 暖棕·冷锚](preview-dark.png)
+| 暖白纸张 · 浅色 | 暖棕·冷锚 · 深色 |
+| :---: | :---: |
+| ![](preview.png) | ![](preview-dark.png) |
 
-![OnePage · 演示模式（投屏）](preview-demo.png)
+**演示模式**（一键投屏：放大字号，隐藏侧栏 / 标签栏 / 状态栏）
+
+![](preview-demo.png)
 
 > 官方目录缩略图：[浅色 512×288](screenshot.png) · [深色 512×288](screenshot-dark.png)
 
