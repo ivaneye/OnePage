@@ -1,0 +1,9 @@
+{
+  "name": "OnePage",
+  "version": "1.0.0",
+  "minAppVersion": "1.13.4",
+  "description": "macOS 原生 × 极客感。暖白纸张（浅色）与暖棕·冷锚（暗色）双配色，开箱即用，无需 Style Settings。基于 Cupertino。",
+  "author": "<你的 GitHub 用户名>",
+  "authorUrl": "https://github.com/<你的 GitHub 用户名>",
+  "fundingUrl": ""
+}
