@@ -24,7 +24,9 @@ OnePage 是一款基于 [Cupertino](https://github.com/aaaaalexis/Obsidian-Cuper
 
 ## 截图
 
-（待补充 —— 官方目录需 512×288 预览图）
+![OnePage 浅色·暖白纸张](screenshot.png)
+
+![OnePage 暗色·暖棕·冷锚](screenshot-dark.png)
 
 ## 安装
 
