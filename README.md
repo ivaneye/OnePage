@@ -94,3 +94,4 @@ OnePage 是一款基于 [Cupertino](https://github.com/aaaaalexis/Obsidian-Cuper
 - 首个发布版本：基于 Cupertino 3.2.12
 - 固化两套配色（暖白纸张 / 暖棕·冷锚），移除 Style Settings 依赖
 - 整合极客编辑器细节、macOS 胶囊标签、Notion 风格文件树等定制
+token test
