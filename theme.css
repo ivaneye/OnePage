@@ -295,7 +295,7 @@ body:is(.mod-macos,.adaptive-mode-off):not(.is-mobile).is-focused.is-translucent
 /* 当激活的是笔记(编辑/阅读)时, 侧栏和其余 tab 弱化, 悬停/点击恢复 */
 body:has(.workspace-leaf.mod-active .markdown-source-view) .workspace-split.mod-sidedock,
 body:has(.workspace-leaf.mod-active .markdown-reading-view) .workspace-split.mod-sidedock {
-  opacity: 0.72;
+  opacity: 0.92;
 }
 body:has(.workspace-leaf.mod-active .markdown-source-view) .workspace-split.mod-sidedock:hover,
 body:has(.workspace-leaf.mod-active .markdown-source-view) .workspace-split.mod-sidedock:focus-within,
@@ -781,4 +781,9 @@ body.is-translucent .modal:not(.mod-sidebar-layout) {
   background-color: color-mix(in srgb, var(--text-accent) 18%, var(--background-primary)) !important;
   border-color: color-mix(in srgb, var(--text-accent) 45%, transparent) !important;
   color: var(--text-accent) !important;
+}
+
+/* ---------- OnePage: 非透明模式边栏实色 (透明模式仍为毛玻璃) ---------- */
+body:not(.is-translucent) .workspace-split.mod-sidedock {
+  background-color: var(--background-secondary) !important;
 }
