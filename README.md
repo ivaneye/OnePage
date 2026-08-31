@@ -8,7 +8,7 @@ OnePage 是一款基于 [Cupertino](https://github.com/aaaaalexis/Obsidian-Cuper
 - 🌞 **浅色 · 暖白纸张**：米白暖底 + 深青绿强调，阅读像摊开一本暖调的纸书
 - 🌙 **暗色 · 暖棕·冷锚**：暖棕底色 + 冷青绿强调，冷暖对比，深夜护眼不偏冷
 
-**无需 Style Settings 插件**，两套配色已固化进主题，装完即用。
+**无需 Style Settings 即可完整使用**，两套配色已固化进主题，装完即用。（仅「演示模式」开关需可选安装 Style Settings，见下方说明）
 
 ---
 
@@ -64,8 +64,14 @@ OnePage 是一款基于 [Cupertino](https://github.com/aaaaalexis/Obsidian-Cuper
 
 ## 演示模式（可选）
 
-主题内置 `body.demo-mode` 样式：放大字号、隐藏侧栏/标签栏/状态栏，适合投屏/演示。
-可用 CSS snippet 或在开发者模式下临时添加类名触发；后续可考虑做成快捷键。
+一键切换纯阅读投屏画布：放大字号（24px）、隐藏左侧栏/状态栏/标题栏，保留右侧目录。
+
+**启用方式**（任选其一）：
+
+1. **推荐**：安装 [Style Settings](obsidian://show-plugin?id=obsidian-style-settings) 插件 → 命令面板出现「Toggle 演示模式（投屏）」→ 在 设置→快捷键 中绑定任意快捷键（如 `Cmd+Shift+P`）
+2. 在开发者模式下手动给 `body` 添加 `demo-mode` 类
+
+> 说明：演示模式开关由 Style Settings 生成命令，属于**可选依赖**。不装 Style Settings 时，两套配色与全部样式照常生效，仅演示模式无快捷键开关。
 
 ## 开源规范
 
