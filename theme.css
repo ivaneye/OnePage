@@ -783,10 +783,15 @@ body.is-translucent .modal:not(.mod-sidebar-layout) {
   color: var(--text-accent) !important;
 }
 
-/* ---------- OnePage: 非透明模式边栏始终为干净实色卡片 (透明模式仍为毛玻璃) ---------- */
+/* ---------- OnePage: 非透明模式边栏柔和实色 (透明模式仍为毛玻璃, 与上游一致) ---------- */
 body:is(.mod-macos,.adaptive-mode-off):not(.is-mobile):not(.is-translucent) .workspace-split.mod-sidedock {
-  background-color: var(--background-primary) !important;
+  background-color: var(--background-secondary) !important;
 }
 body:is(.mod-macos,.adaptive-mode-off):not(.is-mobile):not(.is-translucent):not(.is-focused):not(.reduce-contrast-change) .workspace-split.mod-sidedock {
-  background-color: var(--background-primary) !important;
+  background-color: var(--background-secondary) !important;
+}
+
+/* ---------- OnePage: 状态栏在文档流中, hover 展开时把内容顶上去 (与 notes 一致) ---------- */
+body:not(.status-bar-baseline) .status-bar {
+  position: static !important;
 }
