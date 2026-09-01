@@ -790,3 +790,11 @@ body:is(.mod-macos,.adaptive-mode-off):not(.is-mobile):not(.is-translucent) .wor
 body:is(.mod-macos,.adaptive-mode-off):not(.is-mobile):not(.is-translucent):not(.is-focused):not(.reduce-contrast-change) .workspace-split.mod-sidedock {
   background-color: var(--background-secondary) !important;
 }
+
+/* ---------- OnePage: 演示模式内容顶部留白, 拉开与窗口顶部/按钮距离 ---------- */
+body.demo-mode .markdown-preview-view {
+  padding-top: 56px !important;
+}
+body.demo-mode .markdown-source-view .cm-sizer {
+  padding-top: 56px !important;
+}

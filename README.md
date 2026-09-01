@@ -40,11 +40,14 @@ OnePage 是一款基于 [Cupertino](https://github.com/aaaaalexis/Obsidian-Cuper
 
 ## 安装
 
-### 方式一：GitHub 下载（推荐，最快）
+### 方式一：从主题仓库下载（推荐优先）
 
-1. 下载本仓库最新 Release 中的 `OnePage` 文件夹（或 `theme.css` + `manifest.json`）
-2. 放入你的 vault：`.obsidian/themes/OnePage/`
-3. 设置 → 外观 → 主题，选择 **OnePage**
+直接从 GitHub 主题仓库获取，能第一时间用上最新版本：
+
+1. 访问仓库：**https://github.com/ivaneye/OnePage**
+2. 打开 **Releases** 下载最新版，或直接下载仓库中的 `theme.css` + `manifest.json`
+3. 放入你的 vault：`.obsidian/themes/OnePage/`
+4. 设置 → 外观 → 主题，选择 **OnePage**
 
 ### 方式二：BRAT 插件
 
@@ -54,7 +57,7 @@ OnePage 是一款基于 [Cupertino](https://github.com/aaaaalexis/Obsidian-Cuper
 
 ### 方式三：官方主题目录
 
-已提交（待审核通过后可直接在「外观 → 浏览」中搜索 **OnePage**）。
+已上架 Obsidian 官方主题目录，可在「外观 → 浏览」中搜索 **OnePage** 直接安装。
 
 ## ⚠️ 必读：字体依赖
 
@@ -82,6 +85,10 @@ OnePage 是一款基于 [Cupertino](https://github.com/aaaaalexis/Obsidian-Cuper
 2. 在开发者模式下手动给 `body` 添加 `demo-mode` 类
 
 > 说明：演示模式开关由 Style Settings 生成命令，属于**可选依赖**。不装 Style Settings 时，两套配色与全部样式照常生效，仅演示模式无快捷键开关。
+
+## 反馈与支持
+
+使用中遇到任何问题、或有改进建议，欢迎通过**公众号「一页清」**私信反馈，我会持续跟进维护。
 
 ## 开源规范
 
