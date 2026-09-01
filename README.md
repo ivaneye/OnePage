@@ -12,6 +12,16 @@ OnePage 是一款基于 [Cupertino](https://github.com/aaaaalexis/Obsidian-Cuper
 
 ---
 
+## 📣 关注公众号「一页清」
+
+> 持续输出 **Obsidian 主题 · macOS 美化 · 效率工具 · 极客技巧** 干货
+
+> 🎁 使用反馈 · 主题定制 · 问题求助 · 合作交流
+>
+> 微信搜一搜 **「一页清」**，私信即可，我都会一一回复 ❤️
+
+---
+
 ## 特性
 
 - **编辑器极客细节**：当前行轻高亮、行号强调色、2px 强调色光标、Markdown 符号弱化
@@ -40,24 +50,28 @@ OnePage 是一款基于 [Cupertino](https://github.com/aaaaalexis/Obsidian-Cuper
 
 ## 安装
 
-### 方式一：从主题仓库下载（推荐优先）
+### 方式一：官方主题目录（推荐优先）
 
-直接从 GitHub 主题仓库获取，能第一时间用上最新版本：
+OnePage 已上架 Obsidian **官方主题目录**，最省心、自动跟随更新：
+
+1. 设置 → 外观 → 主题 → **浏览**
+2. 搜索 **OnePage** → 点击安装
+3. 在主题列表中选择启用
+
+### 方式二：从主题仓库下载
+
+想第一时间用上最新版本，或手动管理：
 
 1. 访问仓库：**https://github.com/ivaneye/OnePage**
 2. 打开 **Releases** 下载最新版，或直接下载仓库中的 `theme.css` + `manifest.json`
 3. 放入你的 vault：`.obsidian/themes/OnePage/`
 4. 设置 → 外观 → 主题，选择 **OnePage**
 
-### 方式二：BRAT 插件
+### 方式三：BRAT 插件
 
 1. 安装 [BRAT](https://github.com/TfTHacker/obsidian42-brat) 插件
 2. 添加仓库：`ivaneye/OnePage`
 3. 安装后在外观里启用
-
-### 方式三：官方主题目录
-
-已上架 Obsidian 官方主题目录，可在「外观 → 浏览」中搜索 **OnePage** 直接安装。
 
 ## ⚠️ 必读：字体依赖
 
@@ -88,7 +102,9 @@ OnePage 是一款基于 [Cupertino](https://github.com/aaaaalexis/Obsidian-Cuper
 
 ## 反馈与支持
 
-使用中遇到任何问题、或有改进建议，欢迎通过**公众号「一页清」**私信反馈，我会持续跟进维护。
+使用中遇到任何问题、或有改进建议，欢迎**关注公众号「一页清」私信反馈**（微信搜一搜即可，记得点关注，不迷路）。
+
+如果 OnePage 对你有帮助，也欢迎**分享给身边用 Obsidian 的朋友**，你的推荐是我持续维护的最大动力 🙏
 
 ## 开源规范
 
