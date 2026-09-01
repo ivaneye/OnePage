@@ -790,8 +790,3 @@ body:is(.mod-macos,.adaptive-mode-off):not(.is-mobile):not(.is-translucent) .wor
 body:is(.mod-macos,.adaptive-mode-off):not(.is-mobile):not(.is-translucent):not(.is-focused):not(.reduce-contrast-change) .workspace-split.mod-sidedock {
   background-color: var(--background-secondary) !important;
 }
-
-/* ---------- OnePage: 状态栏在文档流中, hover 展开时把内容顶上去 (与 notes 一致) ---------- */
-body:not(.status-bar-baseline) .status-bar {
-  position: static !important;
-}
