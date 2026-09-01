@@ -785,8 +785,8 @@ body.is-translucent .modal:not(.mod-sidebar-layout) {
 
 /* ---------- OnePage: 非透明模式边栏始终为干净实色卡片 (透明模式仍为毛玻璃) ---------- */
 body:is(.mod-macos,.adaptive-mode-off):not(.is-mobile):not(.is-translucent) .workspace-split.mod-sidedock {
-  background-color: var(--background-secondary) !important;
+  background-color: var(--background-primary) !important;
 }
 body:is(.mod-macos,.adaptive-mode-off):not(.is-mobile):not(.is-translucent):not(.is-focused):not(.reduce-contrast-change) .workspace-split.mod-sidedock {
-  background-color: var(--background-secondary) !important;
+  background-color: var(--background-primary) !important;
 }
