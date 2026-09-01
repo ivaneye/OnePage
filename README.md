@@ -20,14 +20,6 @@ OnePage 是一款基于 [Cupertino](https://github.com/aaaaalexis/Obsidian-Cuper
 
 ---
 
-## ✨ 毛玻璃（强烈推荐）
-
-开启 **「窗口透明」** 后，左右边栏呈现半透明磨砂 + 柔和投影的悬浮卡片，与 macOS 原生质感浑然一体。
-
-设置 → 外观 → 打开 **「窗口透明」** → 重启 Obsidian。
-
----
-
 ## 特性
 
 - **编辑器极客细节**：当前行轻高亮、行号强调色、2px 强调色光标、Markdown 符号弱化
@@ -78,6 +70,14 @@ OnePage 已上架 Obsidian **官方主题目录**，最省心、自动跟随更�
 1. 安装 [BRAT](https://github.com/TfTHacker/obsidian42-brat) 插件
 2. 添加仓库：`ivaneye/OnePage`
 3. 安装后在外观里启用
+
+---
+
+## ✨ 开启毛玻璃
+
+开启 **「窗口透明」** 后，左右边栏呈现半透明磨砂 + 柔和投影的悬浮卡片，与 macOS 原生质感浑然一体。
+
+设置 → 外观 → 打开 **「窗口透明」** → 重启 Obsidian。
 
 ## ⚠️ 必读：字体依赖
 
