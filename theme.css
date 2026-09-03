@@ -889,3 +889,26 @@ body:not(.is-translucent):not(.is-mobile) .workspace-split.mod-sidedock.mod-left
 body:not(.is-translucent):not(.is-mobile) .workspace-split.mod-sidedock.mod-right-split > .workspace-leaf-resize-handle {
   border-color: transparent !important;
 }
+
+/* ---------- OnePage: 功能区融入左边栏卡片 (半透明关闭时, 功能区显示且非悬停) ----------
+   默认功能区(ribbon)是独立元素, 在卡片外面很怪 → 让卡片向左延伸到功能区底下(单一投影
+   包住整张卡), 功能区背景透明、z-index 提到 12 浮在卡片上层, 图标可见且无接缝阴影 */
+/* 卡片向左延伸 + 内容用 padding 让开功能区图标 */
+body:not(.is-translucent):not(.is-mobile).show-ribbon:not(.hover-ribbon) .workspace-split.mod-sidedock.mod-left-split:not(.is-sidedock-collapsed) {
+  margin-left: calc(-1 * var(--ribbon-width) + 8px) !important;
+  padding-left: var(--ribbon-width) !important;
+}
+/* 功能区: 透明浮在卡片上, 图标在上层; 贴左边框(x=0), 图标经 padding-left 落在卡片上;
+   顶部保留默认 header-height 偏移(避开 macOS 窗口按钮), 底部 8px 与卡片对齐 */
+body:not(.is-translucent):not(.is-mobile).show-ribbon:not(.hover-ribbon):has(.workspace-split.mod-sidedock.mod-left-split:not(.is-sidedock-collapsed)) .workspace-ribbon.mod-left:not(.is-collapsed) {
+  position: relative;
+  z-index: 12;
+  margin: var(--header-height) 0 8px 0 !important;
+  padding-left: 16px;
+  background-color: transparent !important;
+  border-right: none !important;
+}
+/* 去掉功能区左上角顶栏色块补丁, 避免盖住卡片圆角 */
+body:not(.is-translucent):not(.is-mobile).show-ribbon:not(.hover-ribbon) .workspace-ribbon.mod-left:not(.is-collapsed)::before {
+  display: none !important;
+}
