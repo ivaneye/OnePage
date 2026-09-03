@@ -497,6 +497,14 @@ body.demo-mode {
   --file-line-width: 880px !important;
 }
 
+/* 演示时: 按「可读行长度」开关判定顶部留白
+   - 开启(is-readable-line-width) → 内容已按 880px 居中留边, 文字不会顶到窗口按钮, 无需 hack
+   - 未开启 → 内容全宽铺满, 加顶部留白避免文字被窗口按钮遮挡 */
+body.demo-mode .markdown-source-view.mod-cm6:not(.is-readable-line-width) .cm-sizer,
+body.demo-mode .markdown-preview-view:not(.is-readable-line-width) {
+  padding-top: 56px !important;
+}
+
 /* 放大字号 + 舒展行距 (编辑/阅读视图都生效) */
 body.demo-mode .markdown-source-view,
 body.demo-mode .markdown-preview-view {
@@ -840,14 +848,6 @@ body:is(.mod-macos,.adaptive-mode-off):not(.is-mobile):not(.is-translucent) .wor
 }
 body:is(.mod-macos,.adaptive-mode-off):not(.is-mobile):not(.is-translucent):not(.is-focused):not(.reduce-contrast-change) .workspace-split.mod-sidedock {
   background-color: var(--background-secondary) !important;
-}
-
-/* ---------- OnePage: 演示模式内容顶部留白, 拉开与窗口顶部/按钮距离 ---------- */
-body.demo-mode .markdown-preview-view {
-  padding-top: 56px !important;
-}
-body.demo-mode .markdown-source-view .cm-sizer {
-  padding-top: 56px !important;
 }
 
 /* ---------- OnePage: 全平台保留边栏卡片 (半透明关闭时兜底) ----------
