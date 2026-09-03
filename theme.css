@@ -849,3 +849,43 @@ body.demo-mode .markdown-preview-view {
 body.demo-mode .markdown-source-view .cm-sizer {
   padding-top: 56px !important;
 }
+
+/* ---------- OnePage: 全平台保留边栏卡片 (半透明关闭时兜底) ----------
+   判定开关: 半透明开启(is-translucent, 仅 macOS 原生支持) → 保持上方毛玻璃卡片样式, 本块不介入
+             半透明关闭(非 is-translucent, 含 Win/Linux)   → 各平台统一显示实色悬浮卡片
+   浅色: 卡片 #f4f2ee, 整体背景 #e9e9e9 (用户指定)
+   暗色: 卡片 #2d2a28, 整体背景 #1e1c1b (暂用同关系暗色对应, 待定)
+   Win/Linux 没有 is-translucent, 边栏卡片(留白/圆角/投影)原被 :is(.mod-macos,.adaptive-mode-off)
+   锁死而整体失效 → 这里用 :not(.is-translucent) 在全部桌面平台兜底复刻: 8px 留白 + 圆角 +
+   柔和投影 + 发丝描边; 折叠态不参与, 避免窄条出现奇怪留白 */
+
+/* 整体背景: 卡片四周留白/窗口底色 */
+body:not(.is-translucent):not(.is-mobile) {
+  background-color: #e9e9e9 !important;
+}
+body.theme-dark:not(.is-translucent):not(.is-mobile) {
+  background-color: #1e1c1b !important;
+}
+
+/* 左右悬浮卡片 */
+body:not(.is-translucent):not(.is-mobile) .workspace-split.mod-sidedock.mod-left-split:not(.is-sidedock-collapsed),
+body:not(.is-translucent):not(.is-mobile) .workspace-split.mod-sidedock.mod-right-split:not(.is-sidedock-collapsed) {
+  margin: 8px 8px 8px 8px !important;
+  border-radius: var(--radius-window, var(--radius-m)) !important;
+  overflow: hidden !important;
+  height: -webkit-fill-available !important;
+  background-color: #f4f2ee !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06), 0 2px 6px rgba(0,0,0,0.03) !important;
+  border: 1px solid color-mix(in srgb, var(--text-muted) 14%, transparent) !important;
+}
+body.theme-dark:not(.is-translucent):not(.is-mobile) .workspace-split.mod-sidedock.mod-left-split:not(.is-sidedock-collapsed),
+body.theme-dark:not(.is-translucent):not(.is-mobile) .workspace-split.mod-sidedock.mod-right-split:not(.is-sidedock-collapsed) {
+  background-color: #2d2a28 !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.28), 0 2px 6px rgba(0,0,0,0.14) !important;
+}
+
+/* 卡片内侧 resize 分割线置透明: 只留发丝描边, 不出现黑线 */
+body:not(.is-translucent):not(.is-mobile) .workspace-split.mod-sidedock.mod-left-split > .workspace-leaf-resize-handle,
+body:not(.is-translucent):not(.is-mobile) .workspace-split.mod-sidedock.mod-right-split > .workspace-leaf-resize-handle {
+  border-color: transparent !important;
+}
