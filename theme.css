@@ -51,8 +51,9 @@ body,.theme-light,.theme-dark{--font-interface-theme: "SF Pro";--font-text-theme
 
 /* ---------- 1. 字体与排版基调 ---------- */
 body {
-  /* 代码字体: JetBrainsMono NFM(Nerd Font, 图标字形全) > JetBrains Mono > 系统 */
-  --font-monospace: "JetBrainsMono NFM", "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+  /* 代码字体: JetBrainsMono NFM(Nerd Font, 图标字形全) > JetBrains Mono > 系统
+     注意: 用 --font-monospace-theme(主题兜底), 用户在外观里设置的代码字体优先 */
+  --font-monospace-theme: "JetBrainsMono NFM", "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
   /* 正文行高: 略松, 阅读舒适 */
   --line-height-normal: 1.7;
 }
