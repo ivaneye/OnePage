@@ -240,6 +240,12 @@ body {
   border-top: 1px solid var(--background-modifier-border) !important;
 }
 
+/* 兜底: 强制状态栏悬浮(fixed), 防止第三方插件(如 quick-explorer)把状态栏改成
+   in-flow(static) 顶开内容 —— 保持 OnePage 悬浮胶囊观感, 与各处底部间距一致 */
+body:not(.status-bar-baseline) .status-bar {
+  position: fixed !important;
+}
+
 /* 新增Tab / 下拉按钮: 默认半透明, 悬停全亮, 去掉划过残留的高亮底色 */
 .workspace-tab-header-tab-list,
 .workspace-tab-header-new-tab {
