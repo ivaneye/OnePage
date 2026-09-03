@@ -175,6 +175,54 @@ body {
   border-radius: 4px;
 }
 
+/* ---------- 属性面板: 复选框直接复用正文样式 ----------
+   正文复选框 input[type=checkbox] 的渲染: 未勾选=描边+透明底; 勾选=强调色底+同色边框+背景色对勾
+   这里对属性面板 .metadata-input-checkbox 显式套用同一套规则(!important 防止隐藏覆盖) */
+body {
+  --checkbox-border-color: color-mix(in srgb, var(--text-muted) 62%, var(--background-primary));
+  --checkbox-border-color-hover: var(--text-muted);
+  --checkbox-color: var(--interactive-accent);
+  --checkbox-color-hover: var(--interactive-accent-hover);
+  /* 对勾用背景色绘制(正文默认): 与强调色互补, 亮/暗双模式都高对比;
+     不能用白色 — 暗色下强调色是浅青 #6db3a3, 白勾会看不见 */
+  --checkbox-marker-color: var(--background-primary);
+}
+/* 未勾选: 与正文完全一致 */
+.metadata-input-checkbox,
+.metadata-property input[type="checkbox"] {
+  background-color: transparent !important;
+  border: 1px solid var(--checkbox-border-color) !important;
+  border-radius: var(--checkbox-radius) !important;
+}
+/* 勾选: 与正文完全一致(强调色底 + 同色边框) */
+.metadata-input-checkbox:checked,
+.metadata-property input[type="checkbox"]:checked {
+  background-color: var(--checkbox-color) !important;
+  border-color: var(--checkbox-color) !important;
+}
+/* 对勾: 复用正文 checkbox 的渲染值(top:-1px 补偿1px边框, 使 :after 盖满可见盒子),
+   mask-size 100% 与正文一致; 之前设 top:0 因绝对定位基于内边距盒导致整体偏右下方1px */
+.metadata-input-checkbox:checked::after,
+.metadata-property input[type="checkbox"]:checked::after {
+  background-color: var(--checkbox-marker-color) !important;
+  top: -1px !important;
+  inset-inline-start: -1px !important;
+  width: var(--checkbox-size) !important;
+  height: var(--checkbox-size) !important;
+  -webkit-mask-position: 52% 52% !important;
+  -webkit-mask-size: 100% 100% !important;
+  -webkit-mask-repeat: no-repeat !important;
+}
+/* 属性面板里的开关(toggle, 兜底): 未启用时加深轨道 + 描边 */
+.metadata-property .checkbox-container {
+  background-color: color-mix(in srgb, var(--text-muted) 28%, var(--background-primary));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--text-muted) 48%, transparent);
+}
+.metadata-property .checkbox-container.is-enabled {
+  background-color: var(--interactive-accent);
+  box-shadow: none;
+}
+
 /* ---------- 5. UI 原生感 ---------- */
 
 /* 状态栏: 更轻更紧凑 */
@@ -578,6 +626,8 @@ body.demo-mode .markdown-rendered blockquote {
 .metadata-property-key {
   font-weight: 500;
   padding: 0 !important;   /* 去掉默认 8px 16px 撑高 */
+  /* 关键: 子元素(图标+key输入)垂直居中, 与 value 对齐(默认 flex-start 偏上) */
+  align-items: center !important;
 }
 .metadata-property-key-input,
 .metadata-property-icon {
