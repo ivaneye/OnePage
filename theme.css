@@ -820,32 +820,53 @@ body.is-translucent .modal:not(.mod-sidebar-layout) {
   pointer-events: none;
 }
 
-/* ---------- OnePage: 标签 = macOS 胶囊 ---------- */
+/* ---------- OnePage: 标签 = 青色 (Obsidian 默认 tag 样式, 强调色青) ----------
+   不再用灰底胶囊: 让 .tag 走 Obsidian 默认(--tag-color: text-accent 青,
+   --tag-background: accent 10% 透明), 与 notes/ob-dev 全平台观感一致 */
 
-/* 基础药丸 */
-.tag,
-.frontmatter-section-tags .tag {
-  font-size: 0.78em !important;
-  font-weight: 500 !important;
-  line-height: 1.6 !important;
-  padding: 1px 10px !important;
-  border-radius: 100vh !important;               /* macOS 胶囊 */
-  border: 1px solid color-mix(in srgb, var(--text-muted) 32%, transparent) !important;
-  background-color: color-mix(in srgb, var(--text-muted) 16%, var(--background-primary)) !important;
-  color: color-mix(in srgb, var(--text-muted) 60%, var(--text-normal)) !important;
-  text-decoration: none !important;
-  display: inline-block !important;
-  margin: 0 4px 0 0 !important;
-  cursor: pointer !important;
-  vertical-align: middle !important;
-  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease !important;
+/* Bases 表格/属性面板里的多选药丸(标签等): 统一成青色(与正文 .tag 一致), 覆盖 --pill-* 变量 */
+.multi-select-pill {
+  --pill-background: color-mix(in srgb, var(--text-accent) 10%, transparent);
+  --pill-background-hover: color-mix(in srgb, var(--text-accent) 20%, transparent);
+  --pill-border-color: color-mix(in srgb, var(--text-accent) 15%, transparent);
+  --pill-border-color-hover: color-mix(in srgb, var(--text-accent) 15%, transparent);
+  --pill-border-width: 0;
+  --pill-color: var(--text-accent);
+  --pill-color-hover: var(--text-accent);
+  --pill-radius: 2em;
+  --pill-padding-x: 0.65em;
+  --pill-padding-y: 0.25em;
+  --pill-weight: inherit;
 }
 
-/* 悬停: 轻微强调 */
-.tag:hover {
-  background-color: color-mix(in srgb, var(--text-accent) 18%, var(--background-primary)) !important;
-  border-color: color-mix(in srgb, var(--text-accent) 45%, transparent) !important;
+/* Bases 表格单元格里的标签: 作用域内直接兜底(不依赖 --pill-* 变量解析链), 保证青色 */
+.bases-td .multi-select-pill,
+.bases-table-cell .multi-select-pill,
+.bases-rendered-value .multi-select-pill {
+  background-color: color-mix(in srgb, var(--text-accent) 10%, transparent) !important;
+  border: 0 solid transparent !important;
+  border-radius: 2em !important;
   color: var(--text-accent) !important;
+}
+
+/* Bases 表格单元格里的标签(<a class=tag>): 高特异性强制为 Obsidian 默认青色透明标签
+   (color=text-accent, bg=accent 10% 透明), 与普通标签完全一致 */
+.bases-td .tag,
+.bases-table-cell .tag,
+.bases-rendered-value .tag,
+.value-list-container .tag {
+  background-color: color-mix(in srgb, var(--text-accent) 10%, transparent) !important;
+  border: 0 solid transparent !important;
+  border-radius: 2em !important;
+  color: var(--text-accent) !important;
+  font-size: var(--tag-size, 0.875em) !important;
+  font-weight: inherit !important;
+  text-decoration: none !important;
+  padding: 0.25em 0.65em !important;
+  line-height: 1 !important;
+  display: inline !important;
+  margin: 0 !important;
+  vertical-align: baseline !important;
 }
 
 /* ---------- OnePage: 非透明模式边栏柔和实色 (透明模式仍为毛玻璃, 与上游一致) ---------- */
