@@ -1,5 +1,7 @@
 # OnePage
 
+> 🌐 中文 · [English](README_EN.md)
+
 > macOS 原生质感 × 极客编辑器细节 · 暖色护眼双配色 · 开箱即用
 
 OnePage 是一款基于 [Cupertino](https://github.com/aaaaalexis/Obsidian-Cupertino) 深度定制的 Obsidian 主题：
