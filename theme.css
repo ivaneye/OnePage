@@ -1209,6 +1209,7 @@ body:not(.is-translucent):not(.is-mobile).colorful-frame.theme-dark .workspace-s
 /* ---------- Style Settings「始终显示 Vault 选择」: 取消上游悬停才显示 ----------
    上游 Cupertino 把左侧边栏底部 Vault 选择(workspace-drawer-vault-switcher)默认隐藏,
    仅悬停 vault-profile 区域才浮现(透明+blur+禁用点击)。开启本开关后常驻显示,
+   并补上不透明底色(否则下层文件列表文字会透上来看不清楚)。
    用 !important 覆盖上游, 无 .vault-switcher-always 类时不匹配, 默认行为不变 */
 body.vault-switcher-always:not(.is-mobile) .mod-sidedock.mod-left-split .workspace-sidedock-vault-profile:not(:hover) {
   pointer-events: auto !important;
@@ -1218,4 +1219,17 @@ body.vault-switcher-always:not(.is-mobile) .mod-sidedock.mod-left-split .workspa
   filter: none !important;
   pointer-events: auto !important;
   transform: none !important;
+}
+/* 不透明底色: 非透明模式 = OnePage 边栏卡片同色(浅 #f4f2ee / 暗 #2d2a28), 无缝融入 */
+body.vault-switcher-always:not(.is-mobile):not(.is-translucent) .mod-sidedock.mod-left-split .workspace-sidedock-vault-profile {
+  background-color: #f4f2ee !important;
+}
+body.vault-switcher-always:not(.is-mobile):not(.is-translucent).theme-dark .mod-sidedock.mod-left-split .workspace-sidedock-vault-profile {
+  background-color: #2d2a28 !important;
+}
+/* 不透明底色: 透明(毛玻璃)模式 = 近不透明磨砂, 自带 blur 挡住滚动上来的内容 */
+body.vault-switcher-always:not(.is-mobile).is-translucent .mod-sidedock.mod-left-split .workspace-sidedock-vault-profile {
+  background-color: color-mix(in srgb, var(--background-secondary) 88%, transparent) !important;
+  backdrop-filter: blur(24px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(160%) !important;
 }
