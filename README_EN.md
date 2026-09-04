@@ -131,6 +131,17 @@ If OnePage helps you, feel free to **share it with friends who use Obsidian** â€
 
 ## Changelog
 
+### 1.1.0
+
+- Full **Style Settings** support (inherits all Cupertino toggles + OnePage-specific options)
+  - **Colors**: accent (light/dark), disable typographic colors, body line height, tinted sidebar, dynamic color
+  - **Layout**: hover ribbon/sidebar, focus view, always-show Vault switcher & status bar, compact panels, etc.
+  - **Demo**: demo mode (bindable hotkey), demo font size
+  - **Editor / Accessibility**: active line, banner, block width, font variants, adaptive mode, motion, font/icon size, etc.
+- Bilingual settings panel (follows the Obsidian UI language automatically)
+- Removed the "Disable compact status bar" toggle
+- Fixed text showing through when "Always show Vault switcher" is enabled
+
 ### 1.0.0
 
 - Initial release: based on Cupertino 3.2.12
