@@ -7,8 +7,9 @@ settings:
         description: |
             OnePage 基于 **Cupertino**，完整继承了其 Style Settings 自定义能力。
 
-            - **配色**：强调色（浅/暗）、彩色排版、演示模式、彩色侧边栏
-            - **布局**：悬停功能区/侧栏、聚焦视图、紧凑面板等
+            - **配色**：强调色（浅/暗）、彩色排版、彩色侧边栏
+            - **演示**：演示模式（投屏）、演示字号
+            - **布局**：悬停功能区/侧栏、聚焦视图、Vault 选择常驻、紧凑面板等
             - **编辑器**：当前行高亮、横幅、块宽、字体特性等
             - **无障碍**：自适应模式、对比度、动效、界面字号等
 
@@ -53,6 +54,23 @@ settings:
         max: 2.4
         step: 0.05
     -
+        id: colorful-frame
+        title: 彩色侧边栏
+        description: 根据强调色给边栏叠加轻微染色（macOS 非透明模式）
+        type: class-toggle
+    -
+        id: material-color
+        title: 动态配色
+        description: 根据强调色动态着色（主要影响移动端）
+        type: class-toggle
+
+    -
+        id: onepage-demo
+        title: 演示
+        type: heading
+        level: 1
+        collapsed: true
+    -
         id: demo-mode
         title: 演示模式（投屏）
         description: 放大字号、隐藏侧栏/标签栏/状态栏, 一键切换纯阅读画布。可在 设置→快捷键 搜索「演示模式」绑定热键
@@ -69,16 +87,6 @@ settings:
         max: 40
         step: 1
         format: px
-    -
-        id: colorful-frame
-        title: 彩色侧边栏
-        description: 根据强调色给边栏叠加轻微染色（macOS 非透明模式）
-        type: class-toggle
-    -
-        id: material-color
-        title: 动态配色
-        description: 根据强调色动态着色（主要影响移动端）
-        type: class-toggle
 
     -
         id: onepage-layout
@@ -123,6 +131,11 @@ settings:
         id: zoom-off
         title: 关闭媒体缩放
         description: 点击图片不再放大预览
+        type: class-toggle
+    -
+        id: vault-switcher-always
+        title: 始终显示 Vault 选择
+        description: 默认关闭（左侧边栏底部 Vault 选择「悬停才显示」）；开启后常驻显示，无需悬停即可点击切换
         type: class-toggle
 
     -
@@ -1168,4 +1181,18 @@ body:not(.is-translucent):not(.is-mobile).colorful-frame.theme-light .workspace-
 body:not(.is-translucent):not(.is-mobile).colorful-frame.theme-dark .workspace-split.mod-sidedock.mod-left-split:not(.is-sidedock-collapsed),
 body:not(.is-translucent):not(.is-mobile).colorful-frame.theme-dark .workspace-split.mod-sidedock.mod-right-split:not(.is-sidedock-collapsed) {
   background-color: color-mix(in srgb, #2d2a28 92%, var(--text-accent)) !important;
+}
+
+/* ---------- Style Settings「始终显示 Vault 选择」: 取消上游悬停才显示 ----------
+   上游 Cupertino 把左侧边栏底部 Vault 选择(workspace-drawer-vault-switcher)默认隐藏,
+   仅悬停 vault-profile 区域才浮现(透明+blur+禁用点击)。开启本开关后常驻显示,
+   用 !important 覆盖上游, 无 .vault-switcher-always 类时不匹配, 默认行为不变 */
+body.vault-switcher-always:not(.is-mobile) .mod-sidedock.mod-left-split .workspace-sidedock-vault-profile:not(:hover) {
+  pointer-events: auto !important;
+}
+body.vault-switcher-always:not(.is-mobile) .mod-sidedock.mod-left-split .workspace-sidedock-vault-profile:not(:hover) .workspace-drawer-vault-switcher:not(.has-active-menu) {
+  opacity: 1 !important;
+  filter: none !important;
+  pointer-events: auto !important;
+  transform: none !important;
 }
