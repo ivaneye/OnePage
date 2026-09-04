@@ -8,7 +8,7 @@ OnePage 是一款基于 [Cupertino](https://github.com/aaaaalexis/Obsidian-Cuper
 - 🌞 **浅色 · 暖白纸张**：米白暖底 + 深青绿强调，阅读像摊开一本暖调的纸书
 - 🌙 **暗色 · 暖棕·冷锚**：暖棕底色 + 冷青绿强调，冷暖对比，深夜护眼不偏冷
 
-**无需 Style Settings 即可完整使用**，两套配色已固化进主题，装完即用。（仅「演示模式」开关需可选安装 Style Settings，见下方说明）
+**无需 Style Settings 即可完整使用**，两套配色已固化进主题，装完即用。可选装 Style Settings 获得 **Cupertino 同款深度自定义**（强调色 / 布局 / 编辑器 / 无障碍等，见下方说明）
 
 ---
 
@@ -28,6 +28,7 @@ OnePage 是一款基于 [Cupertino](https://github.com/aaaaalexis/Obsidian-Cuper
 - **UI 原生感**：macOS 胶囊标签、极细滚动条、状态栏轻量、Notion 风格文件树与属性面板
 - ⭐ **毛玻璃（强烈推荐）**：开启 Obsidian「窗口透明」后，边栏呈现半透明浮层 + 柔和投影，整体质感提升一个层次
 - **演示模式**：放大字号、隐藏侧栏/标签栏/状态栏，一键投屏阅读（见下方说明）
+- **深度自定义**：可选装 Style Settings，继承 Cupertino 全部开关 + OnePage 专属配色项（见下方说明）
 - **聚焦编辑**：编辑时侧栏与其它 Tab 自动弱化，悬停恢复
 
 ## 截图
@@ -88,6 +89,17 @@ OnePage 已上架 Obsidian **官方主题目录**，最省心、自动跟随更�
 
 下载：<https://www.nerdfonts.com/font-downloads> → 搜索 **JetBrainsMono** 下载安装即可。
 （macOS：双击 ttf 文件 → 安装字体；Windows/Linux 同理）
+
+## Style Settings 深度自定义（可选）
+
+OnePage 完整继承了 **Cupertino** 的 Style Settings 配置，装好 [Style Settings](obsidian://show-plugin?id=obsidian-style-settings) 插件后在「设置 → Style Settings → OnePage」即可调整：
+
+- **配色**：强调色（浅/暗各一，改一处全局联动）、关闭彩色排版、正文行高、演示模式字号
+- **布局**：悬停功能区 / 悬停侧边栏 / 聚焦视图、关闭紧凑面板操作 / 紧凑侧栏标签 / 紧凑状态栏、关闭媒体缩放
+- **编辑器**：关闭当前行高亮 / 横幅 / 块宽 / 字体特性 / 全宽元素 / 快速模式切换
+- **无障碍**：关闭自适应模式、减少对比度变化、减少动效、标准字号、界面字号与图标尺寸微调、链接下划线
+
+> 所有开关默认值与 OnePage 设计固化值一致，不装 Style Settings 也能开箱即用。
 
 ## 演示模式（可选）
 

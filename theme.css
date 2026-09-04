@@ -3,19 +3,220 @@ name: OnePage
 id: onepage
 settings:
     -
+        id: onepage-info
+        description: |
+            OnePage 基于 **Cupertino**，完整继承了其 Style Settings 自定义能力。
+
+            - **配色**：强调色（浅/暗）、彩色排版、演示模式、彩色侧边栏
+            - **布局**：悬停功能区/侧栏、聚焦视图、紧凑面板等
+            - **编辑器**：当前行高亮、横幅、块宽、字体特性等
+            - **无障碍**：自适应模式、对比度、动效、界面字号等
+
+            默认值即 OnePage 设计固化值，无需配置即可开箱即用；标签页默认靠左。
+        type: info-text
+        markdown: true
+
+    -
+        id: onepage-color
+        title: 配色
+        type: heading
+        level: 1
+        collapsed: true
+    -
+        id: onepage-accent
+        title: 强调色
+        description: 浅色「暖白纸张」默认 #0e6e63（深青），暗色「暖棕·冷锚」默认 #6db3a3（浅青）。修改后强调色、链接、按钮、图形视图等同步变化
+        type: variable-themed-color
+        format: hsl-split
+        alt-format:
+            -
+                id: onepage-accent-rgb
+                format: rgb-split
+            -
+                id: onepage-accent-hex
+                format: hex
+        default-light: '#0e6e63'
+        default-dark: '#6db3a3'
+    -
+        id: onepage-typo-off
+        title: 关闭彩色排版
+        description: 标题 / 加粗 / 斜体恢复正文颜色（默认按 OnePage 配色分层着色）
+        type: class-toggle
+        default: false
+    -
+        id: line-height-normal
+        title: 正文行高
+        description: 默认 1.7
+        type: variable-number-slider
+        default: 1.7
+        min: 1.3
+        max: 2.4
+        step: 0.05
+    -
         id: demo-mode
         title: 演示模式（投屏）
         description: 放大字号、隐藏侧栏/标签栏/状态栏, 一键切换纯阅读画布。可在 设置→快捷键 搜索「演示模式」绑定热键
         type: class-toggle
         addCommand: true
         default: false
+    -
+        id: onepage-demo-font
+        title: 演示模式字号
+        description: 演示模式下的正文放大字号，标题按比例联动（默认 24px）
+        type: variable-number-slider
+        default: 24
+        min: 16
+        max: 40
+        step: 1
+        format: px
+    -
+        id: colorful-frame
+        title: 彩色侧边栏
+        description: 根据强调色给边栏叠加轻微染色（macOS 非透明模式）
+        type: class-toggle
+    -
+        id: material-color
+        title: 动态配色
+        description: 根据强调色动态着色（主要影响移动端）
+        type: class-toggle
+
+    -
+        id: onepage-layout
+        title: 布局
+        type: heading
+        level: 1
+        collapsed: true
+    -
+        id: hover-ribbon
+        title: 悬停功能区
+        description: 功能区平时隐藏，鼠标移到窗口左缘时浮现
+        type: class-toggle
+        addCommand: true
+    -
+        id: hover-sidedock
+        title: 悬停侧边栏
+        description: 折叠的侧边栏在鼠标移到窗口边缘时浮现
+        type: class-toggle
+        addCommand: true
+    -
+        id: focus-view
+        title: 聚焦视图
+        description: 两侧边栏都折叠时隐藏标签栏与表格标题栏
+        type: class-toggle
+        addCommand: true
+    -
+        id: nav-action-center
+        title: 关闭紧凑面板操作
+        description: 恢复默认的面板操作按钮布局
+        type: class-toggle
+    -
+        id: tab-icon
+        title: 关闭紧凑侧栏标签
+        description: 恢复侧边栏完整标签图标
+        type: class-toggle
+    -
+        id: status-bar-baseline
+        title: 关闭紧凑状态栏
+        description: 状态栏恢复默认（OnePage 默认强制悬浮胶囊，此开关可关闭）
+        type: class-toggle
+    -
+        id: zoom-off
+        title: 关闭媒体缩放
+        description: 点击图片不再放大预览
+        type: class-toggle
+
+    -
+        id: onepage-editor
+        title: 编辑器
+        type: heading
+        level: 1
+        collapsed: true
+    -
+        id: active-line-off
+        title: 关闭当前行高亮
+        type: class-toggle
+    -
+        id: banner-off
+        title: 关闭横幅
+        description: 关闭图片横幅（banner）特性
+        type: class-toggle
+    -
+        id: block-width-off
+        title: 关闭块宽
+        description: 关闭表格 / 图片等 wide / max / 100 宽块特性
+        type: class-toggle
+    -
+        id: font-variant-off
+        title: 关闭字体特性
+        description: 关闭连字与字体变体（ss01 / liga 等）
+        type: class-toggle
+    -
+        id: full-width-media-off
+        title: 关闭全宽元素
+        type: class-toggle
+    -
+        id: mode-switcher-off
+        title: 关闭快速模式切换
+        type: class-toggle
+
+    -
+        id: onepage-a11y
+        title: 无障碍
+        type: heading
+        level: 1
+        collapsed: true
+    -
+        id: adaptive-mode-off
+        title: 关闭自适应模式
+        description: 禁止根据操作系统自动调整样式
+        type: class-toggle
+    -
+        id: reduce-contrast-change
+        title: 减少对比度变化
+        description: 窗口失焦时减少对比度跳变
+        type: class-toggle
+    -
+        id: reduce-motion
+        title: 减少动效
+        type: class-toggle
+    -
+        id: dynamic-type-off
+        title: 标准字号
+        description: 关闭基于操作系统的动态字号
+        type: class-toggle
+    -
+        id: font-ui-modifier
+        title: 界面字号
+        description: 微调界面文字大小
+        type: variable-number-slider
+        default: 0
+        min: -8
+        max: 8
+        step: 1
+        format: px
+    -
+        id: icon-size-modifier
+        title: 图标尺寸
+        description: 微调图标大小
+        type: variable-number-slider
+        default: 0
+        min: -4
+        max: 4
+        step: 1
+        format: px
+    -
+        id: clean-link-off
+        title: 链接下划线
+        description: 始终给链接加下划线以提升可见性
+        type: class-toggle
 */
 /*! =====================================================================
    OnePage — Obsidian Theme
    基于 Cupertino (https://github.com/aaaaalexis/Obsidian-Cupertino)
    上游版权: Copyright (c) 2025 aaaaalexis — MIT License
    OnePage 定制与配色: 保留原 MIT License, 详见 LICENSE
-   说明: 本主题不依赖 Style Settings 插件, 配置已固化。
+   说明: 默认配置已固化, 无需 Style Settings 即开箱即用;
+       可选装 Style Settings 获得深度自定义(继承 Cupertino 全部开关 + OnePage 专属: 强调色/彩色排版/演示字号等)
    ===================================================================== */
 
 
@@ -58,17 +259,19 @@ body {
   --line-height-normal: 1.7;
 }
 
-/* 编辑器正文: 打开连字与特性 (JetBrains Mono 的 -> => 等自动连字) */
-.markdown-source-view,
-.cm-s-obsidian {
+/* 编辑器正文: 打开连字与特性 (JetBrains Mono 的 -> => 等自动连字)
+   :not(.font-variant-off) 让 Style Settings「关闭字体特性」开关可关闭 */
+body:not(.font-variant-off) .markdown-source-view,
+body:not(.font-variant-off) .cm-s-obsidian {
   font-feature-settings: "calt" 1, "liga" 1, "ss02" 1;
   font-variant-ligatures: contextual;
 }
 
 /* ---------- 2. 编辑器极客细节 ---------- */
 
-/* 当前行: 极轻的强调条, VSCode 感, 不打扰阅读 */
-.markdown-source-view.mod-cm6 .cm-active.cm-line {
+/* 当前行: 极轻的强调条, VSCode 感, 不打扰阅读
+   :not(.active-line-off) 让 Style Settings「关闭当前行高亮」开关可关闭 */
+body:not(.active-line-off) .markdown-source-view.mod-cm6 .cm-active.cm-line {
   background-color: color-mix(in srgb, var(--text-accent) 6%, transparent);
   border-radius: 4px;
 }
@@ -84,7 +287,7 @@ body {
 }
 
 /* 当前行号: 强调色高亮 */
-.markdown-source-view.mod-cm6 .cm-active.cm-gutterElement {
+body:not(.active-line-off) .markdown-source-view.mod-cm6 .cm-active.cm-gutterElement {
   color: var(--text-accent);
   font-weight: 700;
   opacity: 1;
@@ -403,7 +606,7 @@ body.is-translucent .workspace-tab-header.is-active {
   background-color: color-mix(in srgb, var(--background-primary) 78%, transparent) !important;
 }
 
-/* ---------- 10. 配色主题 (Style Settings 下拉切换) ---------- */
+/* ---------- 10. 配色主题 (Style Settings 强调色 / 彩色排版开关) ---------- */
 
 /* 暖棕·冷锚 (暖底 + 冷青绿强调, 照搬暖白纸张的冷暖对比结构) */
 body.theme-dark {
@@ -420,17 +623,18 @@ body.theme-dark {
   --text-muted: #948d83 !important;
   --text-faint: #6b665e !important;
   /* 强调改冷色: 青绿 */
-  --text-accent: #6db3a3 !important;
-  --accent: #6db3a3 !important;
-  --accent-h: 166 !important;
-  --accent-s: 32% !important;
-  --accent-l: 57% !important;
-  --accent-hsl: 166 32% 57% !important;
-  --color-accent-rgb: 109, 179, 163 !important;
-  --accent-hover: #7fbfb0 !important;
-  --accent-active: #5ca393 !important;
-  --interactive-accent: #6db3a3 !important;
-  --interactive-accent-hover: #7fbfb0 !important;
+  /* 强调色可经 Style Settings 覆盖: 精确 hex 走 onepage-accent-hex, 通道走 hsl/rgb split; 未设置时回退主题默认值 */
+  --text-accent: var(--onepage-accent-hex, #6db3a3) !important;
+  --accent: var(--text-accent) !important;
+  --accent-h: var(--onepage-accent-h, 166) !important;
+  --accent-s: var(--onepage-accent-s, 32%) !important;
+  --accent-l: var(--onepage-accent-l, 57%) !important;
+  --accent-hsl: var(--onepage-accent-h, 166) var(--onepage-accent-s, 32%) var(--onepage-accent-l, 57%) !important;
+  --color-accent-rgb: var(--onepage-accent-rgb-r, 109), var(--onepage-accent-rgb-g, 179), var(--onepage-accent-rgb-b, 163) !important;
+  --accent-hover: color-mix(in srgb, var(--text-accent) 88%, white) !important;
+  --accent-active: color-mix(in srgb, var(--text-accent) 88%, black) !important;
+  --interactive-accent: var(--text-accent) !important;
+  --interactive-accent-hover: var(--accent-hover) !important;
   /* 彩色排版: 以暖白纸张标题色系为基础, 各提亮一档适配暗底 (亮暗同源) */
   /* 彩色排版: h2 深紫/h3 深青绿, 都与 h1 皇家蓝、h4 深陶土同为饱和不显白的色系 */
   --typo-h1: #4F74AF !important;
@@ -465,17 +669,17 @@ body.theme-light {
   --text-normal: #3d3730 !important;
   --text-muted: #857d70 !important;
   --text-faint: #c0b8ab !important;
-  --text-accent: #0e6e63 !important;  /* 深青强调色, 与暖棕正文区分明显 */
-  --accent: #0e6e63 !important;
-  --color-accent-rgb: 14, 110, 99 !important;
-  --accent-h: 173 !important;
-  --accent-s: 77% !important;
-  --accent-l: 24% !important;
-  --accent-hsl: 173 77% 24% !important;
-  --accent-hover: #2a7f75 !important;
-  --accent-active: #0a5c53 !important;
-  --interactive-accent: #0e6e63 !important;
-  --interactive-accent-hover: #2a7f75 !important;
+  --text-accent: var(--onepage-accent-hex, #0e6e63) !important;  /* 深青强调色, 与暖棕正文区分明显 */
+  --accent: var(--text-accent) !important;
+  --color-accent-rgb: var(--onepage-accent-rgb-r, 14), var(--onepage-accent-rgb-g, 110), var(--onepage-accent-rgb-b, 99) !important;
+  --accent-h: var(--onepage-accent-h, 173) !important;
+  --accent-s: var(--onepage-accent-s, 77%) !important;
+  --accent-l: var(--onepage-accent-l, 24%) !important;
+  --accent-hsl: var(--onepage-accent-h, 173) var(--onepage-accent-s, 77%) var(--onepage-accent-l, 24%) !important;
+  --accent-hover: color-mix(in srgb, var(--text-accent) 85%, white) !important;
+  --accent-active: color-mix(in srgb, var(--text-accent) 90%, black) !important;
+  --interactive-accent: var(--text-accent) !important;
+  --interactive-accent-hover: var(--accent-hover) !important;
   /* graph 适配 */
   --graph-node-tag: var(--text-accent) !important;
   --graph-node-attachment: color-mix(in srgb, var(--text-accent) 65%, var(--text-muted)) !important;
@@ -512,20 +716,21 @@ body.demo-mode .markdown-preview-view:not(.is-readable-line-width) {
 }
 
 /* 放大字号 + 舒展行距 (编辑/阅读视图都生效) */
+/* 字号可经 Style Settings「演示模式字号」调整, 未设置时回退 24px */
 body.demo-mode .markdown-source-view,
 body.demo-mode .markdown-preview-view {
-  font-size: 24px !important;
+  font-size: var(--onepage-demo-font, 24px) !important;
   line-height: 1.9 !important;
 }
 
-/* 标题更大 (固定像素, 避免 em 叠加爆大; h1 对齐文档标题 36px) */
-body.demo-mode .markdown-preview-view h1 { font-size: 36px !important; }
-body.demo-mode .markdown-preview-view h2 { font-size: 30px !important; }
-body.demo-mode .markdown-preview-view h3 { font-size: 26px !important; }
-body.demo-mode .markdown-preview-view h4 { font-size: 24px !important; }
-body.demo-mode .markdown-source-view .cm-header-1 { font-size: 36px !important; }
-body.demo-mode .markdown-source-view .cm-header-2 { font-size: 30px !important; }
-body.demo-mode .markdown-source-view .cm-header-3 { font-size: 26px !important; }
+/* 标题更大 (按演示字号比例缩放, 避免 em 叠加爆大; 默认字号下 h1 对齐文档标题 36px) */
+body.demo-mode .markdown-preview-view h1 { font-size: calc(var(--onepage-demo-font, 24px) * 1.5) !important; }
+body.demo-mode .markdown-preview-view h2 { font-size: calc(var(--onepage-demo-font, 24px) * 1.25) !important; }
+body.demo-mode .markdown-preview-view h3 { font-size: calc(var(--onepage-demo-font, 24px) * 1.08) !important; }
+body.demo-mode .markdown-preview-view h4 { font-size: calc(var(--onepage-demo-font, 24px) * 1) !important; }
+body.demo-mode .markdown-source-view .cm-header-1 { font-size: calc(var(--onepage-demo-font, 24px) * 1.5) !important; }
+body.demo-mode .markdown-source-view .cm-header-2 { font-size: calc(var(--onepage-demo-font, 24px) * 1.25) !important; }
+body.demo-mode .markdown-source-view .cm-header-3 { font-size: calc(var(--onepage-demo-font, 24px) * 1.08) !important; }
 
 /* 隐藏左侧栏 / 状态栏 / 标题栏 / 标签栏 → 保留右侧目录 */
 body.demo-mode .mod-sidedock.mod-left-split,
@@ -572,6 +777,18 @@ body.demo-mode .markdown-rendered blockquote {
 .cm-header-6 { color: var(--typo-h6, currentColor) !important; }
 .cm-strong { color: var(--typo-bold, currentColor) !important; }
 .cm-em { color: var(--typo-italic, currentColor) !important; }
+
+/* Style Settings「关闭彩色排版」: 标题/加粗/斜体回退正文色 */
+body.onepage-typo-off {
+  --typo-h1: currentColor !important;
+  --typo-h2: currentColor !important;
+  --typo-h3: currentColor !important;
+  --typo-h4: currentColor !important;
+  --typo-h5: currentColor !important;
+  --typo-h6: currentColor !important;
+  --typo-bold: currentColor !important;
+  --typo-italic: currentColor !important;
+}
 
 /* ---------- 12. 属性 (YAML frontmatter) 样式 ---------- */
 
@@ -732,9 +949,10 @@ body.demo-mode .markdown-rendered blockquote {
 /* =====================================================================
 
 /* ---------- 14. 亮色模式: 编辑/阅读切换按钮柔和淡染 ---------- */
-/* 深色实底按钮太显眼; 亮色和暗色都改用 20% 淡染 + 强调色图标 */
-body.theme-light .mod-root .workspace-leaf-content[data-type=markdown][data-mode=source] .view-header .view-actions button:nth-last-child(2),
-body.theme-dark .mod-root .workspace-leaf-content[data-type=markdown][data-mode=source] .view-header .view-actions button:nth-last-child(2) {
+/* 深色实底按钮太显眼; 亮色和暗色都改用 20% 淡染 + 强调色图标
+   :not(.mode-switcher-off) 与上游「关闭快速模式切换」开关联动 */
+body.theme-light:not(.mode-switcher-off) .mod-root .workspace-leaf-content[data-type=markdown][data-mode=source] .view-header .view-actions button:nth-last-child(2),
+body.theme-dark:not(.mode-switcher-off) .mod-root .workspace-leaf-content[data-type=markdown][data-mode=source] .view-header .view-actions button:nth-last-child(2) {
   background-color: color-mix(in srgb, var(--accent) 20%, var(--background-primary)) !important;
   color: var(--accent) !important;
   box-shadow: none !important;
@@ -938,4 +1156,16 @@ body:not(.is-translucent):not(.is-mobile).show-ribbon:not(.hover-ribbon):has(.wo
 /* 去掉功能区左上角顶栏色块补丁, 避免盖住卡片圆角 */
 body:not(.is-translucent):not(.is-mobile).show-ribbon:not(.hover-ribbon) .workspace-ribbon.mod-left:not(.is-collapsed)::before {
   display: none !important;
+}
+
+/* ---------- Style Settings「彩色侧边栏」: 在 OnePage 边栏卡片底色上叠强调色染层 ----------
+   纯新增规则, 不影响默认(无 .colorful-frame 时不匹配); 只在非透明模式生效,
+   与上游 Cupertino 同名开关一致。左侧/右侧都染色, 保持卡片观感 */
+body:not(.is-translucent):not(.is-mobile).colorful-frame.theme-light .workspace-split.mod-sidedock.mod-left-split:not(.is-sidedock-collapsed),
+body:not(.is-translucent):not(.is-mobile).colorful-frame.theme-light .workspace-split.mod-sidedock.mod-right-split:not(.is-sidedock-collapsed) {
+  background-color: color-mix(in srgb, #f4f2ee 92%, var(--text-accent)) !important;
+}
+body:not(.is-translucent):not(.is-mobile).colorful-frame.theme-dark .workspace-split.mod-sidedock.mod-left-split:not(.is-sidedock-collapsed),
+body:not(.is-translucent):not(.is-mobile).colorful-frame.theme-dark .workspace-split.mod-sidedock.mod-right-split:not(.is-sidedock-collapsed) {
+  background-color: color-mix(in srgb, #2d2a28 92%, var(--text-accent)) !important;
 }
