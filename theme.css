@@ -8,8 +8,8 @@ settings:
             OnePage 基于 **Cupertino**，完整继承了其 Style Settings 自定义能力。
 
             - **配色**：强调色（浅/暗）、彩色排版、彩色侧边栏
+            - **布局**：悬停功能区/侧栏、聚焦视图、Vault 选择常驻、状态栏悬浮等
             - **演示**：演示模式（投屏）、演示字号
-            - **布局**：悬停功能区/侧栏、聚焦视图、Vault 选择常驻、紧凑面板等
             - **编辑器**：当前行高亮、横幅、块宽、字体特性等
             - **无障碍**：自适应模式、对比度、动效、界面字号等
 
@@ -65,30 +65,6 @@ settings:
         type: class-toggle
 
     -
-        id: onepage-demo
-        title: 演示
-        type: heading
-        level: 1
-        collapsed: true
-    -
-        id: demo-mode
-        title: 演示模式（投屏）
-        description: 放大字号、隐藏侧栏/标签栏/状态栏, 一键切换纯阅读画布。可在 设置→快捷键 搜索「演示模式」绑定热键
-        type: class-toggle
-        addCommand: true
-        default: false
-    -
-        id: onepage-demo-font
-        title: 演示模式字号
-        description: 演示模式下的正文放大字号，标题按比例联动（默认 24px）
-        type: variable-number-slider
-        default: 24
-        min: 16
-        max: 40
-        step: 1
-        format: px
-
-    -
         id: onepage-layout
         title: 布局
         type: heading
@@ -123,6 +99,12 @@ settings:
         description: 恢复侧边栏完整标签图标
         type: class-toggle
     -
+        id: status-bar-float
+        title: 始终显示状态栏
+        description: 开启后状态栏悬浮胶囊常驻展开显示，无需悬停即可看到内容；关闭则保持默认（平时折叠成细条，悬停展开）
+        type: class-toggle
+        default: false
+    -
         id: status-bar-baseline
         title: 关闭紧凑状态栏
         description: 状态栏恢复默认（OnePage 默认强制悬浮胶囊，此开关可关闭）
@@ -137,6 +119,30 @@ settings:
         title: 始终显示 Vault 选择
         description: 默认关闭（左侧边栏底部 Vault 选择「悬停才显示」）；开启后常驻显示，无需悬停即可点击切换
         type: class-toggle
+
+    -
+        id: onepage-demo
+        title: 演示
+        type: heading
+        level: 1
+        collapsed: true
+    -
+        id: demo-mode
+        title: 演示模式（投屏）
+        description: 放大字号、隐藏侧栏/标签栏/状态栏, 一键切换纯阅读画布。可在 设置→快捷键 搜索「演示模式」绑定热键
+        type: class-toggle
+        addCommand: true
+        default: false
+    -
+        id: onepage-demo-font
+        title: 演示模式字号
+        description: 演示模式下的正文放大字号，标题按比例联动（默认 24px）
+        type: variable-number-slider
+        default: 24
+        min: 16
+        max: 40
+        step: 1
+        format: px
 
     -
         id: onepage-editor
@@ -460,6 +466,28 @@ body {
    in-flow(static) 顶开内容 —— 保持 OnePage 悬浮胶囊观感, 与各处底部间距一致 */
 body:not(.status-bar-baseline) .status-bar {
   position: fixed !important;
+}
+
+/* Style Settings「始终显示状态栏」: 悬浮胶囊常驻展开, 不折叠成 4px 细条。
+   覆盖上游 body:not(.status-bar-baseline) .status-bar:not(:hover) 的折叠态;
+   无 .status-bar-float 类时不匹配, 默认行为不变 */
+body.status-bar-float .status-bar:not(:hover) {
+  bottom: 4px !important;
+  border-width: var(--border-width) !important;
+  padding: 8px !important;
+  max-width: 100% !important;
+  height: 40px !important;
+  transform: none !important;
+  opacity: 1 !important;
+  filter: none !important;
+}
+body.status-bar-float .status-bar:not(:hover) > div {
+  transform: none !important;
+  opacity: 1 !important;
+  filter: none !important;
+}
+body.status-bar-float .status-bar:not(:hover)::before {
+  transform: none !important;
 }
 
 /* 新增Tab / 下拉按钮: 默认半透明, 悬停全亮, 去掉划过残留的高亮底色 */
