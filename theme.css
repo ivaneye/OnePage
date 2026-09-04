@@ -45,43 +45,6 @@ settings:
         type: class-toggle
         default: false
     -
-        id: onepage-typo-heading
-        title: 标题配色 H1-H5
-        description: Obsidian 原生无标题颜色设置，这里提供每个级别标题的颜色覆盖（浅/暗各一）
-        type: heading
-        level: 2
-        collapsed: true
-    -
-        id: onepage-typo-h1
-        title: H1 颜色
-        type: variable-themed-color
-        default-light: '#1D345C'
-        default-dark: '#4F74AF'
-    -
-        id: onepage-typo-h2
-        title: H2 颜色
-        type: variable-themed-color
-        default-light: '#52377A'
-        default-dark: '#8567BD'
-    -
-        id: onepage-typo-h3
-        title: H3 颜色
-        type: variable-themed-color
-        default-light: '#0e6e63'
-        default-dark: '#4E9A8A'
-    -
-        id: onepage-typo-h4
-        title: H4 颜色
-        type: variable-themed-color
-        default-light: '#CE5567'
-        default-dark: '#C0765E'
-    -
-        id: onepage-typo-h5
-        title: H5 颜色
-        type: variable-themed-color
-        default-light: '#9C6B1E'
-        default-dark: '#C99B5E'
-    -
         id: line-height-normal
         title: 正文行高
         description: 默认 1.7
@@ -831,22 +794,22 @@ body.demo-mode .markdown-rendered blockquote {
    通用彩色排版 (各配色通过 --typo-h1..h6 / --typo-bold / --typo-italic 定义)
    未定义时回退 currentColor(即默认正文色), 不影响其它情况
    ===================================================================== */
-.markdown-preview-view h1 { color: var(--onepage-typo-h1, var(--typo-h1, currentColor)) !important; }
-.markdown-preview-view h2 { color: var(--onepage-typo-h2, var(--typo-h2, currentColor)) !important; }
-.markdown-preview-view h3 { color: var(--onepage-typo-h3, var(--typo-h3, currentColor)) !important; }
-.markdown-preview-view h4 { color: var(--onepage-typo-h4, var(--typo-h4, currentColor)) !important; }
-.markdown-preview-view h5 { color: var(--onepage-typo-h5, var(--typo-h5, currentColor)) !important; }
+.markdown-preview-view h1 { color: var(--typo-h1, currentColor) !important; }
+.markdown-preview-view h2 { color: var(--typo-h2, currentColor) !important; }
+.markdown-preview-view h3 { color: var(--typo-h3, currentColor) !important; }
+.markdown-preview-view h4 { color: var(--typo-h4, currentColor) !important; }
+.markdown-preview-view h5 { color: var(--typo-h5, currentColor) !important; }
 .markdown-preview-view h6 { color: var(--typo-h6, currentColor) !important; }
 .markdown-preview-view strong,
 .markdown-rendered strong { color: var(--typo-bold, currentColor) !important; }
 .markdown-preview-view em,
 .markdown-rendered em { color: var(--typo-italic, currentColor) !important; }
 
-.cm-header-1 { color: var(--onepage-typo-h1, var(--typo-h1, currentColor)) !important; }
-.cm-header-2 { color: var(--onepage-typo-h2, var(--typo-h2, currentColor)) !important; }
-.cm-header-3 { color: var(--onepage-typo-h3, var(--typo-h3, currentColor)) !important; }
-.cm-header-4 { color: var(--onepage-typo-h4, var(--typo-h4, currentColor)) !important; }
-.cm-header-5 { color: var(--onepage-typo-h5, var(--typo-h5, currentColor)) !important; }
+.cm-header-1 { color: var(--typo-h1, currentColor) !important; }
+.cm-header-2 { color: var(--typo-h2, currentColor) !important; }
+.cm-header-3 { color: var(--typo-h3, currentColor) !important; }
+.cm-header-4 { color: var(--typo-h4, currentColor) !important; }
+.cm-header-5 { color: var(--typo-h5, currentColor) !important; }
 .cm-header-6 { color: var(--typo-h6, currentColor) !important; }
 .cm-strong { color: var(--typo-bold, currentColor) !important; }
 .cm-em { color: var(--typo-italic, currentColor) !important; }
