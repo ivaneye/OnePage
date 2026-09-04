@@ -94,6 +94,8 @@ OnePage 已上架 Obsidian **官方主题目录**，最省心、自动跟随更�
 
 OnePage 完整继承了 **Cupertino** 的 Style Settings 配置，装好 [Style Settings](obsidian://show-plugin?id=obsidian-style-settings) 插件后在「设置 → Style Settings → OnePage」即可调整：
 
+> 🌐 **中英双语**：设置面板跟随 Obsidian 界面语言自动切换（中文/English）。切换语言后重新打开 Style Settings 面板即可生效。
+
 - **配色**：强调色（浅/暗各一，改一处全局联动）、关闭彩色排版、正文行高、彩色侧边栏
 - **布局**：悬停功能区 / 悬停侧边栏 / 聚焦视图、**始终显示 Vault 选择**、**始终显示状态栏**、关闭紧凑面板操作 / 紧凑侧栏标签、关闭媒体缩放
 - **演示**：演示模式（投屏，可绑快捷键）、演示模式字号

@@ -14,19 +14,32 @@ settings:
             - **无障碍**：自适应模式、对比度、动效、界面字号等
 
             默认值即 OnePage 设计固化值，无需配置即可开箱即用；标签页默认靠左。
+        description.en: |
+            OnePage is built on **Cupertino** and inherits its full Style Settings customization.
+
+            - **Colors**: accent (light/dark), typographic colors, tinted sidebar
+            - **Layout**: hover ribbon/sidebar, focus view, always-visible vault switcher & status bar, etc.
+            - **Demo**: demo mode (presenting), demo font size
+            - **Editor**: active line, banner, block width, font variants, etc.
+            - **Accessibility**: adaptive mode, contrast, motion, UI font size, etc.
+
+            Defaults match OnePage's fixed design — works out of the box without Style Settings; tabs default to left-aligned.
         type: info-text
         markdown: true
 
     -
         id: onepage-color
         title: 配色
+        title.en: Colors
         type: heading
         level: 1
         collapsed: true
     -
         id: onepage-accent
         title: 强调色
+        title.en: Accent Color
         description: 浅色「暖白纸张」默认 #0e6e63（深青），暗色「暖棕·冷锚」默认 #6db3a3（浅青）。修改后强调色、链接、按钮、图形视图等同步变化
+        description.en: Light "Warm Paper" defaults to #0e6e63 (deep teal); dark "Warm Brown · Cool Anchor" defaults to #6db3a3 (light teal). Accent, links, buttons, and the graph view update together.
         type: variable-themed-color
         format: hsl-split
         alt-format:
@@ -41,13 +54,17 @@ settings:
     -
         id: onepage-typo-off
         title: 关闭彩色排版
+        title.en: Disable Typographic Colors
         description: 标题 / 加粗 / 斜体恢复正文颜色（默认按 OnePage 配色分层着色）
+        description.en: Headings / bold / italic fall back to the normal text color (defaults to OnePage's layered color scheme).
         type: class-toggle
         default: false
     -
         id: line-height-normal
         title: 正文行高
+        title.en: Body Line Height
         description: 默认 1.7
+        description.en: Default 1.7
         type: variable-number-slider
         default: 1.7
         min: 1.3
@@ -56,82 +73,108 @@ settings:
     -
         id: colorful-frame
         title: 彩色侧边栏
+        title.en: Tinted Sidebar
         description: 根据强调色给边栏叠加轻微染色（macOS 非透明模式）
+        description.en: Apply a subtle accent-based tint to the sidebars (macOS non-translucent).
         type: class-toggle
     -
         id: material-color
         title: 动态配色
+        title.en: Dynamic Color
         description: 根据强调色动态着色（主要影响移动端）
+        description.en: Dynamic theming based on the accent color (mainly affects mobile).
         type: class-toggle
 
     -
         id: onepage-layout
         title: 布局
+        title.en: Layout
         type: heading
         level: 1
         collapsed: true
     -
         id: hover-ribbon
         title: 悬停功能区
+        title.en: Hover Ribbon
         description: 功能区平时隐藏，鼠标移到窗口左缘时浮现
+        description.en: The ribbon stays hidden until you hover the left window edge.
         type: class-toggle
         addCommand: true
     -
         id: hover-sidedock
         title: 悬停侧边栏
+        title.en: Hover Sidebar
         description: 折叠的侧边栏在鼠标移到窗口边缘时浮现
+        description.en: Reveal collapsed sidebars by hovering over window edges.
         type: class-toggle
         addCommand: true
     -
         id: focus-view
         title: 聚焦视图
+        title.en: Focus View
         description: 两侧边栏都折叠时隐藏标签栏与表格标题栏
+        description.en: Hide tabs and the table title bar when both sidebars are collapsed.
         type: class-toggle
         addCommand: true
     -
         id: nav-action-center
         title: 关闭紧凑面板操作
+        title.en: Disable Compact Panel Actions
         description: 恢复默认的面板操作按钮布局
+        description.en: Restore the default panel action button layout.
         type: class-toggle
     -
         id: tab-icon
         title: 关闭紧凑侧栏标签
+        title.en: Disable Compact Sidebar Tabs
         description: 恢复侧边栏完整标签图标
+        description.en: Restore the full sidebar tab icons.
         type: class-toggle
     -
         id: status-bar-float
         title: 始终显示状态栏
+        title.en: Always Show Status Bar
         description: 开启后状态栏悬浮胶囊常驻展开显示，无需悬停即可看到内容；关闭则保持默认（平时折叠成细条，悬停展开）
+        description.en: Keep the floating status bar expanded so its content is always visible; off keeps the default (collapsed to a thin bar, expands on hover).
         type: class-toggle
         default: false
     -
         id: zoom-off
         title: 关闭媒体缩放
+        title.en: Disable Media Zoom
         description: 点击图片不再放大预览
+        description.en: Clicking images no longer zooms into the preview.
         type: class-toggle
     -
         id: vault-switcher-always
         title: 始终显示 Vault 选择
+        title.en: Always Show Vault Switcher
         description: 默认关闭（左侧边栏底部 Vault 选择「悬停才显示」）；开启后常驻显示，无需悬停即可点击切换
+        description.en: Off by default (the vault switcher at the bottom of the left sidebar shows only on hover); on keeps it visible so you can switch vaults without hovering.
         type: class-toggle
 
     -
         id: onepage-demo
         title: 演示
+        title.en: Demo
         type: heading
         level: 1
         collapsed: true
     -
         id: demo-mode
         title: 演示模式（投屏）
+        title.en: Demo Mode (Presenting)
         description: 放大字号、隐藏侧栏/标签栏/状态栏, 一键切换纯阅读画布。可在 设置→快捷键 搜索「演示模式」绑定热键
+        description.en: Enlarge fonts and hide sidebars / tabs / status bar for a clean reading canvas. Bind a hotkey in Settings → Hotkeys by searching "Demo Mode".
         type: class-toggle
         addCommand: true
         default: false
     -
         id: onepage-demo-font
         title: 演示模式字号
+        title.en: Demo Mode Font Size
         description: 演示模式下的正文放大字号，标题按比例联动（默认 24px）
+        description.en: Enlarged body font size in demo mode; headings scale proportionally (default 24px).
         type: variable-number-slider
         default: 24
         min: 16
@@ -142,66 +185,86 @@ settings:
     -
         id: onepage-editor
         title: 编辑器
+        title.en: Editor
         type: heading
         level: 1
         collapsed: true
     -
         id: active-line-off
         title: 关闭当前行高亮
+        title.en: Disable Active Line Highlight
         type: class-toggle
     -
         id: banner-off
         title: 关闭横幅
+        title.en: Disable Banner
         description: 关闭图片横幅（banner）特性
+        description.en: Disable the image banner feature.
         type: class-toggle
     -
         id: block-width-off
         title: 关闭块宽
+        title.en: Disable Block Width
         description: 关闭表格 / 图片等 wide / max / 100 宽块特性
+        description.en: Disable wide / max / 100 width blocks for tables, images, etc.
         type: class-toggle
     -
         id: font-variant-off
         title: 关闭字体特性
+        title.en: Disable Font Variants
         description: 关闭连字与字体变体（ss01 / liga 等）
+        description.en: Disable ligatures and font variants (ss01 / liga, etc.).
         type: class-toggle
     -
         id: full-width-media-off
         title: 关闭全宽元素
+        title.en: Disable Full-Width Elements
         type: class-toggle
     -
         id: mode-switcher-off
         title: 关闭快速模式切换
+        title.en: Disable Quick Mode Switcher
         type: class-toggle
 
     -
         id: onepage-a11y
         title: 无障碍
+        title.en: Accessibility
         type: heading
         level: 1
         collapsed: true
     -
         id: adaptive-mode-off
         title: 关闭自适应模式
+        title.en: Disable Adaptive Mode
         description: 禁止根据操作系统自动调整样式
+        description.en: Prevent automatic styling based on the operating system.
         type: class-toggle
     -
         id: reduce-contrast-change
         title: 减少对比度变化
+        title.en: Reduce Contrast Change
         description: 窗口失焦时减少对比度跳变
+        description.en: Minimize contrast shifts when the window loses focus.
         type: class-toggle
     -
         id: reduce-motion
         title: 减少动效
+        title.en: Reduce Motion
         type: class-toggle
     -
         id: dynamic-type-off
         title: 标准字号
+        title.en: Standard Font Size
         description: 关闭基于操作系统的动态字号
+        description.en: Disable operating system-based dynamic font sizes.
         type: class-toggle
     -
         id: font-ui-modifier
         title: 界面字号
+        title.en: Interface Font Size
         description: 微调界面文字大小
+        description.en: Fine-tune interface text size.
         type: variable-number-slider
         default: 0
         min: -8
@@ -211,7 +274,9 @@ settings:
     -
         id: icon-size-modifier
         title: 图标尺寸
+        title.en: Icon Size
         description: 微调图标大小
+        description.en: Fine-tune icon size.
         type: variable-number-slider
         default: 0
         min: -4
@@ -221,9 +286,12 @@ settings:
     -
         id: clean-link-off
         title: 链接下划线
+        title.en: Underlined Links
         description: 始终给链接加下划线以提升可见性
+        description.en: Always underline links for improved visibility.
         type: class-toggle
 */
+
 /*! =====================================================================
    OnePage — Obsidian Theme
    基于 Cupertino (https://github.com/aaaaalexis/Obsidian-Cupertino)
