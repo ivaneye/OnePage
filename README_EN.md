@@ -28,7 +28,7 @@ a native macOS-style interface paired with VSCode-like geeky editor details, wra
 - **Refined code**: JetBrains Mono ligatures, pill-shaped inline code, rounded code-block borders
 - **Reading experience**: tightened heading letter-spacing, thin underlined links, polished blockquotes, layered typographic colors (headings / bold / italic)
 - **Native UI**: macOS capsule tabs, ultra-thin scrollbars, lightweight status bar, Notion-style file tree & properties
-- ⭐ **Frosted glass (highly recommended)**: enable Obsidian's "Window translucent" for semi-transparent floating sidebars with soft shadows — a whole new level of polish
+- ⚠️ **Window translucent (not recommended)**: enabling it gives frosted-glass sidebars, but a macOS Electron compositing bug causes text ghosting/residue — keep it off (see below)
 - **Demo mode**: enlarge fonts and hide sidebars / tabs / status bar for distraction-free presenting (see below)
 - **Deep customization**: optional Style Settings with all Cupertino toggles + OnePage-specific options (see below)
 - **Focus editing**: sidebars and other tabs dim while editing, restore on hover
@@ -76,11 +76,17 @@ To get the latest version first, or to manage manually:
 
 ---
 
-## ✨ Enable frosted glass
+## ⚠️ About "Window translucent" (not recommended)
 
-Turn on **"Window translucent"** to get semi-transparent frosted floating sidebars with soft shadows that blend seamlessly with the native macOS feel.
+Turning on **"Window translucent"** gives semi-transparent frosted floating sidebars with soft shadows that blend seamlessly with the native macOS feel.
 
-Settings → Appearance → enable **"Window translucent"** → restart Obsidian.
+However, a **macOS Electron rendering/compositing bug** causes **text ghosting / residue** after enabling it (especially noticeable when scrolling the file list, or when closing/switching tabs), and it **cannot be fixed from CSS** (solid backgrounds, forced compositing layers, etc. were all tried without success).
+
+**Therefore "Window translucent" is not recommended** — keep it off:
+
+Settings → Appearance → turn **"Window translucent"** **off**.
+
+If you already enabled it, turn it off and **restart Obsidian** to restore normal rendering.
 
 ## ⚠️ Must read: font dependency
 
