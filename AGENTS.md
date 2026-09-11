@@ -22,6 +22,10 @@ Obsidian 社区主题靠 **GitHub Release** 分发更新：**只推代码/tag �
 
 版本号必须 **`x.y.z` 纯数字，禁止 `v` 前缀**（tag、release 名称、manifest 三处统一）。
 
+> ⚠️ **安装文件必须作为 Release 的 binary assets 上传**（`manifest.json` + `theme.css`），只提交到仓库不算数。
+> 官方原文："When a user installs your theme, Obsidian downloads `manifest.json` and `theme.css` from the GitHub release whose tag matches the `version` in your manifest"。
+> 漏传 assets → 社区目录报 `Error: Release is missing a required install file`，且**用户端完全无法安装/更新**（1.0.3–1.1.2 曾因此全部失效，2026-09-11 补齐）。
+
 ### 标准发布步骤
 
 1. 改版本号：`manifest.json` 的 `version`（如 `1.0.3`）
@@ -29,17 +33,35 @@ Obsidian 社区主题靠 **GitHub Release** 分发更新：**只推代码/tag �
 3. 提交：`git add manifest.json versions.json && git commit -m "release: v1.0.3"`
 4. 打 tag：`git tag 1.0.3`（**无 v 前缀**，必须与 manifest 版本一致）
 5. 推送：`git push origin master --tags`
-6. 建 Release：
+6. 建 Release（**必须带上 `manifest.json theme.css` 两个文件**，`gh` 会把它们作为 assets 上传）：
    ```bash
-   gh release create 1.0.3 --title "1.0.3" --notes "..."
+   gh release create 1.0.3 --title "1.0.3" --notes "..." manifest.json theme.css
    ```
    - **`--title`（Release 名称）= `1.0.3`，严禁写 `v1.0.3`**
    - tag 名也是 `1.0.3`
-7. 校验：`gh release view 1.0.3 --json name,tagName` 确认 name == tagName == 版本号
+   - 若已配 `.github/workflows/release.yml`，push tag 后 CI 会自动建 Release（含 assets），**跳过本步**，直接做第 7 步校验
+7. 校验（三个条件都要过）：
+   ```bash
+   gh api repos/ivaneye/OnePage/releases/tags/1.0.3 \
+     --jq '[.name, .tag_name, (.assets|map(.name)|sort|join(","))] | tostring'
+   # 期望: ["1.0.3","1.0.3","manifest.json,theme.css"]
+   curl -sIL -o /dev/null -w '%{http_code}\n' \
+     https://github.com/ivaneye/OnePage/releases/download/1.0.3/theme.css   # 期望 200
+   ```
 
 ### 易错点
 
 - ❌ `--title "v1.0.3"`（带 v）→ ✅ `--title "1.0.3"`
+- ❌ `gh release create 1.0.3 --title "1.0.3" --notes "..."`（**漏了 assets**，社区目录会报 `Release is missing a required install file`）
+  → ✅ 末尾补 `manifest.json theme.css`；Release 已建也可以补传：
+  ```bash
+  gh release upload 1.0.3 manifest.json theme.css --clobber
+  ```
+  ⚠️ 补传时必须用**该 tag 当时的文件**（`git show 1.0.3:manifest.json > /tmp/m.json`），别用工作区当前版本，否则 manifest 里的 version 与 tag 不一致。
+- 批量体检所有 Release 是否有 assets：
+  ```bash
+  for t in $(git tag); do echo -n "$t: "; gh api repos/ivaneye/OnePage/releases/tags/$t --jq '.assets|length'; done   # 全部应为 2
+  ```
 - Release 已建后改名称用：`gh release edit 1.0.3 --title "1.0.3"`
 - 若 Release 还没建、tag 已推：可移动 tag（`git tag -d 1.0.3 && git tag 1.0.3 && git push origin --tags --force`）把新修复并入同一版本，避免空发一版
 - `gh release edit` 没有 `--name` 参数，改标题用 `--title`
