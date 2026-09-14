@@ -375,6 +375,16 @@ body:not(.active-line-off) .markdown-source-view.mod-cm6 .cm-active.cm-gutterEle
   opacity: 1;
 }
 
+/* Relative Line Numbers 插件兼容 (Cupertino 基座遗留问题):
+   插件只在「当前行」的 gutter 里生成 .relative-line-numbers-mono 标记,
+   而基座给了它 position: absolute; width: 100% —— 它最近的 positioned 祖先是
+   .cm-scroller (CM6 基座 position: relative), 于是命中区横跨整个编辑区,
+   盖住正文文字, 导致同一段落内重复点击/选择时焦点被 gutter 抢走。
+   该标记纯装饰, 直接不接收指针事件即可。 */
+.markdown-source-view.mod-cm6 .cm-gutterElement.relative-line-numbers-mono {
+  pointer-events: none;
+}
+
 /* 光标: 2px 强调色 */
 .cm-s-obsidian .cm-cursor,
 .cm-s-obsidian .cm-cursor-secondary {
