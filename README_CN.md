@@ -137,6 +137,11 @@ OnePage 完整继承了 **Cupertino** 的 Style Settings 配置，装好 [Style 
 
 ## 更新日志
 
+### 1.1.4
+
+- **修复**：开启 *Relative Line Numbers* 插件后，在当前段落内重复点击 / 选中文字不再丢失编辑器焦点 —— 该插件生成的装饰性 gutter 标记（`position: absolute; width: 100%`，继承自 Cupertino 基座）命中区横跨整个编辑区，抢走了正文的鼠标事件，现已改为 `pointer-events: none`
+- OnePage 已上架 Obsidian 应用内主题浏览器（设置 → 外观 → 浏览）
+
 ### 1.1.3
 
 - README 默认改为英文，中文版移至 [README_CN.md](./README_CN.md)

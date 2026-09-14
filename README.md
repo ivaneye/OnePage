@@ -137,6 +137,11 @@ If OnePage helps you, feel free to **share it with friends who use Obsidian** �
 
 ## Changelog
 
+### 1.1.4
+
+- **Fixed**: with the *Relative Line Numbers* plugin enabled, repeated clicks or text selection inside the active paragraph no longer lose editor focus — the plugin's decorative gutter marker (`position: absolute; width: 100%`, inherited from Cupertino) had a hit area spanning the whole editor, so it swallowed pointer events over the text. It is now `pointer-events: none`
+- OnePage is now listed in Obsidian's in-app theme browser (Settings → Appearance → Themes → Browse)
+
 ### 1.1.3
 
 - English is now the default README; the Chinese version moved to [README_CN.md](./README_CN.md)

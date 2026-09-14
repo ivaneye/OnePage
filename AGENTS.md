@@ -88,7 +88,8 @@ Obsidian 的解析链：`--font-monospace = var(--font-monospace-override(用户
 
 - **Obsidian 不热加载外部修改的 theme.css**。改完必须手动刷新：设置 → 外观 → 主题切走再切回 OnePage（或重启）。
 - 用户反馈"没生效"时，先问/提醒刷新，不要急着改代码。
-- 本机 `app.css`（Obsidian 1.13.7 官方样式，用于查 DOM/默认值）已解压在 `/tmp/ob_asar/app.css`；渲染层 JS 在 `/tmp/ob_asar/app.js`（可 grep 确认元素生成逻辑）。
+- 本机官方样式与渲染层 JS 在 `/Applications/Obsidian.app/Contents/Resources/obsidian.asar`（`app.asar` 只是 Electron 壳，里面没有 app.css/app.js）。解压后 `app.css` 查官方默认值，`app.js` grep 元素生成逻辑。
+- 注意 `theme.css` 里 Cupertino 基座是**压缩成两行**的（第 306/307 行，每条 200KB+）；grep 命中这两行时终端输出会被截断，**必须用 python 打印上下文**，否则会误判为“主题里没有这条规则”。
 
 ---
 
@@ -110,6 +111,16 @@ Obsidian 的解析链：`--font-monospace = var(--font-monospace-override(用户
 
 - `.metadata-property-key` 默认 `align-items: flex-start`（子元素偏上），value 是 `center` → 两者不对齐。
   主题里已加 `align-items: center !important`（`theme.css` 约 626 行），**不要删**。
+
+---
+
+## 插件兼容（继承 Cupertino）
+
+Cupertino 基座里有一段第三方插件兼容层（上游 `src/app/community-plugins.scss`），会直接改插件元素，**已有踩坑**：
+
+- `Relative Line Numbers`（`nadavspi/obsidian-relative-line-numbers`）：基座给了 `.relative-line-numbers-mono{position:absolute;width:100%}`。该标记只在**当前行**渲染，而它最近的 positioned 祖先是 `.cm-scroller`（CM6 基座 `position: relative`；`.cm-gutters`/`.cm-gutter` 均无 position），于是命中区 = 整个编辑区宽，盖在正文上抢鼠标事件 → 同一段落内重复点击/选字丢失焦点。
+  主题已在定制层加 `pointer-events: none`（**不要删**）；后续从上游合并 Cupertino 时注意别把这条覆盖回去，也建议顺手给上游提 issue（baseline / lumin 等衍生主题同样中招）。
+- 排查同类问题的手法：定位元素 → 看 class → 在压缩层 grep 该 class → 用 python 打印上下文。
 
 ---
 
