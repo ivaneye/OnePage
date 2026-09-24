@@ -1306,21 +1306,52 @@ body.is-translucent .modal:not(.mod-sidebar-layout) {
   color: var(--text-normal);
 }
 
-/* 4) 卡片视图: hairline 圆环 + hover 轻抬升 (默认 1px 灰环无质感) */
+/* 4) 卡片视图: 封面贴边出血 + hairline 接缝 + 标题 600 + 组名条与表格同脸
+   + hover 轻抬升/按压回落 (默认: 1px 灰环无质感, 封面顶部缩进 8px 像裱在卡里) */
 .bases-view {
   --bases-cards-radius: 12px;
   --bases-cards-shadow: 0 0 0 1px color-mix(in srgb, var(--text-muted) 16%, transparent);
   --bases-cards-shadow-hover: 0 0 0 1px color-mix(in srgb, var(--text-muted) 30%, transparent), var(--shadow-tactile);
 }
-.bases-cards-item .bases-cards-line:first-child {
-  font-weight: 500;
+/* 卡片内距: 封面→标题的间距 = 卡片 padding-top (JS 用 cardPad.top 定位标题行),
+   末行→卡底的间距 = padding-bottom。官方默认 8px/4px;
+   注: 封面官方本就 top:0 贴边出血(勿再波 padding-top 归零 —— 那只会让标题贴住封面,
+   源码定位公式: cover.top=0 → +coverHeight → +cardPad.top → 标题行)。
+   底部从官方 4px 提到 8px, 末行不贴底 */
+.bases-view .bases-cards-item {
+  padding-top: var(--size-4-2);
+  padding-bottom: var(--size-4-2);
+}
+/* 封面与文字区接缝: 与表格网格同色同语言, 空封面时也是天然占位边界 */
+.bases-view .bases-cards-cover {
+  box-shadow: inset 0 -1px 0 var(--onepage-bases-grid);
+}
+/* 标题字重显式钉 600, 与组名值/表头同语言
+   (默认 bold, 勿用 .bases-cards-line 选择器 — 会盖到标题) */
+.bases-view .bases-cards-property.mod-title {
+  font-weight: 600;
+}
+/* 卡片分组组名条: 与表格分组同脸 (6% tint + hairline);
+   卡片组名是 absolute 且默认无宽度, 需 width:100% 才能横贯整行 */
+.bases-view .bases-cards-group .bases-group-heading {
+  width: 100%;
+  padding-inline-start: var(--size-4-2);
+  background-color: color-mix(in srgb, var(--text-muted) 6%, var(--background-primary));
+  box-shadow: inset 0 -1px 0 var(--onepage-bases-grid);
+}
+/* 组块默认底部分隔线(background-modifier-border)弱化成表格同款 hairline */
+.bases-view .bases-cards-group {
+  border-color: var(--onepage-bases-grid);
 }
 @media (prefers-reduced-motion: no-preference) {
-  .bases-cards-item {
+  .bases-view .bases-cards-item {
     transition: box-shadow var(--anim-duration-fast) ease-in-out, transform var(--anim-duration-fast) ease-in-out;
   }
-  .bases-cards-item:hover {
+  .bases-view .bases-cards-item:hover {
     transform: translateY(-2px);
+  }
+  .bases-view .bases-cards-item:active {
+    transform: translateY(0);
   }
 }
 
