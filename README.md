@@ -137,6 +137,16 @@ If OnePage helps you, feel free to **share it with friends who use Obsidian** �
 
 ## Changelog
 
+### 1.2.0
+
+- **New: Bases redesign** — tables and cards now speak the theme's own table language
+  - Table: restrained accent header + 2px accent divider + 1px full grid, no outer frame; row/header hover uses the same accent tint as the active-line highlight; grouped headings get a mini-section treatment (bold value, faint label, tinted bar + hairline); font size aligned with markdown tables; tabular numerals
+  - **Worked around an Obsidian layout flaw** (affects the default theme too): after manually resizing the last column, the header line ended short of the body — the header lacks the `min-width: 100%` fallback the body chain has; now defended in-theme
+  - Cards: hairline cover seam, 600-weight titles, group bars matching table groups, hover lift / press settle
+  - Embedded bases now render identical to standalone (restored header line, body bottom line and first-column line; squared corners)
+- **Fixed**: the gray band above/below images in the editor that looked like a phantom input line (#4) — lines containing block widgets (images, embeds, tables) no longer get the active-line background fill
+- **Fixed**: dark-mode menus were nearly see-through glass (7.5% white) and unreadable over accent-colored content; now a darker frosted glass
+
 ### 1.1.4
 
 - **Fixed**: with the *Relative Line Numbers* plugin enabled, repeated clicks or text selection inside the active paragraph no longer lose editor focus — the plugin's decorative gutter marker (`position: absolute; width: 100%`, inherited from Cupertino) had a hit area spanning the whole editor, so it swallowed pointer events over the text. It is now `pointer-events: none`
