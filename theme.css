@@ -358,6 +358,17 @@ body:not(.active-line-off) .markdown-source-view.mod-cm6 .cm-active.cm-line {
   border-radius: 4px;
 }
 
+/* 例外: 图片 / 媒体 / 内嵌笔记 / 表格这类「块级 widget」所在行不铺底色。
+   原因: Cupertino 基座把 .cm-content .image-embed 设为 display:block (为「块宽」特性
+   img-wide/max/100 服务), CM6 又会给 widget 两侧插 .cm-widgetBuffer, 于是该行行盒
+   = 内容 + 上下各约一整行高。整行底色铺上去就像图片上下凭空多出一个「输入行」。
+   当前行提示对这类块级媒体没有意义, 故豁免; 文本行的高亮/圆角不受影响。
+   注: .image-embed/.media-embed 通常也带 .internal-embed, 冗余列出以防类名变化。 */
+body:not(.active-line-off) .markdown-source-view.mod-cm6 .cm-active.cm-line:has(.internal-embed, .image-embed, .media-embed, .cm-table-widget) {
+  background-color: transparent;
+  border-radius: 0;
+}
+
 /* 行号栏: 去边框, 更干净 */
 .cm-gutterElement {
   font-family: var(--font-monospace);
