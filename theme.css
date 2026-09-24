@@ -1212,6 +1212,134 @@ body.is-translucent .modal:not(.mod-sidebar-layout) {
   vertical-align: baseline !important;
 }
 
+/* ---------- OnePage: Bases 数据库 (独立文件 + 内嵌, 同步优化) ----------
+   对齐主题第 16 节「表格: 网格风格」: 克制主色表头 + 2px 主色分隔线 + 1px 全网格数据格,
+   无底色卡无外框; 独立打开与内嵌共用同一套语言。 */
+
+/* 1) 表格骨架: 网格风格 (同 .markdown-rendered table) */
+.bases-view {
+  /* 表体/表头块不带底色(网格风格), 分组底色只给"组名行"(见下方结构规则) */
+  --bases-table-group-background: var(--background-primary);
+  --bases-table-summary-background: var(--background-primary);
+  --bases-table-container-border-width: 0;
+  /* 表头: 克制主色文字 + 600 字重 (同 th); 底色用页面底色而非 th 的透明 ——
+     Bases 表头是 sticky, 透明会让滚动内容从表头底下透出来 */
+  --bases-table-header-background: var(--background-primary);
+  /* 表头单元格悬浮: 与行悬浮/当前行高亮同配方 (accent 6%) */
+  --bases-table-header-background-hover: color-mix(in srgb, var(--text-accent) 6%, transparent);
+  --bases-table-header-color: color-mix(in srgb, var(--text-accent) 55%, var(--text-muted));
+  --bases-table-header-weight: 600;
+  /* 数据格: 1px hairline 全网格 (同 td); 行线/列线颜色都走这组变量, 作用域限 bases */
+  --onepage-bases-grid: color-mix(in srgb, var(--text-muted) 15%, transparent);
+  --onepage-bases-header-line: color-mix(in srgb, var(--text-accent) 45%, var(--text-muted));
+  --bases-table-column-border-width: 1px;
+  --bases-table-row-border-width: 1px;
+  --table-border-color: var(--onepage-bases-grid);
+  --bases-table-border-color: var(--onepage-bases-grid);
+  --bases-table-row-height: 34px;  /* ≈ 表格 8px padding 行高 */
+  /* 行悬浮: 与「当前行高亮」同配方 (accent 6% 透明), 全主题同一反馈色 */
+  --bases-table-row-background-hover: color-mix(in srgb, var(--text-accent) 6%, transparent);
+  /* 分组标题 (迷你章节): 属性名=极淡小标签, 值=放大加粗当主角; 组间呼吸 10→18px */
+  --bases-group-heading-property-display: block;
+  --bases-group-heading-property-size: var(--font-ui-smaller);
+  --bases-group-heading-property-weight: var(--font-normal);
+  --bases-group-heading-property-color: var(--text-faint);
+  --bases-group-heading-value-size: var(--font-ui-medium);
+  --bases-group-heading-value-weight: 600;
+  --bases-table-group-gap: 18px;
+  /* 字号: 对齐主题 markdown 表格(--table-text-size=0.933em); 官方默认是更小的
+     --font-smaller(0.875em), 会比正文小一档、比表格又小半档, 观感偏小 */
+  --bases-table-font-size: var(--table-text-size);
+  /* 数字/日期列: 等宽数字, 不改对齐 (保持 Obsidian 习惯) */
+  font-variant-numeric: tabular-nums;
+}
+
+/* 表头分隔线: 2px 主色 (同 th 的 border-bottom)。
+   官方把表头底线租行线宽度共用(--bases-table-row-border-width), 做不了 2px/1px 并存,
+   这里单独盖一条。
+   注意线画在表头单元格上而不是 thead 容器: thead 容器 width:100% 只到可视宽,
+   分组后表体块(组标题/摘要是文档流元素)会更宽, 画在容器上线会比表体短一截;
+   单元格与表体格子同源测量, 线长永远与表体网格对齐(独立/内嵌/溢出都成立)。
+   同时去掉单元格圆角, 否则 inset 线会在每个列边界随圆角翘起成缺口 */
+/* 表头线宽度先钉死: 布局 JS 给 thead/行/组块都写 inline width=总列宽 Z, 但只有表体链
+   (.bases-table-container/.bases-table/.bases-tr) 带 CSS min-width:100% 兜底。
+   当末列被手动拖宽(columnSize 记录 customWidth)时 JS 跳过"末列拉伸填满",
+   Z < 窗格宽 → 表体被兜底撑到窗格宽而 thead 停在 Z → 表头线比组名/行线短一截。
+   这里给 thead 补上同样的兜底 (实测: 修复前 508/883/883, 后 883/883/883)。
+   注: 这是 Obsidian 1.13.7 布局缺陷, 默认主题同样中招, 此条为通用防御。
+   2px 主色线也必须画在 thead 容器上(不能画在表头单元格上): 容器有 min-width
+   兜底能撑到窗格宽, 单元格只按 Z 定位, 画在单元格上末列拖宽时线仍会短一截 */
+.bases-view .bases-thead {
+  min-width: 100%;
+  box-shadow: inset 0 -2px 0 var(--onepage-bases-header-line);
+}
+
+/* 表头/表体之间只留这根 2px 粗线: markdown 表格靠 border-collapse 让粗线吃掉首行的
+   1px 上边线, 而 Bases 的线是 box-shadow 画的不会合并, 不去掉会双线叠在一起。
+   注: 表头是 sticky 且不透明, 滚动时首行细线被表头盖住, 不会濲出 */
+.bases-view .bases-tbody > .bases-tr:first-child {
+  box-shadow: none;
+}
+
+/* 组标题行: 迷你章节 + 底色条(只给组名行, 不给整表) + hairline 底线,
+   背景用 6% muted tint(中性, 与行悬浮的青色 tint 区分), 浅暗都可见 */
+.bases-view .bases-table .bases-group-heading {
+  background-color: color-mix(in srgb, var(--text-muted) 6%, var(--background-primary));
+  box-shadow: inset 0 -1px 0 var(--onepage-bases-grid);
+}
+
+/* 组摘要行: 汇总值弱化 (muted + 等宽数字), 与数据行区分 */
+.bases-view .bases-table-group-summary-row {
+  color: var(--text-muted);
+}
+
+/* 2) 底部「新建笔记」行: ghost 化, 悬浮转强调色 (macOS 表格加行习惯) */
+.bases-table-footer {
+  color: var(--text-faint);
+}
+.bases-table-footer:hover {
+  color: var(--text-accent);
+}
+
+/* 3) Base 标题不吃彩色排版 (默认继承 h2 紫色, 在数据页很怪) */
+.bases-header .title {
+  color: var(--text-normal);
+}
+
+/* 4) 卡片视图: hairline 圆环 + hover 轻抬升 (默认 1px 灰环无质感) */
+.bases-view {
+  --bases-cards-radius: 12px;
+  --bases-cards-shadow: 0 0 0 1px color-mix(in srgb, var(--text-muted) 16%, transparent);
+  --bases-cards-shadow-hover: 0 0 0 1px color-mix(in srgb, var(--text-muted) 30%, transparent), var(--shadow-tactile);
+}
+.bases-cards-item .bases-cards-line:first-child {
+  font-weight: 500;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .bases-cards-item {
+    transition: box-shadow var(--anim-duration-fast) ease-in-out, transform var(--anim-duration-fast) ease-in-out;
+  }
+  .bases-cards-item:hover {
+    transform: translateY(-2px);
+  }
+}
+
+/* 5) 内嵌 Base: 基座为"无框无缝"设计, 在内嵌态强制关掉表头线/底线/首列左线,
+      这里按同特异性、更靠后恢复 —— 内嵌与独立同脸, 不另加外框 */
+.workspace-leaf-content[data-type="markdown"] .bases-embed .bases-view .bases-thead {
+  min-width: 100%;
+  box-shadow: inset 0 -2px 0 var(--onepage-bases-header-line);
+}
+.workspace-leaf-content[data-type="markdown"] .bases-embed .bases-view .bases-tbody {
+  box-shadow: 0 var(--bases-table-row-border-width) 0 var(--onepage-bases-grid);
+  /* 基座给内嵌表体配了 radius-s 圆角, 会把格子左右外沿和 2px 粗线接口切成弧形,
+     表头(方角)和表体接不上、不像一块; 独立视图本来就是直角, 统一去圆角 */
+  border-radius: 0;
+}
+.workspace-leaf-content[data-type="markdown"] .bases-embed .bases-view .bases-tbody > .bases-tr > .bases-td:first-child {
+  box-shadow: calc(var(--bases-table-column-border-width) * -1) 0 0 var(--onepage-bases-grid);
+}
+
 /* ---------- OnePage: 非透明模式边栏柔和实色 (透明模式仍为毛玻璃, 与上游一致) ---------- */
 body:is(.mod-macos,.adaptive-mode-off):not(.is-mobile):not(.is-translucent) .workspace-split.mod-sidedock {
   background-color: var(--background-secondary) !important;
