@@ -1124,6 +1124,16 @@ body.is-translucent .modal:not(.mod-sidebar-layout) {
   -webkit-backdrop-filter: none !important;
 }
 
+/* 暗色: 菜单玻璃改"深色毛玻璃" —— 基座把 --menu-background 绑到 --blur-background,
+   而暗色下它是 rgba(255,255,255,0.075)(92% 透光), 菜单压在强调色内容上
+   (如 Base 的青色表头/标题)时白字看不清。
+   底色改用 background-secondary 的 85% 不透明度, blur(backdrop-filter)保留不变;
+   浅色的白玻璃(rgba(255,255,255,0.5)+深字)可读性没问题, 不动。
+   影响: 所有下拉/右键菜单/建议列表/悬浮弹层(menu-background 消费方), 一致变实 */
+body.theme-dark {
+  --menu-background: hsl(from var(--background-secondary) h s l / 85%);
+}
+
 /* ---------- 16. 表格: 网格风格 (克制主色表头 + 纵线格子) ---------- */
 
 /* 容器: 合并边框, 无外框(避免框住表头; 表体格子自成框) */
