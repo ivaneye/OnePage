@@ -114,6 +114,45 @@ Obsidian 的解析链：`--font-monospace = var(--font-monospace-override(用户
 
 ---
 
+## Obsidian 1.14 类名适配（⚠️ 硬改名，必修）
+
+Obsidian 1.14 为支持 RTL 翻转，把工作区物理方位类换成了逻辑方位类（`app.js` 里 `TS(side)` / `AS(side, tpl)`）：
+
+| 元素 | 1.13 旧类 | 1.14 新类 | 是否双类并存 |
+| --- | --- | --- | --- |
+| 左侧功能区 ribbon | `.workspace-ribbon.mod-left` | `.workspace-ribbon.mod-primary` | ❌ **只输出新类（硬改名）** |
+| 左侧边栏 split | `.mod-left-split` | `.mod-primary-split` | ✅ 新旧都输出（`AS()` 返回两个类） |
+| 左栏开关 | `.is-left-sidedock-open` | `.is-primary-sidedock-open` | ✅ 新旧都输出 |
+
+- **只有功能区是硬改名**，所以主题里所有 `.workspace-ribbon.mod-left` 规则在 1.14 **全部失配**。Cupertino 基座里给功能区 `position:relative; z-index:11` 的那条规则失配后，功能区退回 `position:static`，被 OnePage「向左延伸的边栏卡片」（负 margin + 后绘制）盖住 → **Show Ribbon 打开后侧边栏工具图标全部看不见**（1.14.4 实测复现）。
+- **修复方式**：全文件把 `.workspace-ribbon.mod-left` 统一改写为 `:is(.workspace-ribbon.mod-left,.workspace-ribbon.mod-primary)`（共 39 处）。`:is()` 取参数中最高特异性，两参数同为 `(0,2,0)`，改写后**特异性不变**，1.13 / 1.14 双兼容。
+- ⚠️ **从上游重新合并 Cupertino 基座后必须重跑这条改写**，否则功能区再次不可见。改写脚本：
+  ```bash
+  python3 - <<'EOF'
+  p='theme.css'; s=open(p,encoding='utf-8').read()
+  s=s.replace('.workspace-ribbon.mod-left',':is(.workspace-ribbon.mod-left,.workspace-ribbon.mod-primary)')
+  open(p,'w',encoding='utf-8').write(s)
+  EOF
+  ```
+  注意**必须带前导点**（`.workspace-ribbon...`）；漏掉会留下非法的 `.:is(...)`。
+- 相关改动在 `theme.css`「Obsidian 1.14 兼容层」注释块。
+
+---
+
+## Obsidian 1.14 高亮色（highlight colors）⚠️
+
+1.14 新增高亮色：光标落在高亮文字上时，行内出现色环 widget。DOM 为
+`.cm-highlight-color-widget > img.highlight-swatch`（0.9em 圆点，**该 img 没有 `width` 属性**）。
+
+- **踩坑**：基座（Cupertino）的「全宽元素」规则
+  `body:not(.full-width-media-off) .cm-content img:not([width],.cm-widgetBuffer,.link-favicon,.emoji,[alt=banner])`
+  会命中这个裸 `img`，把它拉成整行宽（用户看到的「颜色红圈被拉宽到和文字一样宽」），且同组的 `background:var(--background-primary-alt)` 还会把圆点颜色覆盖成纸色。
+- **修复**：在基座该 `img:not(...)` 排除列表里补 `.highlight-swatch`（共 4 处），并在定制层加一条 `!important` 兜底（见 `theme.css`「Obsidian 1.14 兼容层」）。兜底规则**故意不设 `background-color`**，让官方 `.highlight-swatch[data-highlight=red]{background-color:var(--color-red)}` 的配色原样生效。
+- ⚠️ 从上游合并基座后同样要重新补 `.highlight-swatch`，否则回归。
+- 验证示例（无头 Chrome，把 1.14.4 的 `app.css` + `theme.css` 内联进页面）：色环应 `width:14.39px`（0.9em @16px）、`border-radius:50%`、背景为 `--color-red`；同时**真实图片仍是 `width:600px` 全宽**，证明未误伤全宽媒体。
+
+---
+
 ## 插件兼容（继承 Cupertino）
 
 Cupertino 基座里有一段第三方插件兼容层（上游 `src/app/community-plugins.scss`），会直接改插件元素，**已有踩坑**：
