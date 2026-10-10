@@ -1,0 +1,1224 @@
+/* =====================================================================
+   ============== OnePage 定制层 (以下为 OnePage 专属样式) ==============
+   固化配色: 暗色 = 暖棕·冷锚 | 浅色 = 暖白纸张
+   不依赖 Style Settings, 开箱即用
+   ===================================================================== */
+
+/* =====================================================================
+   cupertino-geek.css
+   适用主题: Cupertino  |  平台: macOS (浅/深色自适应)
+   目标: 原生 mac 风 × 编辑器极客感
+
+   组成:
+     1. 字体与排版基调   (代码走 JetBrains Mono Nerd Font)
+     2. 编辑器极客细节   (当前行高亮 / 行号 / 光标 / 选中 / 折叠)
+     3. 代码与行内代码精修
+     4. 阅读质感         (标题 / 链接 / 引用)
+     5. UI 原生感         (状态栏 / 标签页 / 滚动条)
+     6. 原生 mac 修正     (tab 靠左 / 悬浮边栏无黑圈)
+     7. 毛玻璃           (需设置→外观开启"窗口透明")
+     8. Tab 精修
+     9. 聚焦编辑弱化其它
+     10. 配色主题         (浅色/暗色各 4 套, 在 Style Settings 下拉切换)
+
+   切换配色: 设置 → 社区插件 → Style Settings → 配色主题
+   ===================================================================== */
+
+/* ---------- 1. 字体与排版基调 ---------- */
+body {
+  /* 代码字体: JetBrainsMono NFM(Nerd Font, 图标字形全) > JetBrains Mono > 系统
+     注意: 用 --font-monospace-theme(主题兜底), 用户在外观里设置的代码字体优先 */
+  --font-monospace-theme: "JetBrainsMono NFM", "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+  /* 正文行高: 略松, 阅读舒适 */
+  --line-height-normal: 1.7;
+}
+
+/* 编辑器正文: 打开连字与特性 (JetBrains Mono 的 -> => 等自动连字)
+   :not(.font-variant-off) 让 Style Settings「关闭字体特性」开关可关闭 */
+body:not(.font-variant-off) .markdown-source-view,
+body:not(.font-variant-off) .cm-s-obsidian {
+  font-feature-settings: "calt" 1, "liga" 1, "ss02" 1;
+  font-variant-ligatures: contextual;
+}
+
+/* ---------- 2. 编辑器极客细节 ---------- */
+
+/* 当前行: 极轻的强调条, VSCode 感, 不打扰阅读
+   :not(.active-line-off) 让 Style Settings「关闭当前行高亮」开关可关闭 */
+body:not(.active-line-off) .markdown-source-view.mod-cm6 .cm-active.cm-line {
+  background-color: color-mix(in srgb, var(--text-accent) 6%, transparent);
+  border-radius: 4px;
+}
+
+/* 例外: 图片 / 媒体 / 内嵌笔记 / 表格这类「块级 widget」所在行不铺底色。
+   原因: Cupertino 基座把 .cm-content .image-embed 设为 display:block (为「块宽」特性
+   img-wide/max/100 服务), CM6 又会给 widget 两侧插 .cm-widgetBuffer, 于是该行行盒
+   = 内容 + 上下各约一整行高。整行底色铺上去就像图片上下凭空多出一个「输入行」。
+   当前行提示对这类块级媒体没有意义, 故豁免; 文本行的高亮/圆角不受影响。
+   注: .image-embed/.media-embed 通常也带 .internal-embed, 冗余列出以防类名变化。 */
+body:not(.active-line-off) .markdown-source-view.mod-cm6 .cm-active.cm-line:has(.internal-embed, .image-embed, .media-embed, .cm-table-widget) {
+  background-color: transparent;
+  border-radius: 0;
+}
+
+/* 行号栏: 去边框, 更干净 */
+.cm-gutterElement {
+  font-family: var(--font-monospace);
+  font-size: 11px;
+}
+.markdown-source-view.mod-cm6 .cm-gutters {
+  border-right: none;
+  opacity: 0.9;
+}
+
+/* 当前行号: 强调色高亮 */
+body:not(.active-line-off) .markdown-source-view.mod-cm6 .cm-active.cm-gutterElement {
+  color: var(--text-accent);
+  font-weight: 700;
+  opacity: 1;
+}
+
+/* Relative Line Numbers 插件兼容 (Cupertino 基座遗留问题):
+   插件只在「当前行」的 gutter 里生成 .relative-line-numbers-mono 标记,
+   而基座给了它 position: absolute; width: 100% —— 它最近的 positioned 祖先是
+   .cm-scroller (CM6 基座 position: relative), 于是命中区横跨整个编辑区,
+   盖住正文文字, 导致同一段落内重复点击/选择时焦点被 gutter 抢走。
+   该标记纯装饰, 直接不接收指针事件即可。 */
+.markdown-source-view.mod-cm6 .cm-gutterElement.relative-line-numbers-mono {
+  pointer-events: none;
+}
+
+/* 光标: 2px 强调色 */
+.cm-s-obsidian .cm-cursor,
+.cm-s-obsidian .cm-cursor-secondary {
+  border-left-color: var(--text-accent);
+  border-left-width: 2px;
+}
+
+/* 文本选中: 强调色半透明 */
+.cm-s-obsidian ::selection,
+.markdown-source-view ::selection {
+  background: color-mix(in srgb, var(--text-accent) 30%, transparent);
+}
+
+/* 折叠指示: 更轻 */
+.cm-fold-gutter .fold-gutter-chevron {
+  opacity: 0.45;
+}
+
+/* 编辑器里的 Markdown 符号 (# * - >): 弱化为淡色, 内容优先 */
+.markdown-source-view.mod-cm6 .cm-formatting {
+  color: var(--text-faint);
+}
+
+/* ---------- 3. 代码与行内代码精修 ---------- */
+
+/* 代码块容器 */
+.markdown-rendered pre {
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-m, 8px);
+  font-feature-settings: "calt" 1, "liga" 1;
+}
+
+/* 代码块/行内代码统一等宽 */
+.markdown-rendered pre code,
+.markdown-rendered code,
+.cm-s-obsidian .HyperMD-codeblock {
+  font-family: var(--font-monospace);
+}
+
+/* 行内代码: 圆角药丸, 更精致 */
+.markdown-rendered code:not(pre code) {
+  font-size: 0.88em;
+  padding: 0.15em 0.42em;
+  border-radius: 5px;
+  background-color: var(--background-modifier-border);
+}
+
+/* ---------- 4. 阅读质感 ---------- */
+
+/* 标题: 负字距微调, 大标题加重 */
+.markdown-rendered h1,
+.markdown-rendered h2,
+.markdown-rendered h3,
+.markdown-rendered h4 {
+  letter-spacing: -0.01em;
+}
+.markdown-rendered h1 { font-weight: 650; }
+.markdown-rendered h2 { font-weight: 620; }
+.markdown-rendered h3 { font-weight: 580; }
+
+/* 链接下划线: 更细、带强调色 */
+.markdown-rendered a {
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+  text-decoration-color: color-mix(in srgb, var(--text-accent) 45%, transparent);
+}
+
+/* 引用块: 左侧竖线更精致 */
+.markdown-rendered blockquote {
+  border-radius: 0 6px 6px 0;
+}
+
+/* 标题行: 修正 line-height 与文字匹配(原来 1.2 小于字体自然行高导致选中高亮错位), 去掉顶部 padding */
+.cm-line.HyperMD-header {
+  padding-top: 0 !important;
+  line-height: 1.45 !important;
+}
+
+/* 任务复选框: 略放大, 点击手感更好 */
+.markdown-rendered .task-list-item-checkbox {
+  width: 15px;
+  height: 15px;
+  border-radius: 4px;
+}
+
+/* ---------- 属性面板: 复选框直接复用正文样式 ----------
+   正文复选框 input[type=checkbox] 的渲染: 未勾选=描边+透明底; 勾选=强调色底+同色边框+背景色对勾
+   这里对属性面板 .metadata-input-checkbox 显式套用同一套规则(!important 防止隐藏覆盖) */
+body {
+  --checkbox-border-color: color-mix(in srgb, var(--text-muted) 62%, var(--background-primary));
+  --checkbox-border-color-hover: var(--text-muted);
+  --checkbox-color: var(--interactive-accent);
+  --checkbox-color-hover: var(--interactive-accent-hover);
+  /* 对勾用背景色绘制(正文默认): 与强调色互补, 亮/暗双模式都高对比;
+     不能用白色 — 暗色下强调色是浅青 #6db3a3, 白勾会看不见 */
+  --checkbox-marker-color: var(--background-primary);
+}
+/* 未勾选: 与正文完全一致 */
+.metadata-input-checkbox,
+.metadata-property input[type="checkbox"] {
+  background-color: transparent !important;
+  border: 1px solid var(--checkbox-border-color) !important;
+  border-radius: var(--checkbox-radius) !important;
+}
+/* 勾选: 与正文完全一致(强调色底 + 同色边框) */
+.metadata-input-checkbox:checked,
+.metadata-property input[type="checkbox"]:checked {
+  background-color: var(--checkbox-color) !important;
+  border-color: var(--checkbox-color) !important;
+}
+/* 对勾: 复用正文 checkbox 的渲染值(top:-1px 补偿1px边框, 使 :after 盖满可见盒子),
+   mask-size 100% 与正文一致; 之前设 top:0 因绝对定位基于内边距盒导致整体偏右下方1px */
+.metadata-input-checkbox:checked::after,
+.metadata-property input[type="checkbox"]:checked::after {
+  background-color: var(--checkbox-marker-color) !important;
+  top: -1px !important;
+  inset-inline-start: -1px !important;
+  width: var(--checkbox-size) !important;
+  height: var(--checkbox-size) !important;
+  -webkit-mask-position: 52% 52% !important;
+  -webkit-mask-size: 100% 100% !important;
+  -webkit-mask-repeat: no-repeat !important;
+}
+/* 属性面板里的开关(toggle, 兜底): 未启用时加深轨道 + 描边 */
+.metadata-property .checkbox-container {
+  background-color: color-mix(in srgb, var(--text-muted) 28%, var(--background-primary));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--text-muted) 48%, transparent);
+}
+.metadata-property .checkbox-container.is-enabled {
+  background-color: var(--interactive-accent);
+  box-shadow: none;
+}
+
+/* ---------- 5. UI 原生感 ---------- */
+
+/* 状态栏: 更轻更紧凑 */
+.status-bar {
+  font-size: 11px;
+  padding: 2px 10px;
+}
+.status-bar-item {
+  opacity: 0.75;
+}
+
+/* 状态栏: 主题底色, 去掉黑色半透明条 */
+.status-bar {
+  background-color: var(--background-secondary) !important;
+  border-top: 1px solid var(--background-modifier-border) !important;
+}
+
+/* 状态栏悬浮胶囊: 强制 fixed 定位, 防止第三方插件(如 quick-explorer)把状态栏改成
+   in-flow(static) 顶开内容 —— 保持 OnePage 悬浮胶囊观感, 与各处底部间距一致 */
+.status-bar {
+  position: fixed !important;
+}
+
+/* Style Settings「始终显示状态栏」: 悬浮胶囊常驻展开, 不折叠成 4px 细条。
+   覆盖上游 body:not(.status-bar-baseline) .status-bar:not(:hover) 的折叠态;
+   无 .status-bar-float 类时不匹配, 默认行为不变 */
+body.status-bar-float .status-bar:not(:hover) {
+  bottom: 4px !important;
+  border-width: var(--border-width) !important;
+  padding: 8px !important;
+  max-width: 100% !important;
+  height: 40px !important;
+  transform: none !important;
+  opacity: 1 !important;
+  filter: none !important;
+}
+body.status-bar-float .status-bar:not(:hover) > div {
+  transform: none !important;
+  opacity: 1 !important;
+  filter: none !important;
+}
+body.status-bar-float .status-bar:not(:hover)::before {
+  transform: none !important;
+}
+
+/* 新增Tab / 下拉按钮: 默认半透明, 悬停全亮, 去掉划过残留的高亮底色 */
+.workspace-tab-header-tab-list,
+.workspace-tab-header-new-tab {
+  opacity: 0.6;
+}
+.workspace-tab-header-tab-list:hover,
+.workspace-tab-header-new-tab:hover {
+  opacity: 1;
+}
+.workspace-tab-header-tab-list .clickable-icon,
+.workspace-tab-header-new-tab .clickable-icon,
+.workspace-tab-header-tab-list .clickable-icon:hover,
+.workspace-tab-header-new-tab .clickable-icon:hover,
+.workspace-tab-header-tab-list .clickable-icon:focus,
+.workspace-tab-header-new-tab .clickable-icon:focus,
+.workspace-tab-header-tab-list .clickable-icon:focus-visible,
+.workspace-tab-header-new-tab .clickable-icon:focus-visible,
+.workspace-tab-header-tab-list .clickable-icon.has-active-menu,
+.workspace-tab-header-new-tab .clickable-icon.has-active-menu {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+/* 滚动条: 极细, mac overlay 风格 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background-color: var(--background-modifier-border);
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--background-modifier-border-hover);
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ---------- 6. 原生 mac 修正 ---------- */
+
+/* 标签页: 从左到右排列 (Cupertino 默认居中) */
+body:not(.is-phone):not(.tab-floating) .mod-root .workspace-tabs:not(.mod-stacked) .workspace-tab-header-container-inner {
+  justify-content: flex-start !important;
+}
+
+/* 左右边栏: 对称悬浮卡片, 彻底去掉黑色描边阴影(黑圈来源) */
+body:is(.mod-macos,.adaptive-mode-off):not(.is-mobile) .mod-sidedock.mod-left-split,
+body:is(.mod-macos,.adaptive-mode-off):not(.is-mobile) .mod-sidedock.mod-right-split {
+  box-shadow: none !important;
+}
+
+/* 右侧边栏: 与左侧对称 (8px 贴编辑器一侧留空 + 8px 贴窗口边缘) */
+body:is(.mod-macos,.adaptive-mode-off):not(.is-mobile) .mod-sidedock.mod-right-split {
+  margin: 8px 8px 8px 8px !important;
+  height: -webkit-fill-available !important;
+  border-radius: var(--radius-window, var(--radius-m));
+  overflow: hidden;
+  background-color: var(--background-primary) !important;
+}
+body:is(.mod-macos,.adaptive-mode-off):not(.is-mobile).is-translucent .mod-sidedock.mod-right-split {
+  background-color: color-mix(in srgb, var(--background-primary) 62%, transparent) !important;
+}
+
+/* ---------- 7. 毛玻璃 (需设置→外观开启"窗口透明"并重启 Obsidian) ---------- */
+
+/* 左右边栏: 高级感浮层 — 半透明 + 柔和投影 + 发丝描边 (不用 blur, 永无重影) */
+body.is-translucent .mod-sidedock.mod-left-split,
+body.is-translucent .mod-sidedock.mod-right-split {
+  background-color: color-mix(in srgb, var(--background-primary) 72%, transparent) !important;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.05) !important;
+  border: 1px solid color-mix(in srgb, var(--text-muted) 14%, transparent) !important;
+}
+body.theme-dark.is-translucent .mod-sidedock.mod-left-split,
+body.theme-dark.is-translucent .mod-sidedock.mod-right-split {
+  box-shadow: 0 8px 30px rgba(0,0,0,0.45), 0 2px 8px rgba(0,0,0,0.25) !important;
+}
+
+/* 聚焦/未聚焦: 两侧边栏背景完全一致 */
+/* 未聚焦: 用左栏现行样式(轻微弱化) */
+body:is(.mod-macos,.adaptive-mode-off):not(.is-mobile):not(.is-focused):not(.reduce-contrast-change) .mod-sidedock.mod-left-split,
+body:is(.mod-macos,.adaptive-mode-off):not(.is-mobile):not(.is-focused):not(.reduce-contrast-change) .mod-sidedock.mod-right-split {
+  background-color: color-mix(in srgb, var(--background-modifier-hover) 85%, var(--background-primary)) !important;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.05) !important;
+}
+body.theme-dark:is(.mod-macos,.adaptive-mode-off):not(.is-mobile):not(.is-focused):not(.reduce-contrast-change) .mod-sidedock.mod-left-split,
+body.theme-dark:is(.mod-macos,.adaptive-mode-off):not(.is-mobile):not(.is-focused):not(.reduce-contrast-change) .mod-sidedock.mod-right-split {
+  box-shadow: 0 8px 30px rgba(0,0,0,0.45), 0 2px 8px rgba(0,0,0,0.25) !important;
+}
+
+/* 聚焦: 用右栏现行样式(半透明磨砂) */
+body:is(.mod-macos,.adaptive-mode-off):not(.is-mobile).is-focused.is-translucent .mod-sidedock.mod-left-split,
+body:is(.mod-macos,.adaptive-mode-off):not(.is-mobile).is-focused.is-translucent .mod-sidedock.mod-right-split {
+  background-color: color-mix(in srgb, var(--background-primary) 62%, transparent) !important;
+}
+
+/* 隐藏的左侧圆点栏若出现也保持干净 */
+/* 不设置任何变换, 避免强制 GPU 图层导致布局错位 */
+
+/* ---------- 9. 聚焦编辑时弱化其它 ---------- */
+
+/* 当激活的是笔记(编辑/阅读)时, 侧栏和其余 tab 弱化, 悬停/点击恢复 */
+body:has(.workspace-leaf.mod-active .markdown-source-view) .workspace-split.mod-sidedock,
+body:has(.workspace-leaf.mod-active .markdown-reading-view) .workspace-split.mod-sidedock {
+  opacity: 0.92;
+}
+body:has(.workspace-leaf.mod-active .markdown-source-view) .workspace-split.mod-sidedock:hover,
+body:has(.workspace-leaf.mod-active .markdown-source-view) .workspace-split.mod-sidedock:focus-within,
+body:has(.workspace-leaf.mod-active .markdown-reading-view) .workspace-split.mod-sidedock:hover,
+body:has(.workspace-leaf.mod-active .markdown-reading-view) .workspace-split.mod-sidedock:focus-within {
+  opacity: 1;
+}
+
+/* 主编辑区的其它 tab: 轻微弱化(可读), 悬停恢复 */
+body:has(.workspace-leaf.mod-active .markdown-source-view) .mod-root .workspace-tab-header:not(.is-active),
+body:has(.workspace-leaf.mod-active .markdown-reading-view) .mod-root .workspace-tab-header:not(.is-active) {
+  opacity: 0.8;
+}
+body:has(.workspace-leaf.mod-active .markdown-source-view) .mod-root .workspace-tab-header:not(.is-active):hover,
+body:has(.workspace-leaf.mod-active .markdown-reading-view) .mod-root .workspace-tab-header:not(.is-active):hover {
+  opacity: 1;
+}
+
+/* ---------- 8. 主编辑器 Tab: 靠最左 + 圆角收小 + 毛玻璃 ---------- */
+
+/* 去掉 Cupertino 的 80px 内缩, 让 tab 靠到最左边 */
+.mod-root .workspace-tab-header-container-inner {
+  padding-left: 6px !important;
+}
+
+/* 圆角: 868px 胶囊 → 6px 小圆角 (更极客) */
+.workspace-tab-header {
+  border-radius: 6px !important;
+}
+
+/* tab: 不要任何边框/描边 */
+.workspace-tab-header,
+.workspace-tab-header-container-inner,
+.mod-root .workspace-tab-header-container {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Tab 标题: 未选中用 muted(可读), 选中用 normal(突出) */
+.mod-root .workspace-tab-header .workspace-tab-header-inner-title {
+  color: var(--text-muted) !important;
+}
+.mod-root .workspace-tab-header.is-active .workspace-tab-header-inner-title {
+  color: var(--text-normal) !important;
+}
+
+/* 激活 tab: 半透明底色 (无 blur, 无重影, 不强制建层) */
+body.is-translucent .workspace-tab-header.is-active {
+  background-color: color-mix(in srgb, var(--background-primary) 78%, transparent) !important;
+}
+
+/* ---------- 10. 配色主题 (Style Settings 强调色 / 彩色排版开关) ---------- */
+
+/* 暖棕·冷锚 (暖底 + 冷青绿强调, 照搬暖白纸张的冷暖对比结构) */
+body.theme-dark {
+  --background-primary: #262322 !important;
+  --background-primary-alt: color-mix(in srgb, #262322, white 3%) !important;
+  --background-secondary: color-mix(in srgb, #262322, white 5%) !important;
+  --background-secondary-alt: color-mix(in srgb, #262322, white 8%) !important;
+  --background-tertiary: #2f2b29 !important;
+  --color-base-00: #242120 !important;
+  --color-base-10: #2b2725 !important;
+  --color-base-20: #2f2b29 !important;
+  --color-base-25: #34302e !important;
+  --text-normal: #cfc7bd !important;
+  --text-muted: #948d83 !important;
+  --text-faint: #6b665e !important;
+  /* 强调改冷色: 青绿 */
+  /* 强调色可经 Style Settings 覆盖: 精确 hex 走 onepage-accent-hex, 通道走 hsl/rgb split; 未设置时回退主题默认值 */
+  --text-accent: var(--onepage-accent-hex, #6db3a3) !important;
+  --accent: var(--text-accent) !important;
+  --accent-h: var(--onepage-accent-h, 166) !important;
+  --accent-s: var(--onepage-accent-s, 32%) !important;
+  --accent-l: var(--onepage-accent-l, 57%) !important;
+  --accent-hsl: var(--onepage-accent-h, 166) var(--onepage-accent-s, 32%) var(--onepage-accent-l, 57%) !important;
+  --color-accent-rgb: var(--onepage-accent-rgb-r, 109), var(--onepage-accent-rgb-g, 179), var(--onepage-accent-rgb-b, 163) !important;
+  --accent-hover: color-mix(in srgb, var(--text-accent) 88%, white) !important;
+  --accent-active: color-mix(in srgb, var(--text-accent) 88%, black) !important;
+  --interactive-accent: var(--text-accent) !important;
+  --interactive-accent-hover: var(--accent-hover) !important;
+  /* 彩色排版: 以暖白纸张标题色系为基础, 各提亮一档适配暗底 (亮暗同源) */
+  /* 彩色排版: h2 深紫/h3 深青绿, 都与 h1 皇家蓝、h4 深陶土同为饱和不显白的色系 */
+  --typo-h1: #4F74AF !important;
+  --typo-h2: #8567BD !important;
+  --typo-h3: #4E9A8A !important;
+  --typo-h4: #C0765E !important;
+  --typo-h5: #C99B5E !important;
+  --typo-h6: #8A8478 !important;
+  --typo-bold: #E89A60 !important;
+  --typo-italic: #A6BA9D !important;
+  /* graph 适配 */
+  --graph-node-tag: var(--text-accent) !important;
+  --graph-node-attachment: color-mix(in srgb, var(--text-accent) 65%, var(--text-muted)) !important;
+  --graph-line: color-mix(in srgb, var(--text-muted) 28%, transparent) !important;
+  --graph-line-highlight: var(--text-accent) !important;
+  --graph-color-1: var(--text-accent) !important;
+  --graph-color-2: color-mix(in srgb, var(--text-accent) 55%, var(--text-muted)) !important;
+  --graph-color-3: var(--text-muted) !important;
+}
+
+/* 暖白纸张 */
+body.theme-light {
+  --background-primary: #faf7f1 !important;
+  --background-primary-alt: #faf7f1 !important;
+  --background-secondary: #f3efe7 !important;
+  --background-secondary-alt: #efeae1 !important;
+  --background-tertiary: #ede8de !important;
+  --color-base-00: #f8f5ef !important;
+  --color-base-10: #f2eee6 !important;
+  --color-base-20: #eae5db !important;
+  --color-base-25: #e2dcd0 !important;
+  --text-normal: #3d3730 !important;
+  --text-muted: #857d70 !important;
+  --text-faint: #c0b8ab !important;
+  --text-accent: var(--onepage-accent-hex, #0e6e63) !important;  /* 深青强调色, 与暖棕正文区分明显 */
+  --accent: var(--text-accent) !important;
+  --color-accent-rgb: var(--onepage-accent-rgb-r, 14), var(--onepage-accent-rgb-g, 110), var(--onepage-accent-rgb-b, 99) !important;
+  --accent-h: var(--onepage-accent-h, 173) !important;
+  --accent-s: var(--onepage-accent-s, 77%) !important;
+  --accent-l: var(--onepage-accent-l, 24%) !important;
+  --accent-hsl: var(--onepage-accent-h, 173) var(--onepage-accent-s, 77%) var(--onepage-accent-l, 24%) !important;
+  --accent-hover: color-mix(in srgb, var(--text-accent) 85%, white) !important;
+  --accent-active: color-mix(in srgb, var(--text-accent) 90%, black) !important;
+  --interactive-accent: var(--text-accent) !important;
+  --interactive-accent-hover: var(--accent-hover) !important;
+  /* graph 适配 */
+  --graph-node-tag: var(--text-accent) !important;
+  --graph-node-attachment: color-mix(in srgb, var(--text-accent) 65%, var(--text-muted)) !important;
+  --graph-line: color-mix(in srgb, var(--text-muted) 28%, transparent) !important;
+  --graph-line-highlight: var(--text-accent) !important;
+  --graph-color-1: var(--text-accent) !important;
+  --graph-color-2: color-mix(in srgb, var(--text-accent) 55%, var(--text-muted)) !important;
+  --graph-color-3: var(--text-muted) !important;
+  /* 彩色排版: 标题 / 加粗 / 斜体 */
+  /* 彩色排版: 标题 / 加粗 / 斜体 (渲染规则见文件末尾「通用彩色排版」) */
+  --typo-h1: #1D345C;
+  --typo-h2: #52377A;
+  --typo-h3: #0e6e63;
+  --typo-h4: #CE5567;
+  --typo-h5: #9C6B1E;
+  --typo-h6: #8A8378;
+  --typo-bold: #C2410C;
+  --typo-italic: #4A704F;  /* 深鼠尾草绿, 提升斜体区分度 */
+}
+
+/* ---------- 11. 演示模式 (Style Settings 开关 + 热键) ---------- */
+
+/* 演示时: 加宽可读行宽 */
+body.demo-mode {
+  --file-line-width: 880px !important;
+}
+
+/* 演示时: 按「可读行长度」开关判定顶部留白
+   - 开启(is-readable-line-width) → 内容已按 880px 居中留边, 文字不会顶到窗口按钮, 无需 hack
+   - 未开启 → 内容全宽铺满, 加顶部留白避免文字被窗口按钮遮挡 */
+body.demo-mode .markdown-source-view.mod-cm6:not(.is-readable-line-width) .cm-sizer,
+body.demo-mode .markdown-preview-view:not(.is-readable-line-width) {
+  padding-top: 56px !important;
+}
+
+/* 放大字号 + 舒展行距 (编辑/阅读视图都生效) */
+/* 字号可经 Style Settings「演示模式字号」调整, 未设置时回退 24px */
+body.demo-mode .markdown-source-view,
+body.demo-mode .markdown-preview-view {
+  font-size: var(--onepage-demo-font, 24px) !important;
+  line-height: 1.9 !important;
+}
+
+/* 标题更大 (按演示字号比例缩放, 避免 em 叠加爆大; 默认字号下 h1 对齐文档标题 36px) */
+body.demo-mode .markdown-preview-view h1 { font-size: calc(var(--onepage-demo-font, 24px) * 1.5) !important; }
+body.demo-mode .markdown-preview-view h2 { font-size: calc(var(--onepage-demo-font, 24px) * 1.25) !important; }
+body.demo-mode .markdown-preview-view h3 { font-size: calc(var(--onepage-demo-font, 24px) * 1.08) !important; }
+body.demo-mode .markdown-preview-view h4 { font-size: calc(var(--onepage-demo-font, 24px) * 1) !important; }
+body.demo-mode .markdown-source-view .cm-header-1 { font-size: calc(var(--onepage-demo-font, 24px) * 1.5) !important; }
+body.demo-mode .markdown-source-view .cm-header-2 { font-size: calc(var(--onepage-demo-font, 24px) * 1.25) !important; }
+body.demo-mode .markdown-source-view .cm-header-3 { font-size: calc(var(--onepage-demo-font, 24px) * 1.08) !important; }
+
+/* 隐藏左侧栏 / 状态栏 / 标题栏 / 标签栏 → 保留右侧目录 */
+body.demo-mode .mod-sidedock.mod-left-split,
+body.demo-mode .status-bar,
+body.demo-mode .view-header,
+body.demo-mode .mod-root .workspace-tab-header-container {
+  display: none !important;
+}
+
+/* 演示模式: 右目录不被聚焦弱化, 保持清晰 */
+body.demo-mode .workspace-split.mod-sidedock {
+  opacity: 1 !important;
+  filter: none !important;
+}
+
+/* 代码块/引用在演示时更醒目 */
+body.demo-mode .markdown-rendered pre code {
+  font-size: 0.8em !important;
+}
+body.demo-mode .markdown-rendered blockquote {
+  font-size: 1.05em !important;
+}
+
+/* =====================================================================
+   通用彩色排版 (各配色通过 --typo-h1..h6 / --typo-bold / --typo-italic 定义)
+   未定义时回退 currentColor(即默认正文色), 不影响其它情况
+   ===================================================================== */
+.markdown-preview-view h1 { color: var(--typo-h1, currentColor) !important; }
+.markdown-preview-view h2 { color: var(--typo-h2, currentColor) !important; }
+.markdown-preview-view h3 { color: var(--typo-h3, currentColor) !important; }
+.markdown-preview-view h4 { color: var(--typo-h4, currentColor) !important; }
+.markdown-preview-view h5 { color: var(--typo-h5, currentColor) !important; }
+.markdown-preview-view h6 { color: var(--typo-h6, currentColor) !important; }
+.markdown-preview-view strong,
+.markdown-rendered strong { color: var(--typo-bold, currentColor) !important; }
+.markdown-preview-view em,
+.markdown-rendered em { color: var(--typo-italic, currentColor) !important; }
+
+.cm-header-1 { color: var(--typo-h1, currentColor) !important; }
+.cm-header-2 { color: var(--typo-h2, currentColor) !important; }
+.cm-header-3 { color: var(--typo-h3, currentColor) !important; }
+.cm-header-4 { color: var(--typo-h4, currentColor) !important; }
+.cm-header-5 { color: var(--typo-h5, currentColor) !important; }
+.cm-header-6 { color: var(--typo-h6, currentColor) !important; }
+.cm-strong { color: var(--typo-bold, currentColor) !important; }
+.cm-em { color: var(--typo-italic, currentColor) !important; }
+
+/* Style Settings「关闭彩色排版」: 标题/加粗/斜体回退正文色 */
+body.onepage-typo-off {
+  --typo-h1: currentColor !important;
+  --typo-h2: currentColor !important;
+  --typo-h3: currentColor !important;
+  --typo-h4: currentColor !important;
+  --typo-h5: currentColor !important;
+  --typo-h6: currentColor !important;
+  --typo-bold: currentColor !important;
+  --typo-italic: currentColor !important;
+}
+
+/* ---------- 12. 属性 (YAML frontmatter) 样式 ---------- */
+
+/* 属性容器: 圆角卡片, 边框四边一致(略加深便于看清轮廓), overflow 让内部贴合圆角 */
+.metadata-container {
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--text-muted) 26%, transparent) !important;
+  background-color: color-mix(in srgb, var(--background-secondary) 60%, var(--background-primary)) !important;
+  margin-bottom: 1.4em;
+  overflow: hidden;
+}
+
+/* 收起标题栏: 恢复显示, 高度和属性行一致, 悬停区大方 */
+.metadata-properties-heading {
+  display: flex !important;
+  align-items: center;
+  gap: 6px;
+  padding: 12px !important;
+  cursor: pointer;
+  color: var(--text-muted) !important;
+  font-size: 12.5px;
+  font-weight: 500;
+  border-bottom: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent) !important;
+  transition: background-color 0.15s ease;
+}
+.metadata-properties-heading:hover {
+  background-color: color-mix(in srgb, var(--background-modifier-hover) 100%, var(--background-primary) 30%) !important;
+}
+
+/* 收起状态: 无分隔线, 去掉标题栏底部 margin(避免外框比底色高), 撑满容器 */
+.metadata-container .metadata-properties-heading {
+  /*border-bottom: none !important;*/
+  margin-bottom: 0 !important;
+}
+
+/* 收起箭头: 正常排布 */
+.metadata-properties-heading .collapse-indicator {
+  position: static !important;
+  display: flex;
+  align-items: center;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+.metadata-properties-heading .collapse-indicator svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* 属性行区 */
+.metadata-properties {
+  padding: 3px 6px !important;
+  margin-bottom: 0 !important;
+}
+
+/* 属性行: 压紧高度, 圆角/悬停一致 */
+.metadata-property {
+  border-radius: 6px !important;
+  padding: 3px 10px !important;
+  min-height: 26px;
+  transition: background-color 0.15s ease;
+}
+.metadata-property:hover {
+  background-color: var(--background-modifier-hover) !important;
+}
+.metadata-property-key {
+  font-weight: 500;
+  padding: 0 !important;   /* 去掉默认 8px 16px 撑高 */
+  /* 关键: 子元素(图标+key输入)垂直居中, 与 value 对齐(默认 flex-start 偏上) */
+  align-items: center !important;
+}
+.metadata-property-key-input,
+.metadata-property-icon {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+.metadata-property-value,
+.metadata-property-value input {
+  background: transparent !important;
+}
+.metadata-property-value {
+  font-family: var(--font-monospace);
+  font-size: 0.9em;
+  color: var(--text-accent);
+}
+
+/* 添加属性按钮: 整行可点, 悬停/聚焦都有底色覆盖整行 */
+.metadata-add-button {
+  display: flex !important;
+  align-items: center;
+  gap: 6px;
+  width: calc(100% - 12px) !important;
+  margin: 0 6px 0 !important;   /* 去掉底部 6px, 避免 add 下方多出空隙 */
+  padding: 8px 10px !important;
+  border-radius: 6px !important;
+  color: var(--text-muted) !important;
+  transition: background-color 0.15s ease;
+}
+.metadata-add-button:hover,
+.metadata-add-button:focus,
+.metadata-add-button:focus-visible {
+  background-color: var(--background-modifier-hover) !important;
+  color: var(--text-normal) !important;
+  box-shadow: none !important;
+}
+.metadata-add-button .text-button-icon {
+  display: flex;
+}
+
+/* ---------- 13. 文件浏览器 & 大纲: Notion 风格 ---------- */
+
+/* ===== 文件浏览器 ===== */
+/* 文件夹标题加粗 (层级感) */
+.nav-folder-title {
+  font-weight: 600;
+}
+
+/* 收窄每级缩进 (Notion 风格: 克制缩进, 无图标无引导线) */
+.nav-files-container .tree-item-children {
+  margin-left: 8px !important;
+  padding-left: 3px !important;
+}
+
+/* 悬停: 柔和灰药丸 */
+.nav-file-title:hover,
+.nav-folder-title:hover,
+[data-type="outline"] .tree-item-self:hover {
+  background-color: var(--background-modifier-hover) !important;
+  border-radius: 5px;
+}
+
+/* 激活文件: 强调色底(弱化) + 强调色文字(弱化) — 还原原风格并降一档 */
+.nav-file-title.is-active {
+  background-color: color-mix(in srgb, var(--text-accent) 10%, transparent) !important;
+  color: color-mix(in srgb, var(--text-accent) 72%, var(--text-normal)) !important;
+  border-radius: 6px;
+  box-shadow: none !important;
+}
+
+/* ===== 大纲 (Outline) ===== */
+/* 收窄每级缩进 */
+[data-type="outline"] .tree-item-children {
+  margin-left: 7px !important;
+  padding-left: 3px !important;
+}
+
+/* 当前所在标题: 强调色底(弱化) + 强调色文字(弱化) */
+[data-type="outline"] .tree-item-self.is-active {
+  background-color: color-mix(in srgb, var(--text-accent) 10%, transparent) !important;
+  color: color-mix(in srgb, var(--text-accent) 72%, var(--text-normal)) !important;
+  border-radius: 6px;
+  box-shadow: none !important;
+}
+
+/* =====================================================================
+
+/* ---------- 14. 亮色模式: 编辑/阅读切换按钮柔和淡染 ---------- */
+/* 深色实底按钮太显眼; 亮色和暗色都改用 20% 淡染 + 强调色图标
+   :not(.mode-switcher-off) 与上游「关闭快速模式切换」开关联动 */
+body.theme-light:not(.mode-switcher-off) .mod-root .workspace-leaf-content[data-type=markdown][data-mode=source] .view-header .view-actions button:nth-last-child(2),
+body.theme-dark:not(.mode-switcher-off) .mod-root .workspace-leaf-content[data-type=markdown][data-mode=source] .view-header .view-actions button:nth-last-child(2) {
+  background-color: color-mix(in srgb, var(--accent) 20%, var(--background-primary)) !important;
+  color: var(--accent) !important;
+  box-shadow: none !important;
+}
+
+/* 属性面板: 恢复收起标题栏 (Cupertino 默认 display:none 隐藏了它) */
+.metadata-properties-heading {
+  display: flex !important;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
+  color: var(--text-muted) !important;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 6px;
+}
+.metadata-properties-heading:hover {
+  background-color: var(--background-modifier-hover) !important;
+}
+/* 收起箭头改为正常排布, 不再绝对定位跑出 -22px */
+.metadata-properties-heading .collapse-indicator {
+  position: static !important;
+  display: flex;
+  align-items: center;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+.metadata-properties-heading .collapse-indicator svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ---------- 15. 弹窗/菜单: 透明模式下背景不透明, 避免透字 ---------- */
+/* Cupertino 在透明模式把 blur 设 none 但菜单背景仍是半透明, 导致看穿背景 */
+body.is-translucent .menu,
+body.is-translucent .suggestion-container,
+body.is-translucent .popover,
+body.is-translucent .prompt,
+body.is-translucent .modal:not(.mod-sidebar-layout) {
+  background-color: color-mix(in srgb, var(--background-primary) 97%, transparent) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* 暗色: 菜单玻璃改"深色毛玻璃" —— 基座把 --menu-background 绑到 --blur-background,
+   而暗色下它是 rgba(255,255,255,0.075)(92% 透光), 菜单压在强调色内容上
+   (如 Base 的青色表头/标题)时白字看不清。
+   底色改用 background-secondary 的 85% 不透明度, blur(backdrop-filter)保留不变;
+   浅色的白玻璃(rgba(255,255,255,0.5)+深字)可读性没问题, 不动。
+   影响: 所有下拉/右键菜单/建议列表/悬浮弹层(menu-background 消费方), 一致变实 */
+body.theme-dark {
+  --menu-background: hsl(from var(--background-secondary) h s l / 85%);
+}
+
+/* ---------- 16. 表格: 网格风格 (克制主色表头 + 纵线格子) ---------- */
+
+/* 容器: 合并边框, 无外框(避免框住表头; 表体格子自成框) */
+.markdown-rendered table {
+  border-collapse: collapse;
+  border: none !important;
+}
+
+/* 表头: 克制主色文字 + 加粗, 无单元格边框, 只留分隔线 */
+.markdown-rendered th {
+  font-weight: 600;
+  color: color-mix(in srgb, var(--text-accent) 55%, var(--text-muted)) !important;
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 2px solid color-mix(in srgb, var(--text-accent) 45%, var(--text-muted)) !important;
+  padding: 8px 12px;
+}
+
+/* 数据行: 格子(纵线+横线) */
+.markdown-rendered td {
+  border: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent) !important;
+  padding: 8px 12px;
+}
+
+/* Tab 分隔: 未选中 tab 之间加细微竖线, 避免连成一片 */
+.mod-root .workspace-tab-header:not(:first-child) {
+  position: relative;
+}
+.mod-root .workspace-tab-header:not(:first-child)::before {
+  content: "";
+  position: absolute;
+  left: -2.5px;
+  top: 24%;
+  height: 52%;
+  width: 1px;
+  background-color: color-mix(in srgb, var(--text-muted) 24%, transparent);
+  pointer-events: none;
+}
+
+/* ---------- OnePage: 标签 = 青色 (Obsidian 默认 tag 样式, 强调色青) ----------
+   不再用灰底胶囊: 让 .tag 走 Obsidian 默认(--tag-color: text-accent 青,
+   --tag-background: accent 10% 透明), 与 notes/ob-dev 全平台观感一致 */
+
+/* Bases 表格/属性面板里的多选药丸(标签等): 统一成青色(与正文 .tag 一致), 覆盖 --pill-* 变量 */
+.multi-select-pill {
+  --pill-background: color-mix(in srgb, var(--text-accent) 10%, transparent);
+  --pill-background-hover: color-mix(in srgb, var(--text-accent) 20%, transparent);
+  --pill-border-color: color-mix(in srgb, var(--text-accent) 15%, transparent);
+  --pill-border-color-hover: color-mix(in srgb, var(--text-accent) 15%, transparent);
+  --pill-border-width: 0;
+  --pill-color: var(--text-accent);
+  --pill-color-hover: var(--text-accent);
+  --pill-radius: 2em;
+  --pill-padding-x: 0.65em;
+  --pill-padding-y: 0.25em;
+  --pill-weight: inherit;
+}
+
+/* Bases 表格单元格里的标签: 作用域内直接兜底(不依赖 --pill-* 变量解析链), 保证青色 */
+.bases-td .multi-select-pill,
+.bases-table-cell .multi-select-pill,
+.bases-rendered-value .multi-select-pill {
+  background-color: color-mix(in srgb, var(--text-accent) 10%, transparent) !important;
+  border: 0 solid transparent !important;
+  border-radius: 2em !important;
+  color: var(--text-accent) !important;
+}
+
+/* Bases 表格单元格里的标签(<a class=tag>): 高特异性强制为 Obsidian 默认青色透明标签
+   (color=text-accent, bg=accent 10% 透明), 与普通标签完全一致 */
+.bases-td .tag,
+.bases-table-cell .tag,
+.bases-rendered-value .tag,
+.value-list-container .tag {
+  background-color: color-mix(in srgb, var(--text-accent) 10%, transparent) !important;
+  border: 0 solid transparent !important;
+  border-radius: 2em !important;
+  color: var(--text-accent) !important;
+  font-size: var(--tag-size, 0.875em) !important;
+  font-weight: inherit !important;
+  text-decoration: none !important;
+  padding: 0.25em 0.65em !important;
+  line-height: 1 !important;
+  display: inline !important;
+  margin: 0 !important;
+  vertical-align: baseline !important;
+}
+
+/* ---------- OnePage: Bases 数据库 (独立文件 + 内嵌, 同步优化) ----------
+   对齐主题第 16 节「表格: 网格风格」: 克制主色表头 + 2px 主色分隔线 + 1px 全网格数据格,
+   无底色卡无外框; 独立打开与内嵌共用同一套语言。 */
+
+/* 1) 表格骨架: 网格风格 (同 .markdown-rendered table) */
+.bases-view {
+  /* 表体/表头块不带底色(网格风格), 分组底色只给"组名行"(见下方结构规则) */
+  --bases-table-group-background: var(--background-primary);
+  --bases-table-summary-background: var(--background-primary);
+  --bases-table-container-border-width: 0;
+  /* 表头: 克制主色文字 + 600 字重 (同 th); 底色用页面底色而非 th 的透明 ——
+     Bases 表头是 sticky, 透明会让滚动内容从表头底下透出来 */
+  --bases-table-header-background: var(--background-primary);
+  /* 表头单元格悬浮: 与行悬浮/当前行高亮同配方 (accent 6%) */
+  --bases-table-header-background-hover: color-mix(in srgb, var(--text-accent) 6%, transparent);
+  --bases-table-header-color: color-mix(in srgb, var(--text-accent) 55%, var(--text-muted));
+  --bases-table-header-weight: 600;
+  /* 数据格: 1px hairline 全网格 (同 td); 行线/列线颜色都走这组变量, 作用域限 bases */
+  --onepage-bases-grid: color-mix(in srgb, var(--text-muted) 15%, transparent);
+  --onepage-bases-header-line: color-mix(in srgb, var(--text-accent) 45%, var(--text-muted));
+  --bases-table-column-border-width: 1px;
+  --bases-table-row-border-width: 1px;
+  --table-border-color: var(--onepage-bases-grid);
+  --bases-table-border-color: var(--onepage-bases-grid);
+  --bases-table-row-height: 34px;  /* ≈ 表格 8px padding 行高 */
+  /* 行悬浮: 与「当前行高亮」同配方 (accent 6% 透明), 全主题同一反馈色 */
+  --bases-table-row-background-hover: color-mix(in srgb, var(--text-accent) 6%, transparent);
+  /* 分组标题 (迷你章节): 属性名=极淡小标签, 值=放大加粗当主角; 组间呼吸 10→18px */
+  --bases-group-heading-property-display: block;
+  --bases-group-heading-property-size: var(--font-ui-smaller);
+  --bases-group-heading-property-weight: var(--font-normal);
+  --bases-group-heading-property-color: var(--text-faint);
+  --bases-group-heading-value-size: var(--font-ui-medium);
+  --bases-group-heading-value-weight: 600;
+  --bases-table-group-gap: 18px;
+  /* 字号: 对齐主题 markdown 表格(--table-text-size=0.933em); 官方默认是更小的
+     --font-smaller(0.875em), 会比正文小一档、比表格又小半档, 观感偏小 */
+  --bases-table-font-size: var(--table-text-size);
+  /* 数字/日期列: 等宽数字, 不改对齐 (保持 Obsidian 习惯) */
+  font-variant-numeric: tabular-nums;
+}
+
+/* 表头分隔线: 2px 主色 (同 th 的 border-bottom)。
+   官方把表头底线租行线宽度共用(--bases-table-row-border-width), 做不了 2px/1px 并存,
+   这里单独盖一条。
+   注意线画在表头单元格上而不是 thead 容器: thead 容器 width:100% 只到可视宽,
+   分组后表体块(组标题/摘要是文档流元素)会更宽, 画在容器上线会比表体短一截;
+   单元格与表体格子同源测量, 线长永远与表体网格对齐(独立/内嵌/溢出都成立)。
+   同时去掉单元格圆角, 否则 inset 线会在每个列边界随圆角翘起成缺口 */
+/* 表头线宽度先钉死: 布局 JS 给 thead/行/组块都写 inline width=总列宽 Z, 但只有表体链
+   (.bases-table-container/.bases-table/.bases-tr) 带 CSS min-width:100% 兜底。
+   当末列被手动拖宽(columnSize 记录 customWidth)时 JS 跳过"末列拉伸填满",
+   Z < 窗格宽 → 表体被兜底撑到窗格宽而 thead 停在 Z → 表头线比组名/行线短一截。
+   这里给 thead 补上同样的兜底 (实测: 修复前 508/883/883, 后 883/883/883)。
+   注: 这是 Obsidian 1.13.7 布局缺陷, 默认主题同样中招, 此条为通用防御。
+   2px 主色线也必须画在 thead 容器上(不能画在表头单元格上): 容器有 min-width
+   兜底能撑到窗格宽, 单元格只按 Z 定位, 画在单元格上末列拖宽时线仍会短一截 */
+.bases-view .bases-thead {
+  min-width: 100%;
+  box-shadow: inset 0 -2px 0 var(--onepage-bases-header-line);
+}
+
+/* 表头/表体之间只留这根 2px 粗线: markdown 表格靠 border-collapse 让粗线吃掉首行的
+   1px 上边线, 而 Bases 的线是 box-shadow 画的不会合并, 不去掉会双线叠在一起。
+   注: 表头是 sticky 且不透明, 滚动时首行细线被表头盖住, 不会濲出 */
+.bases-view .bases-tbody > .bases-tr:first-child {
+  box-shadow: none;
+}
+
+/* 组标题行: 迷你章节 + 底色条(只给组名行, 不给整表) + hairline 底线,
+   背景用 6% muted tint(中性, 与行悬浮的青色 tint 区分), 浅暗都可见 */
+.bases-view .bases-table .bases-group-heading {
+  background-color: color-mix(in srgb, var(--text-muted) 6%, var(--background-primary));
+  box-shadow: inset 0 -1px 0 var(--onepage-bases-grid);
+}
+
+/* 组摘要行: 汇总值弱化 (muted + 等宽数字), 与数据行区分 */
+.bases-view .bases-table-group-summary-row {
+  color: var(--text-muted);
+}
+
+/* 2) 底部「新建笔记」行: ghost 化, 悬浮转强调色 (macOS 表格加行习惯) */
+.bases-table-footer {
+  color: var(--text-faint);
+}
+.bases-table-footer:hover {
+  color: var(--text-accent);
+}
+
+/* 3) Base 标题不吃彩色排版 (默认继承 h2 紫色, 在数据页很怪) */
+.bases-header .title {
+  color: var(--text-normal);
+}
+
+/* 4) 卡片视图: 封面贴边出血 + hairline 接缝 + 标题 600 + 组名条与表格同脸
+   + hover 轻抬升/按压回落 (默认: 1px 灰环无质感, 封面顶部缩进 8px 像裱在卡里) */
+.bases-view {
+  --bases-cards-radius: 12px;
+  --bases-cards-shadow: 0 0 0 1px color-mix(in srgb, var(--text-muted) 16%, transparent);
+  --bases-cards-shadow-hover: 0 0 0 1px color-mix(in srgb, var(--text-muted) 30%, transparent), var(--shadow-tactile);
+}
+/* 卡片内距: 封面→标题的间距 = 卡片 padding-top (JS 用 cardPad.top 定位标题行),
+   末行→卡底的间距 = padding-bottom。官方默认 8px/4px;
+   注: 封面官方本就 top:0 贴边出血(勿再波 padding-top 归零 —— 那只会让标题贴住封面,
+   源码定位公式: cover.top=0 → +coverHeight → +cardPad.top → 标题行)。
+   底部从官方 4px 提到 8px, 末行不贴底 */
+.bases-view .bases-cards-item {
+  padding-top: var(--size-4-2);
+  padding-bottom: var(--size-4-2);
+}
+/* 封面与文字区接缝: 与表格网格同色同语言, 空封面时也是天然占位边界 */
+.bases-view .bases-cards-cover {
+  box-shadow: inset 0 -1px 0 var(--onepage-bases-grid);
+}
+/* 标题字重显式钉 600, 与组名值/表头同语言
+   (默认 bold, 勿用 .bases-cards-line 选择器 — 会盖到标题) */
+.bases-view .bases-cards-property.mod-title {
+  font-weight: 600;
+}
+/* 卡片分组组名条: 与表格分组同脸 (6% tint + hairline);
+   卡片组名是 absolute 且默认无宽度, 需 width:100% 才能横贯整行 */
+.bases-view .bases-cards-group .bases-group-heading {
+  width: 100%;
+  padding-inline-start: var(--size-4-2);
+  background-color: color-mix(in srgb, var(--text-muted) 6%, var(--background-primary));
+  box-shadow: inset 0 -1px 0 var(--onepage-bases-grid);
+}
+/* 组块默认底部分隔线(background-modifier-border)弱化成表格同款 hairline */
+.bases-view .bases-cards-group {
+  border-color: var(--onepage-bases-grid);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .bases-view .bases-cards-item {
+    transition: box-shadow var(--anim-duration-fast) ease-in-out, transform var(--anim-duration-fast) ease-in-out;
+  }
+  .bases-view .bases-cards-item:hover {
+    transform: translateY(-2px);
+  }
+  .bases-view .bases-cards-item:active {
+    transform: translateY(0);
+  }
+}
+
+/* 5) 内嵌 Base: 基座为"无框无缝"设计, 在内嵌态强制关掉表头线/底线/首列左线,
+      这里按同特异性、更靠后恢复 —— 内嵌与独立同脸, 不另加外框 */
+.workspace-leaf-content[data-type="markdown"] .bases-embed .bases-view .bases-thead {
+  min-width: 100%;
+  box-shadow: inset 0 -2px 0 var(--onepage-bases-header-line);
+}
+.workspace-leaf-content[data-type="markdown"] .bases-embed .bases-view .bases-tbody {
+  box-shadow: 0 var(--bases-table-row-border-width) 0 var(--onepage-bases-grid);
+  /* 基座给内嵌表体配了 radius-s 圆角, 会把格子左右外沿和 2px 粗线接口切成弧形,
+     表头(方角)和表体接不上、不像一块; 独立视图本来就是直角, 统一去圆角 */
+  border-radius: 0;
+}
+.workspace-leaf-content[data-type="markdown"] .bases-embed .bases-view .bases-tbody > .bases-tr > .bases-td:first-child {
+  box-shadow: calc(var(--bases-table-column-border-width) * -1) 0 0 var(--onepage-bases-grid);
+}
+
+/* ---------- OnePage: 非透明模式边栏柔和实色 (透明模式仍为毛玻璃, 与上游一致) ---------- */
+body:is(.mod-macos,.adaptive-mode-off):not(.is-mobile):not(.is-translucent) .workspace-split.mod-sidedock {
+  background-color: var(--background-secondary) !important;
+}
+body:is(.mod-macos,.adaptive-mode-off):not(.is-mobile):not(.is-translucent):not(.is-focused):not(.reduce-contrast-change) .workspace-split.mod-sidedock {
+  background-color: var(--background-secondary) !important;
+}
+
+/* ---------- OnePage: 全平台保留边栏卡片 (半透明关闭时兜底) ----------
+   判定开关: 半透明开启(is-translucent, 仅 macOS 原生支持) → 保持上方毛玻璃卡片样式, 本块不介入
+             半透明关闭(非 is-translucent, 含 Win/Linux)   → 各平台统一显示实色悬浮卡片
+   浅色: 卡片 #f4f2ee, 整体背景 #e9e9e9 (用户指定)
+   暗色: 卡片 #2d2a28, 整体背景 #1e1c1b (暂用同关系暗色对应, 待定)
+   Win/Linux 没有 is-translucent, 边栏卡片(留白/圆角/投影)原被 :is(.mod-macos,.adaptive-mode-off)
+   锁死而整体失效 → 这里用 :not(.is-translucent) 在全部桌面平台兜底复刻: 8px 留白 + 圆角 +
+   柔和投影 + 发丝描边; 折叠态不参与, 避免窄条出现奇怪留白 */
+
+/* 整体背景: 卡片四周留白/窗口底色 */
+body:not(.is-translucent):not(.is-mobile) {
+  background-color: #e9e9e9 !important;
+}
+body.theme-dark:not(.is-translucent):not(.is-mobile) {
+  background-color: #1e1c1b !important;
+}
+
+/* 左右悬浮卡片 */
+body:not(.is-translucent):not(.is-mobile) .workspace-split.mod-sidedock.mod-left-split:not(.is-sidedock-collapsed),
+body:not(.is-translucent):not(.is-mobile) .workspace-split.mod-sidedock.mod-right-split:not(.is-sidedock-collapsed) {
+  margin: 8px 8px 8px 8px !important;
+  border-radius: var(--radius-window, var(--radius-m)) !important;
+  overflow: hidden !important;
+  height: -webkit-fill-available !important;
+  background-color: #f4f2ee !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06), 0 2px 6px rgba(0,0,0,0.03) !important;
+  border: 1px solid color-mix(in srgb, var(--text-muted) 14%, transparent) !important;
+}
+body.theme-dark:not(.is-translucent):not(.is-mobile) .workspace-split.mod-sidedock.mod-left-split:not(.is-sidedock-collapsed),
+body.theme-dark:not(.is-translucent):not(.is-mobile) .workspace-split.mod-sidedock.mod-right-split:not(.is-sidedock-collapsed) {
+  background-color: #2d2a28 !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.28), 0 2px 6px rgba(0,0,0,0.14) !important;
+}
+
+/* 卡片内侧 resize 分割线置透明: 只留发丝描边, 不出现黑线 */
+body:not(.is-translucent):not(.is-mobile) .workspace-split.mod-sidedock.mod-left-split > .workspace-leaf-resize-handle,
+body:not(.is-translucent):not(.is-mobile) .workspace-split.mod-sidedock.mod-right-split > .workspace-leaf-resize-handle {
+  border-color: transparent !important;
+}
+
+/* ---------- OnePage: 功能区融入左边栏卡片 (半透明关闭时, 功能区显示且非悬停) ----------
+   默认功能区(ribbon)是独立元素, 在卡片外面很怪 → 让卡片向左延伸到功能区底下(单一投影
+   包住整张卡), 功能区背景透明、z-index 提到 12 浮在卡片上层, 图标可见且无接缝阴影 */
+/* 卡片向左延伸 + 内容用 padding 让开功能区图标 */
+body:not(.is-translucent):not(.is-mobile).show-ribbon:not(.hover-ribbon) .workspace-split.mod-sidedock.mod-left-split:not(.is-sidedock-collapsed) {
+  margin-left: calc(-1 * var(--ribbon-width) + 8px) !important;
+  padding-left: var(--ribbon-width) !important;
+}
+/* 功能区: 透明浮在卡片上, 图标在上层; 贴左边框(x=0), 图标经 padding-left 落在卡片上;
+   顶部保留默认 header-height 偏移(避开 macOS 窗口按钮), 底部 8px 与卡片对齐 */
+body:not(.is-translucent):not(.is-mobile).show-ribbon:not(.hover-ribbon):has(.workspace-split.mod-sidedock.mod-left-split:not(.is-sidedock-collapsed)) :is(.workspace-ribbon.mod-left,.workspace-ribbon.mod-primary):not(.is-collapsed) {
+  position: relative;
+  z-index: 12;
+  margin: var(--header-height) 0 8px 0 !important;
+  padding-left: 16px;
+  background-color: transparent !important;
+  border-right: none !important;
+}
+/* 去掉功能区左上角顶栏色块补丁, 避免盖住卡片圆角 */
+body:not(.is-translucent):not(.is-mobile).show-ribbon:not(.hover-ribbon) :is(.workspace-ribbon.mod-left,.workspace-ribbon.mod-primary):not(.is-collapsed)::before {
+  display: none !important;
+}
+
+/* ---------- Obsidian 1.14 兼容层 ----------
+   1.14 为支持 RTL 翻转, 把工作区物理方位类改成了逻辑方位类:
+     左侧功能区 .workspace-ribbon.mod-left → .workspace-ribbon.mod-primary
+     左侧边栏 .mod-left-split      → .mod-primary-split   (旧类仍并存, 见下)
+     左栏开关 .is-left-sidedock-open → .is-primary-sidedock-open (旧类仍并存)
+   注意: 边栏/开关是「双类并存」(app.js 里 AS(side, tpl) 同时输出新旧两个类),
+   所以基座里 .mod-left-split / .is-left-sidedock-open 规则在 1.14 仍生效;
+   唯独「功能区」是硬改名, 只输出 mod-primary, 不再输出 mod-left。
+   后果: 全文件所有 .workspace-ribbon.mod-left 规则在 1.14 失配 → 功能区拿不到
+   position:relative/z-index, 被向左延伸的边栏卡片(负 margin)盖住, 图标全部消失。
+   修复: 把全文件 .workspace-ribbon.mod-left 统一改写为
+     :is(.workspace-ribbon.mod-left,.workspace-ribbon.mod-primary)
+   :is() 取参数中最高特异性, 两个参数同为 (0,2,0), 所以改写后特异性不变,
+   1.13 与 1.14 同时兼容。
+   ⚠️ 日后从上游重新合并 Cupertino 基座时, 必须对基座重新执行这条全局改写,
+      否则功能区再次不可见。见 AGENTS.md「Obsidian 1.14 兼容」。 */
+
+/* 1.14 高亮色: 光标落在高亮文字上时, 行内会出现色环 widget
+   (.cm-highlight-color-widget > img.highlight-swatch, 0.9em 圆点)。
+   基座「全宽元素」规则会命中 .cm-content 下的裸 img(色环不含 width 属性),
+   把它拉成整行宽 → 用户看到的「颜色红圈被拉宽到和文字一样宽」。
+   根基座已在 img:not(...) 排除列表里补了 .highlight-swatch(共 4 处);
+   这里再兜一层, 防止后续合并上游时回归。不设 background-color,
+   让官方 .highlight-swatch[data-highlight=...] 的配色原样生效。 */
+.cm-s-obsidian .cm-highlight-color-widget .highlight-swatch {
+  width: 0.9em !important;
+  height: 0.9em !important;
+  max-width: 0.9em !important;
+  max-height: 0.9em !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+  border: 0.1em solid transparent !important;
+  background-clip: padding-box !important;
+  border-radius: 50% !important;
+  object-fit: contain;
+  vertical-align: -0.1em;
+  box-shadow: inset 0 0 0 1px rgba(var(--mono-rgb-100), 0.1) !important;
+}
+
+/* ---------- Style Settings「彩色侧边栏」: 在 OnePage 边栏卡片底色上叠强调色染层 ----------
+   纯新增规则, 不影响默认(无 .colorful-frame 时不匹配); 只在非透明模式生效,
+   与上游 Cupertino 同名开关一致。左侧/右侧都染色, 保持卡片观感 */
+body:not(.is-translucent):not(.is-mobile).colorful-frame.theme-light .workspace-split.mod-sidedock.mod-left-split:not(.is-sidedock-collapsed),
+body:not(.is-translucent):not(.is-mobile).colorful-frame.theme-light .workspace-split.mod-sidedock.mod-right-split:not(.is-sidedock-collapsed) {
+  background-color: color-mix(in srgb, #f4f2ee 92%, var(--text-accent)) !important;
+}
+body:not(.is-translucent):not(.is-mobile).colorful-frame.theme-dark .workspace-split.mod-sidedock.mod-left-split:not(.is-sidedock-collapsed),
+body:not(.is-translucent):not(.is-mobile).colorful-frame.theme-dark .workspace-split.mod-sidedock.mod-right-split:not(.is-sidedock-collapsed) {
+  background-color: color-mix(in srgb, #2d2a28 92%, var(--text-accent)) !important;
+}
+
+/* ---------- Style Settings「始终显示 Vault 选择」: 取消上游悬停才显示 ----------
+   上游 Cupertino 把左侧边栏底部 Vault 选择(workspace-drawer-vault-switcher)默认隐藏,
+   仅悬停 vault-profile 区域才浮现(透明+blur+禁用点击)。开启本开关后常驻显示,
+   并补上不透明底色(否则下层文件列表文字会透上来看不清楚)。
+   用 !important 覆盖上游, 无 .vault-switcher-always 类时不匹配, 默认行为不变 */
+body.vault-switcher-always:not(.is-mobile) .mod-sidedock.mod-left-split .workspace-sidedock-vault-profile:not(:hover) {
+  pointer-events: auto !important;
+}
+body.vault-switcher-always:not(.is-mobile) .mod-sidedock.mod-left-split .workspace-sidedock-vault-profile:not(:hover) .workspace-drawer-vault-switcher:not(.has-active-menu) {
+  opacity: 1 !important;
+  filter: none !important;
+  pointer-events: auto !important;
+  transform: none !important;
+}
+/* 不透明底色: 非透明模式 = OnePage 边栏卡片同色(浅 #f4f2ee / 暗 #2d2a28), 无缝融入 */
+body.vault-switcher-always:not(.is-mobile):not(.is-translucent) .mod-sidedock.mod-left-split .workspace-sidedock-vault-profile {
+  background-color: #f4f2ee !important;
+}
+body.vault-switcher-always:not(.is-mobile):not(.is-translucent).theme-dark .mod-sidedock.mod-left-split .workspace-sidedock-vault-profile {
+  background-color: #2d2a28 !important;
+}
+/* 不透明底色: 透明(毛玻璃)模式 = 近不透明磨砂, 自带 blur 挡住滚动上来的内容 */
+body.vault-switcher-always:not(.is-mobile).is-translucent .mod-sidedock.mod-left-split .workspace-sidedock-vault-profile {
+  background-color: color-mix(in srgb, var(--background-secondary) 88%, transparent) !important;
+  backdrop-filter: blur(24px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(160%) !important;
+}

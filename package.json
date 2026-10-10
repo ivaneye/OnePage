@@ -1,0 +1,11 @@
+{
+  "name": "onepage-obsidian-theme",
+  "version": "0.0.0",
+  "private": true,
+  "description": "OnePage — Obsidian 主题（macOS 原生 × 极客感）。theme.css 是构建产物，源在 src/ + vendor/。",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "verify": "node scripts/verify.mjs",
+    "split": "node scripts/split.mjs"
+  }
+}
