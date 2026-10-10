@@ -1,7 +1,9 @@
 # OnePage 2.0.0：升级 Cupertino 基座到 4.x — 实施计划
 
-> 记录时间：2026-10-10（动工前的方案评审稿）
-> 状态：**方案已确认，尚未实施**。本次先做「结构重构 + 兼容修复 + 发版」（1.3.0），2.0.0 见下文 Phase 0~7。
+> 记录时间：2026-10-10（动工前的方案评审稿，已评审通过）
+> 状态：**方案已确认，尚未动工**。前置工作已完成并发布 **1.3.0**（结构重构 + 兼容修复 + 构建流水线，见 §2）。
+> 待定项：透明模式 / 毛玻璃的取舍（§3.5），动工前确认。
+> 环境：本机 Obsidian 已升级 1.14.4 ✅
 
 ---
 
@@ -120,3 +122,24 @@ scripts/verify.mjs                括号/元数据/版本/变量体检
 | 回滚 | `backup/1.2.1` tag + 1.2.1 Release 仍在，用户可手装退回 |
 
 预计工作量：4–6 个工作日（流水线已完成，实际剩余 3–5 天）；此后每次上游升级预计 0.5–1 天。
+
+---
+
+## 附录：Obsidian 1.13 / 1.14 兼容性实测（2026-10-10，1.3.0 期间完成）
+
+结论：**不需要版本判断；1.13 与 1.14 都已覆盖，侧边栏样式不会在 1.13 上坏掉。**
+
+证据（直接读 `app.js` / `app.css`，非推断）：
+
+| 项 | 1.13.7 | 1.14.4 |
+| --- | --- | --- |
+| 功能区类名 | `createDiv("workspace-ribbon side-dock-ribbon")` + `addClass("mod-"+side)` → **`.workspace-ribbon.mod-left`** | `addClass("mod-"+TS(side))`，`TS('left')='primary'` → **`.workspace-ribbon.mod-primary`** |
+| 侧边栏类名 | `addClass("mod-"+side+"-split")` → `.mod-sidedock.mod-left-split` | `AS(side, tpl)` **同时输出** `mod-primary-split` + `mod-left-split` |
+| 左栏开关 | `.is-left-sidedock-open` | 同时输出 `is-primary-sidedock-open` + `is-left-sidedock-open` |
+| `--ribbon-width` | ✅ 44px | ✅ 44px |
+| `--checkbox-size` / `--size-4-2` / `--mono-rgb-100` / `--font-normal` / `--background-modifier-hover` / `--font-monospace` | ✅ 全部存在 | ✅ 全部存在 |
+
+- **只有功能区是硬改名**，主题用 `:is(.workspace-ribbon.mod-left,.workspace-ribbon.mod-primary)` 同时覆盖（特异性不变），基座里那 37 处由构建期补丁处理。
+- **侧边栏从来不受影响**：`.mod-sidedock.mod-left-split` 在两个版本都命中，所以侧边栏卡片样式不需要任何兼容分支。
+- 实测工具：`npm run check:obsidian -- <app.css …>`（无头 Chrome 读 `getComputedStyle`），已跑 1.13.7 + 1.14.4 × 两套类名，全绿；工具自检过（未打补丁的主题会报 ❌）。
+- 顺手加固：`--ribbon-width` 增加 `44px` 兜底（取不到值时整条 `calc()` 会失效，卡片不再向左延伸、图标会压在侧栏内容上）；`--shadow-tactile` 增加兜底以对冲 4.x 删除该变量（见 §3.4）。
