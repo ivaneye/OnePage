@@ -137,6 +137,17 @@ If OnePage helps you, feel free to **share it with friends who use Obsidian** �
 
 ## Changelog
 
+### 1.3.0
+
+- **Internal refactor (no visual change)**: the theme is now assembled from a pinned upstream Cupertino base + a OnePage layer, instead of being one hand-maintained file. Sources live in `src/`, the base in `vendor/`, and `npm run build` / `npm run verify` regenerate and sanity-check `theme.css` (now a build artifact). This is the groundwork for the Cupertino 4.x upgrade — the rebuild is byte-for-byte identical to 1.2.1, so nothing should look different
+- **Compatibility hardening**: `--ribbon-width` and the Bases card `--shadow-tactile` now have fallback values, so the sidebar card layout and card hover shadow survive missing or renamed variables (in Obsidian or in the upstream base)
+- Docs: added `docs/UPGRADE-CUPERTINO-4.md` — the 2.0.0 upgrade plan
+
+### 1.2.1
+
+- **Fixed**: sidebar ribbon icons disappeared on Obsidian 1.14 — the ribbon's position class was hard-renamed from `.mod-left` to `.mod-primary`, so the base rules silently stopped matching and the sidebar card drew over the ribbon. The theme now matches both
+- **Fixed**: on Obsidian 1.14, the highlight-colour swatch next to highlighted text was stretched to the full line width
+
 ### 1.2.0
 
 - **New: Bases redesign** — tables and cards now speak the theme's own table language

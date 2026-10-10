@@ -137,6 +137,17 @@ OnePage 完整继承了 **Cupertino** 的 Style Settings 配置，装好 [Style 
 
 ## 更新日志
 
+### 1.3.0
+
+- **内部重构（不改变外观）**：主题改为「钉版本的上游 Cupertino 基座 + OnePage 定制层」构建而成，不再是一个手工维护的大文件。源在 `src/`、基座在 `vendor/`，`theme.css` 变成构建产物，用 `npm run build` / `npm run verify` 生成与体检。这是为升级 Cupertino 4.x 铺路 —— 重建产物与 1.2.1 逐字节一致，观感不应有任何变化
+- **兼容加固**：`--ribbon-width` 与 Bases 卡片的 `--shadow-tactile` 增加兜底值，侧栏卡片布局与卡片悬浮阴影在变量缺失 / 改名时不再失效
+- 文档：新增 `docs/UPGRADE-CUPERTINO-4.md`（2.0.0 升级计划）
+
+### 1.2.1
+
+- **修复**：Obsidian 1.14 上侧边栏工具图标全部消失 —— 功能区方位类被硬改名（`.mod-left` → `.mod-primary`），基座规则静默失配，边栏卡片盖住了功能区。现在新旧类名同时匹配
+- **修复**：Obsidian 1.14 上，高亮文字旁的高亮色色环被拉成整行宽
+
 ### 1.2.0
 
 - **新增：Bases 重设计** —— 表格与卡片和主题表格语言同脸
