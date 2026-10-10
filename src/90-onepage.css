@@ -1013,7 +1013,7 @@ body.theme-dark {
 .bases-view {
   --bases-cards-radius: 12px;
   --bases-cards-shadow: 0 0 0 1px color-mix(in srgb, var(--text-muted) 16%, transparent);
-  --bases-cards-shadow-hover: 0 0 0 1px color-mix(in srgb, var(--text-muted) 30%, transparent), var(--shadow-tactile);
+  --bases-cards-shadow-hover: 0 0 0 1px color-mix(in srgb, var(--text-muted) 30%, transparent), var(--shadow-tactile, var(--shadow-s));
 }
 /* 卡片内距: 封面→标题的间距 = 卡片 padding-top (JS 用 cardPad.top 定位标题行),
    末行→卡底的间距 = padding-bottom。官方默认 8px/4px;
@@ -1126,8 +1126,10 @@ body:not(.is-translucent):not(.is-mobile) .workspace-split.mod-sidedock.mod-righ
    包住整张卡), 功能区背景透明、z-index 提到 12 浮在卡片上层, 图标可见且无接缝阴影 */
 /* 卡片向左延伸 + 内容用 padding 让开功能区图标 */
 body:not(.is-translucent):not(.is-mobile).show-ribbon:not(.hover-ribbon) .workspace-split.mod-sidedock.mod-left-split:not(.is-sidedock-collapsed) {
-  margin-left: calc(-1 * var(--ribbon-width) + 8px) !important;
-  padding-left: var(--ribbon-width) !important;
+  /* --ribbon-width 是 Obsidian 本体变量(桌面 44px); 加 fallback 防止老版本/异常构建下取不到值
+     导致整条 calc() 失效、卡片不再向左延伸 */
+  margin-left: calc(-1 * var(--ribbon-width, 44px) + 8px) !important;
+  padding-left: var(--ribbon-width, 44px) !important;
 }
 /* 功能区: 透明浮在卡片上, 图标在上层; 贴左边框(x=0), 图标经 padding-left 落在卡片上;
    顶部保留默认 header-height 偏移(避开 macOS 窗口按钮), 底部 8px 与卡片对齐 */
@@ -1145,29 +1147,36 @@ body:not(.is-translucent):not(.is-mobile).show-ribbon:not(.hover-ribbon) :is(.wo
 }
 
 /* ---------- Obsidian 1.14 兼容层 ----------
-   1.14 为支持 RTL 翻转, 把工作区物理方位类改成了逻辑方位类:
-     左侧功能区 .workspace-ribbon.mod-left → .workspace-ribbon.mod-primary
-     左侧边栏 .mod-left-split      → .mod-primary-split   (旧类仍并存, 见下)
-     左栏开关 .is-left-sidedock-open → .is-primary-sidedock-open (旧类仍并存)
-   注意: 边栏/开关是「双类并存」(app.js 里 AS(side, tpl) 同时输出新旧两个类),
-   所以基座里 .mod-left-split / .is-left-sidedock-open 规则在 1.14 仍生效;
-   唯独「功能区」是硬改名, 只输出 mod-primary, 不再输出 mod-left。
-   后果: 全文件所有 .workspace-ribbon.mod-left 规则在 1.14 失配 → 功能区拿不到
-   position:relative/z-index, 被向左延伸的边栏卡片(负 margin)盖住, 图标全部消失。
-   修复: 把全文件 .workspace-ribbon.mod-left 统一改写为
-     :is(.workspace-ribbon.mod-left,.workspace-ribbon.mod-primary)
-   :is() 取参数中最高特异性, 两个参数同为 (0,2,0), 所以改写后特异性不变,
-   1.13 与 1.14 同时兼容。
-   ⚠️ 日后从上游重新合并 Cupertino 基座时, 必须对基座重新执行这条全局改写,
-      否则功能区再次不可见。见 AGENTS.md「Obsidian 1.14 兼容」。 */
+   1.14 为支持 RTL 翻转, 把工作区物理方位类换成了逻辑方位类(app.js 里 TS(side) / AS(side, tpl)):
+
+     元素                1.13 旧类                    1.14 新类                        是否双类并存
+     左侧功能区 ribbon   .workspace-ribbon.mod-left   .workspace-ribbon.mod-primary   ❌ 硬改名
+     左侧边栏 split      .mod-left-split              .mod-primary-split              ✅ 新旧并存
+     左栏开关            .is-left-sidedock-open       .is-primary-sidedock-open       ✅ 新旧并存
+
+   (1.14.4 app.js 实证: 功能区 = createDiv("workspace-ribbon side-dock-ribbon") + addClass("mod-" + TS(side)),
+    其中 TS('left') = 'primary'; 边栏/开关经 AS(side, tpl) 同时输出两个类。)
+
+   → 结论: **侧边栏样式不需要任何版本判断** —— .mod-sidedock.mod-left-split 在 1.13 / 1.14 都能命中。
+     只有功能区是硬改名。本主题曾在 1.14 上出现「Show Ribbon 之后侧栏工具图标全部看不见」:
+     基座里给功能区 position:relative / z-index:11 的规则失配 → 功能区退回 position:static,
+     被 OnePage「向左延伸的边栏卡片」(负 margin + 后绘制) 盖住。
+
+   → 修复已经工程化: 基座里的批量改写放在构建期完成 —— 见 scripts/build.mjs 的 PATCHES
+     (把 .workspace-ribbon.mod-left 改写为 :is(.workspace-ribbon.mod-left,.workspace-ribbon.mod-primary),
+     并断言命中数; 换基座时如果上游改了名, 构建会直接失败而不是静默失效)。
+     本文件下面两处功能区选择器用同样写法, 保持 1.13 / 1.14 双兼容。
+     :is() 取参数中最高特异性, 两参数同为 (0,2,0), 所以改写后特异性不变。
+   详见 AGENTS.md「Obsidian 1.14 类名适配」。 */
 
 /* 1.14 高亮色: 光标落在高亮文字上时, 行内会出现色环 widget
-   (.cm-highlight-color-widget > img.highlight-swatch, 0.9em 圆点)。
-   基座「全宽元素」规则会命中 .cm-content 下的裸 img(色环不含 width 属性),
-   把它拉成整行宽 → 用户看到的「颜色红圈被拉宽到和文字一样宽」。
-   根基座已在 img:not(...) 排除列表里补了 .highlight-swatch(共 4 处);
-   这里再兜一层, 防止后续合并上游时回归。不设 background-color,
-   让官方 .highlight-swatch[data-highlight=...] 的配色原样生效。 */
+   (.cm-highlight-color-widget > img.highlight-swatch, 0.9em 圆点; 该 img 没有 width 属性)。
+   基座「全宽元素」规则会命中 .cm-content 下的裸 img, 把它拉成整行宽
+   → 用户看到的「颜色红圈被拉宽到和文字一样宽」, 而且同组的 background 还会把圆点染成纸色。
+   当前基座(3.2.12)的 img:not(...) 排除列表由构建期补丁补上 .highlight-swatch(4 处, 见 build.mjs);
+   这里再兜一层, 防止换基座时回归。**故意不设 background-color**,
+   让官方 .highlight-swatch[data-highlight=...] 的配色原样生效。
+   已知: Cupertino 4.1.0 已自行修复(排除列表里带了 .highlight-swatch), 2.0.0 换基座时应删基座补丁、保留本兜底。 */
 .cm-s-obsidian .cm-highlight-color-widget .highlight-swatch {
   width: 0.9em !important;
   height: 0.9em !important;

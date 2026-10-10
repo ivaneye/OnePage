@@ -6,6 +6,7 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "verify": "node scripts/verify.mjs",
-    "split": "node scripts/split.mjs"
+    "split": "node scripts/split.mjs",
+    "check:obsidian": "node scripts/check-obsidian-compat.mjs"
   }
 }
