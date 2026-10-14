@@ -1,0 +1,90 @@
+## Changelog
+
+> Full changelog. The README only links here — releases are append-only.
+
+### 2.0.0
+
+**Base theme upgraded: Cupertino 3.2.12 → 4.1.0** (a full "Liquid Glass" rewrite — roughly 44% of the base's selectors were replaced). This is the biggest visual change since 1.0.0, so please read the notes below.
+
+#### ⚠️ Requirements changed
+
+- **Minimum Obsidian version is now 1.14.0** (was 1.13.4). On 1.13.x, Obsidian will keep you on 1.3.0 and won't offer 2.0.0.
+- **Desktop: update the Obsidian *installer* as well**, not just the app. The new base probes for modern rendering features (`interpolate-size`) and otherwise shows “Cupertino requires a newer Obsidian installer” at the top of the window.
+- **Mobile:** the base ships its own touch/mobile styling (upstream advertises mobile support), but OnePage's custom layer is desktop-first and mobile was **not** specifically verified for this release.
+
+#### ✨ Deliberate visual changes
+
+- **Callouts, rebuilt for this palette**
+  - The hairline ring around every callout is gone. In 4.1.0 that frame is no longer a `border` but two `0.5pt` layers inside `box-shadow`, so it needs an explicit override.
+  - Colours are now OnePage's own muted “ink” palette (slate blue / teal-green / ochre / moss green / dusty purple / amber / brick / warm grey) instead of the base's bright macOS system colours, which read like stickers on warm paper.
+  - The tint is a flat 13% accent over the paper colour instead of a washed-out glass gradient, so callout *types* are actually distinguishable again.
+  - Callouts inside embeds (`![[note#section]]`, hover previews) no longer sit flush against each other — Live Preview renders embeds in a nested editor where the base zeroes margins.
+- **Checkboxes are circles everywhere.** Reading view used to draw small rounded squares (15px / 4px radius) while Live Preview and the properties panel drew circles (16px). All three are now 16px circles driven by the base variables.
+- **Toggles are teal again.** 4.1.0 injects `--interactive-accent: var(--color-green)` on `.checkbox-container`; OnePage declares its accent on `body`, and an inherited value can never beat a declaration on the element itself — toggles would have turned macOS green.
+- **The active tab is flat again** — no glass gradient, no hairline ring. (4.1.0 switched to a `background:` *shorthand*, which silently swallows a `background-color`-only override.)
+- **The status bar stays an opaque capsule** (hover glass disabled): in translucent mode the base's glass resolves to “semi-transparent with no blur”, which lets text show through.
+- **Glass surfaces are warm** — menus, modals, the command palette and notices used the base's neutral grey glass, which goes muddy over warm paper.
+- **Code blocks and tables are flatter** — 4.1.0 removed the gradient background and shadow from code blocks, and its hairline colour moved from translucent ink to opaque grey (matching the current macOS look).
+- **New option: “Collapse Properties by Default”** (Style Settings → Editor). Collapsed by default; click the properties card to expand, click elsewhere to collapse. Obsidian has no such setting and does not remember the state in Live Preview.
+- Typography: heading/list spacing and table font sizes follow 4.1.0's updated metrics.
+
+#### 🔧 Settings changes
+
+- **“Disable full-width elements” has a new id** (`media-width-fit`, previously `full-width-media-off`). If you had it enabled, **re-enable it once** — Style Settings cannot migrate the old key.
+- Removed “Standard font size” (`dynamic-type-off`) — dropped upstream.
+- OnePage still exposes every base option bilingually (34 items in total).
+
+#### ⚪ Unchanged
+
+- “Window translucent” is still **not recommended** (macOS Electron vibrancy + `backdrop-filter` ghosting — an upstream Electron issue closed as won't-fix).
+- JetBrains Mono Nerd Font is still the default code font, with a system fallback.
+- The theme is still assembled from a pinned upstream base plus the `src/` layer (`npm run build` / `npm run verify`).
+
+### 1.3.0
+
+- **Internal refactor (no visual change)**: the theme is now assembled from a pinned upstream Cupertino base + a OnePage layer, instead of being one hand-maintained file. Sources live in `src/`, the base in `vendor/`, and `npm run build` / `npm run verify` regenerate and sanity-check `theme.css` (now a build artifact). This is the groundwork for the Cupertino 4.x upgrade — the rebuild is byte-for-byte identical to 1.2.1, so nothing should look different
+- **Compatibility hardening**: `--ribbon-width` and the Bases card `--shadow-tactile` now have fallback values, so the sidebar card layout and card hover shadow survive missing or renamed variables (in Obsidian or in the upstream base)
+- Docs: added `docs/UPGRADE-CUPERTINO-4.md` — the 2.0.0 upgrade plan
+
+### 1.2.1
+
+- **Fixed**: sidebar ribbon icons disappeared on Obsidian 1.14 — the ribbon's position class was hard-renamed from `.mod-left` to `.mod-primary`, so the base rules silently stopped matching and the sidebar card drew over the ribbon. The theme now matches both
+- **Fixed**: on Obsidian 1.14, the highlight-colour swatch next to highlighted text was stretched to the full line width
+
+### 1.2.0
+
+- **New: Bases redesign** — tables and cards now speak the theme's own table language
+  - Table: restrained accent header + 2px accent divider + 1px full grid, no outer frame; row/header hover uses the same accent tint as the active-line highlight; grouped headings get a mini-section treatment (bold value, faint label, tinted bar + hairline); font size aligned with markdown tables; tabular numerals
+  - **Worked around an Obsidian layout flaw** (affects the default theme too): after manually resizing the last column, the header line ended short of the body — the header lacks the `min-width: 100%` fallback the body chain has; now defended in-theme
+  - Cards: hairline cover seam, 600-weight titles, group bars matching table groups, hover lift / press settle
+  - Embedded bases now render identical to standalone (restored header line, body bottom line and first-column line; squared corners)
+- **Fixed**: the gray band above/below images in the editor that looked like a phantom input line (#4) — lines containing block widgets (images, embeds, tables) no longer get the active-line background fill
+- **Fixed**: dark-mode menus were nearly see-through glass (7.5% white) and unreadable over accent-colored content; now a darker frosted glass
+
+### 1.1.4
+
+- **Fixed**: with the *Relative Line Numbers* plugin enabled, repeated clicks or text selection inside the active paragraph no longer lose editor focus — the plugin's decorative gutter marker (`position: absolute; width: 100%`, inherited from Cupertino) had a hit area spanning the whole editor, so it swallowed pointer events over the text. It is now `pointer-events: none`
+- OnePage is now listed in Obsidian's in-app theme browser (Settings → Appearance → Themes → Browse)
+
+### 1.1.3
+
+- English is now the default README; the Chinese version moved to [README_CN.md](./README_CN.md)
+- **Fixed missing release assets** — installing and updating from within Obsidian works again; every release now ships `manifest.json` + `theme.css` as binary attachments
+- Releases are now published automatically by GitHub Actions when a version tag is pushed
+
+### 1.1.0
+
+- Full **Style Settings** support (inherits all Cupertino toggles + OnePage-specific options)
+  - **Colors**: accent (light/dark), disable typographic colors, body line height, tinted sidebar, dynamic color
+  - **Layout**: hover ribbon/sidebar, focus view, always-show Vault switcher & status bar, compact panels, etc.
+  - **Demo**: demo mode (bindable hotkey), demo font size
+  - **Editor / Accessibility**: active line, banner, block width, font variants, adaptive mode, motion, font/icon size, etc.
+- Bilingual settings panel (follows the Obsidian UI language automatically)
+- Removed the "Disable compact status bar" toggle
+- Fixed text showing through when "Always show Vault switcher" is enabled
+
+### 1.0.0
+
+- Initial release: based on Cupertino 3.2.12
+- Fixed dual color schemes (Warm Paper / Warm Brown · Cool Anchor)
+- Integrated geeky editor details, macOS capsule tabs, Notion-style file tree, and more

@@ -49,6 +49,14 @@ a native macOS-style interface paired with VSCode-like geeky editor details, wra
 
 > Official directory thumbnails: [Light 512×288](screenshot.png) · [Dark 512×288](screenshot-dark.png)
 
+## Requirements
+
+- **Obsidian 1.14.0 or newer.** OnePage 2.0.0 is built on Cupertino 4.x, which requires 1.14. On 1.13.x you will simply stay on 1.3.0.
+- **Desktop users: also update the Obsidian *installer*** (the downloaded app, not just the in-app update). The new base probes for modern rendering features and otherwise shows a notice at the top of the window.
+- **Mobile**: the base ships mobile/touch styling, but OnePage's own custom layer is desktop-first — mobile is not specifically verified.
+
+> Full history: [RELEASE.md](RELEASE.md) · 中文：[RELEASE_CN.md](RELEASE_CN.md)
+
 ## Installation
 
 ### Option 1: Official theme directory (recommended)
@@ -107,7 +115,7 @@ OnePage fully inherits **Cupertino**'s Style Settings config. Install [Style Set
 - **Colors**: accent color (one per light/dark; links, buttons and the graph update together), disable typographic colors, body line height, tinted sidebar
 - **Layout**: hover ribbon / hover sidebar / focus view, **always show Vault switcher**, **always show status bar**, disable compact panel actions / compact sidebar tabs, disable media zoom
 - **Demo**: demo mode (presenting, bindable hotkey), demo mode font size
-- **Editor**: disable active line highlight / banner / block width / font variants / full-width elements / quick mode switcher
+- **Editor**: disable active line highlight / banner / block width / font variants / full-width elements / quick mode switcher, **collapse the Properties panel by default**
 - **Accessibility**: disable adaptive mode, reduce contrast change, reduce motion, standard font size, fine-tune UI font & icon size, underlined links
 
 > All toggles default to OnePage's fixed design — the theme works out of the box even without Style Settings.
@@ -137,51 +145,4 @@ If OnePage helps you, feel free to **share it with friends who use Obsidian** �
 
 ## Changelog
 
-### 1.3.0
-
-- **Internal refactor (no visual change)**: the theme is now assembled from a pinned upstream Cupertino base + a OnePage layer, instead of being one hand-maintained file. Sources live in `src/`, the base in `vendor/`, and `npm run build` / `npm run verify` regenerate and sanity-check `theme.css` (now a build artifact). This is the groundwork for the Cupertino 4.x upgrade — the rebuild is byte-for-byte identical to 1.2.1, so nothing should look different
-- **Compatibility hardening**: `--ribbon-width` and the Bases card `--shadow-tactile` now have fallback values, so the sidebar card layout and card hover shadow survive missing or renamed variables (in Obsidian or in the upstream base)
-- Docs: added `docs/UPGRADE-CUPERTINO-4.md` — the 2.0.0 upgrade plan
-
-### 1.2.1
-
-- **Fixed**: sidebar ribbon icons disappeared on Obsidian 1.14 — the ribbon's position class was hard-renamed from `.mod-left` to `.mod-primary`, so the base rules silently stopped matching and the sidebar card drew over the ribbon. The theme now matches both
-- **Fixed**: on Obsidian 1.14, the highlight-colour swatch next to highlighted text was stretched to the full line width
-
-### 1.2.0
-
-- **New: Bases redesign** — tables and cards now speak the theme's own table language
-  - Table: restrained accent header + 2px accent divider + 1px full grid, no outer frame; row/header hover uses the same accent tint as the active-line highlight; grouped headings get a mini-section treatment (bold value, faint label, tinted bar + hairline); font size aligned with markdown tables; tabular numerals
-  - **Worked around an Obsidian layout flaw** (affects the default theme too): after manually resizing the last column, the header line ended short of the body — the header lacks the `min-width: 100%` fallback the body chain has; now defended in-theme
-  - Cards: hairline cover seam, 600-weight titles, group bars matching table groups, hover lift / press settle
-  - Embedded bases now render identical to standalone (restored header line, body bottom line and first-column line; squared corners)
-- **Fixed**: the gray band above/below images in the editor that looked like a phantom input line (#4) — lines containing block widgets (images, embeds, tables) no longer get the active-line background fill
-- **Fixed**: dark-mode menus were nearly see-through glass (7.5% white) and unreadable over accent-colored content; now a darker frosted glass
-
-### 1.1.4
-
-- **Fixed**: with the *Relative Line Numbers* plugin enabled, repeated clicks or text selection inside the active paragraph no longer lose editor focus — the plugin's decorative gutter marker (`position: absolute; width: 100%`, inherited from Cupertino) had a hit area spanning the whole editor, so it swallowed pointer events over the text. It is now `pointer-events: none`
-- OnePage is now listed in Obsidian's in-app theme browser (Settings → Appearance → Themes → Browse)
-
-### 1.1.3
-
-- English is now the default README; the Chinese version moved to [README_CN.md](./README_CN.md)
-- **Fixed missing release assets** — installing and updating from within Obsidian works again; every release now ships `manifest.json` + `theme.css` as binary attachments
-- Releases are now published automatically by GitHub Actions when a version tag is pushed
-
-### 1.1.0
-
-- Full **Style Settings** support (inherits all Cupertino toggles + OnePage-specific options)
-  - **Colors**: accent (light/dark), disable typographic colors, body line height, tinted sidebar, dynamic color
-  - **Layout**: hover ribbon/sidebar, focus view, always-show Vault switcher & status bar, compact panels, etc.
-  - **Demo**: demo mode (bindable hotkey), demo font size
-  - **Editor / Accessibility**: active line, banner, block width, font variants, adaptive mode, motion, font/icon size, etc.
-- Bilingual settings panel (follows the Obsidian UI language automatically)
-- Removed the "Disable compact status bar" toggle
-- Fixed text showing through when "Always show Vault switcher" is enabled
-
-### 1.0.0
-
-- Initial release: based on Cupertino 3.2.12
-- Fixed dual color schemes (Warm Paper / Warm Brown · Cool Anchor)
-- Integrated geeky editor details, macOS capsule tabs, Notion-style file tree, and more
+See **[RELEASE.md](RELEASE.md)** for the full changelog (中文：[RELEASE_CN.md](RELEASE_CN.md)).
