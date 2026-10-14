@@ -38,6 +38,10 @@ const EXTERNAL_VARS = new Set([
   "--table-text-align-header", "--table-text-align-body", "--bases-table-align-items",
   "--mono-rgb-100", "--font-normal", "--checkbox-size", "--size-4-2",
   "--background-modifier-hover", "--font-monospace",
+  // 4.1.0 起基座不再自带这一项（3.2.12 里有 3 处定义），改由核心提供：
+  // app.css:2949 `--background-modifier-border-hover: var(--color-base-35)`
+  // 用途：src/90-onepage.css 的滚动条 thumb:hover。
+  "--background-modifier-border-hover",
 ]);
 
 const errors = [];

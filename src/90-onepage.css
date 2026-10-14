@@ -166,11 +166,17 @@ body:not(.active-line-off) .markdown-source-view.mod-cm6 .cm-active.cm-gutterEle
   line-height: 1.45 !important;
 }
 
-/* 任务复选框: 略放大, 点击手感更好 */
+/* 任务复选框: 统一为圆形（与实时预览 / 属性面板一致）
+   ⚠️ 原来写死 15px + border-radius 4px，但 `.markdown-rendered` 只命中阅读视图
+   （app.js 里它只加在 markdown-preview-view / 嵌入 / CM6 widget 上），导致三处不一致：
+     实时预览 = 基座 --checkbox-radius:100px（圆）
+     阅读视图 = 15px 圆角方（圆）
+     属性面板 = 圆
+   → 2.0.0 统一为圆形：尺寸与圆角都走基座变量，不再硬编码。 */
 .markdown-rendered .task-list-item-checkbox {
-  width: 15px;
-  height: 15px;
-  border-radius: 4px;
+  width: var(--checkbox-size);
+  height: var(--checkbox-size);
+  border-radius: var(--checkbox-radius);
 }
 
 /* ---------- 属性面板: 复选框直接复用正文样式 ----------
@@ -184,6 +190,15 @@ body {
   /* 对勾用背景色绘制(正文默认): 与强调色互补, 亮/暗双模式都高对比;
      不能用白色 — 暗色下强调色是浅青 #6db3a3, 白勾会看不见 */
   --checkbox-marker-color: var(--background-primary);
+}
+
+/* 开关(toggle) 强调色：Cupertino 4.1.0 起会注入
+     body:not(.accented-interface) .checkbox-container{--interactive-accent:var(--color-green)}
+   它声明在 .checkbox-container 自身，而 OnePage 的 --interactive-accent 声明在 body 上：
+   CSS 里「元素自身的声明」永远赢过「继承值」（哪怕继承值带 !important），
+   继承链防不住 → 开着开关会被染成系统绿。这里钉回 OnePage 强调色。 */
+.checkbox-container {
+  --interactive-accent: var(--text-accent) !important;
 }
 /* 未勾选: 与正文完全一致 */
 .metadata-input-checkbox,
@@ -232,10 +247,16 @@ body {
   opacity: 0.75;
 }
 
-/* 状态栏: 主题底色, 去掉黑色半透明条 */
+/* 状态栏: 主题底色, 去掉黑色半透明条
+   Cupertino 4.1.0 给状态栏 hover 加了玻璃(backdrop-filter: var(--blur-m) + --raised-background + --raised-shadow)，
+   但 OnePage 这里是不透明底色 → blur 被完全盖住（白耗一次重绘），raised 的 0.5pt 环也会多一条发丝线。
+   决策：状态栏保持 OnePage 自己的不透明悬浮胶囊，显式关掉上游玻璃（不用 blur 也不留空转）。 */
 .status-bar {
   background-color: var(--background-secondary) !important;
   border-top: 1px solid var(--background-modifier-border) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
 }
 
 /* 状态栏悬浮胶囊: 强制 fixed 定位, 防止第三方插件(如 quick-explorer)把状态栏改成
@@ -401,10 +422,14 @@ body:has(.workspace-leaf.mod-active .markdown-reading-view) .mod-root .workspace
   border-radius: 6px !important;
 }
 
-/* tab: 不要任何边框/描边 */
+/* tab: 不要任何边框/描边
+   4.1.0 给 `.mod-root .workspace-tab-container` 新增了
+   box-shadow: 0 0 0 var(--tab-outline-width) var(--tab-outline-color)（容器外圈 1px 环）；
+   macOS 下 --tab-outline-color 是 transparent，但 Win/Linux 默认是 rgba(mono,.05) → 会多一圈线，一并压掉 */
 .workspace-tab-header,
 .workspace-tab-header-container-inner,
-.mod-root .workspace-tab-header-container {
+.mod-root .workspace-tab-header-container,
+.mod-root .workspace-tab-container {
   border: none !important;
   box-shadow: none !important;
   outline: none !important;
@@ -418,9 +443,15 @@ body:has(.workspace-leaf.mod-active .markdown-reading-view) .mod-root .workspace
   color: var(--text-normal) !important;
 }
 
-/* 激活 tab: 半透明底色 (无 blur, 无重影, 不强制建层) */
-body.is-translucent .workspace-tab-header.is-active {
-  background-color: color-mix(in srgb, var(--background-primary) 78%, transparent) !important;
+/* 活跃 tab: OnePage 自己的半透明纸色 (无 blur, 无重影, 不强制建层)
+   ⚠️ 必须用 `background` 简写（或显式 background-image:none）:
+   Cupertino 4.1.0 给活跃 tab 写的是 `background: var(--raised-background)`，
+   它是**简写**，会同时设上 background-image:linear-gradient(...) —— 只写 background-color
+   会被那层渐变盖在上面（原实现只在透明模式写 background-color，升级后会静默失效）。
+   注: 4.1.0 这条只改渐变+阴影，没有 backdrop-filter，所以不受「透明模式不 blur」约束。 */
+.mod-root .workspace-tab-header.is-active {
+  background: color-mix(in srgb, var(--background-primary) 78%, transparent) !important;
+  background-image: none !important;
 }
 
 /* ---------- 10. 配色主题 (Style Settings 强调色 / 彩色排版开关) ---------- */
@@ -718,6 +749,57 @@ body.onepage-typo-off {
   display: flex;
 }
 
+/* ---------- 12.1 Style Settings「属性面板默认收起（点击展开）」----------
+
+   背景：Obsidian 没有「属性面板默认收起」这个设置项（app.js 的设置默认值里只有
+   propertiesInDocument: visible / hidden / source），而且它的「记住」只在阅读视图生效：
+   MarkdownView 上有个全局静态 collapseProperties（默认 true = 收起），但只有阅读视图的
+   加载路径会 setCollapse(它)；实时预览的 frontmatter 每次新建视图都是展开的 → 用户感受就是
+   「每次进来都要手动点收起」。
+
+   ⚠️ 走过的弯路（别再回头试）：
+   1. 用 `:hover` 展开 —— 被否：鼠标移开就缩回去，晃动。
+   2. 用 `.is-collapsed` 反色显示（借用 Obsidian 自己的点击开关）—— **不可靠**：
+      markdown 视图的 metadataEditor 实例在「阅读视图 / 实时预览」之间是**同一个 DOM 复用**的，
+      只要某篇笔记在阅读视图里被套用过收起状态（全局 collapseProperties 默认就是 true），
+      切到实时预览就带着 is-collapsed 进来 → 反色后正好显示成展开。用户实测「总有些笔记打开是展开的」。
+
+   现在这版：**完全不理 `is-collapsed`，改用焦点状态**。
+   `.metadata-container` 本身带 `tabindex="-1"`（Obsidian 给的），鼠标点击就会获得焦点 →
+   `:focus-within` 成立 → 展开；点到别处失焦 → 自动收起。
+   收起态把标题栏设为 pointer-events:none，让点击穿透到卡片本身（否则点标题栏只会触发
+   Obsidian 自己的折叠开关，而那个开关的状态我们不用）；展开后再恢复正常，标题栏/属性行/右键菜单都可正常用。
+
+   作用域限定在正文：侧栏「属性」视图（.workspace-leaf-content[data-type=file-properties]）
+   在 .markdown-source-view / .markdown-preview-view 之外，不受影响，始终展开。 */
+body.properties-collapsed :is(.markdown-source-view, .markdown-preview-view) .metadata-container:not(:focus-within) > .metadata-content {
+  display: none !important;
+}
+body.properties-collapsed :is(.markdown-source-view, .markdown-preview-view) .metadata-container:focus-within > .metadata-content {
+  display: block !important;
+  height: auto !important;
+  overflow: visible !important;
+}
+/* 收起态：标题栏不拦截点击（点击落到卡片上 → 拿到焦点 → 展开）；同时不显示分割线
+   （否则会与外框底线叠成双线：外框 overflow:hidden + 1px 边框）。 */
+body.properties-collapsed :is(.markdown-source-view, .markdown-preview-view) .metadata-container:not(:focus-within) .metadata-properties-heading {
+  pointer-events: none;
+  border-bottom-color: transparent !important;
+}
+/* 展开态：必须恢复「行」的显示 —— core 另有一条
+   `.metadata-container.is-collapsed .metadata-property { display: none }`，
+   若这个实例带着旧的 is-collapsed 进来，只展开容器会得到「有框无内容」（行默认是 flex）。 */
+body.properties-collapsed :is(.markdown-source-view, .markdown-preview-view) .metadata-container:focus-within .metadata-property {
+  display: flex !important;
+}
+/* 箭头方向跟「看到的状态」走：收起指右，展开指下。 */
+body.properties-collapsed :is(.markdown-source-view, .markdown-preview-view) .metadata-container:not(:focus-within) .metadata-properties-heading .collapse-indicator svg.svg-icon {
+  transform: rotate(calc(var(--direction, 1) * -1 * 90deg)) !important;
+}
+body.properties-collapsed :is(.markdown-source-view, .markdown-preview-view) .metadata-container:focus-within .metadata-properties-heading .collapse-indicator svg.svg-icon {
+  transform: none !important;
+}
+
 /* ---------- 13. 文件浏览器 & 大纲: Notion 风格 ---------- */
 
 /* ===== 文件浏览器 ===== */
@@ -805,7 +887,10 @@ body.theme-dark:not(.mode-switcher-off) .mod-root .workspace-leaf-content[data-t
 }
 
 /* ---------- 15. 弹窗/菜单: 透明模式下背景不透明, 避免透字 ---------- */
-/* Cupertino 在透明模式把 blur 设 none 但菜单背景仍是半透明, 导致看穿背景 */
+/* 3.2.12 的老问题（blur=none 但菜单背景仍半透明 → 看穿背景）上游 4.1.0 已自行解决：
+   .is-translucent 下 --menu-background / --modal-background 改绑**实色** --background-primary，
+   且 --blur-s/m/l 被强制 none（cup410.css:179-181 / 4166-4170）。
+   本块保留作**兜底保险**（万一上游回退，或 97% 不透明度仍显脏），不再是风险项。 */
 body.is-translucent .menu,
 body.is-translucent .suggestion-container,
 body.is-translucent .popover,
@@ -1115,9 +1200,13 @@ body.theme-dark:not(.is-translucent):not(.is-mobile) .workspace-split.mod-sidedo
   box-shadow: 0 8px 24px rgba(0,0,0,0.28), 0 2px 6px rgba(0,0,0,0.14) !important;
 }
 
-/* 卡片内侧 resize 分割线置透明: 只留发丝描边, 不出现黑线 */
-body:not(.is-translucent):not(.is-mobile) .workspace-split.mod-sidedock.mod-left-split > .workspace-leaf-resize-handle,
-body:not(.is-translucent):not(.is-mobile) .workspace-split.mod-sidedock.mod-right-split > .workspace-leaf-resize-handle {
+/* 侧栏外缘 resize 分割线置透明: 只留发丝描边, 不出现黑线
+   Cupertino 4.1.0 在 macOS/自适应模式下给
+   `.mod-sidedock > .workspace-leaf-resize-handle:not(:hover)` 恢复了 `border-color: var(--divider-color)`
+   （4.1.0 全表里少见的「新增描边」），会沿着卡片外缘多画一条 1px 线；3.2.12 是透明。
+   这里统一压掉（透明模式同样适用 —— 卡片本身已有 1px 发丝描边）。 */
+body:not(.is-mobile) .workspace-split.mod-sidedock.mod-left-split > .workspace-leaf-resize-handle,
+body:not(.is-mobile) .workspace-split.mod-sidedock.mod-right-split > .workspace-leaf-resize-handle {
   border-color: transparent !important;
 }
 
@@ -1162,10 +1251,10 @@ body:not(.is-translucent):not(.is-mobile).show-ribbon:not(.hover-ribbon) :is(.wo
      基座里给功能区 position:relative / z-index:11 的规则失配 → 功能区退回 position:static,
      被 OnePage「向左延伸的边栏卡片」(负 margin + 后绘制) 盖住。
 
-   → 修复已经工程化: 基座里的批量改写放在构建期完成 —— 见 scripts/build.mjs 的 PATCHES
-     (把 .workspace-ribbon.mod-left 改写为 :is(.workspace-ribbon.mod-left,.workspace-ribbon.mod-primary),
-     并断言命中数; 换基座时如果上游改了名, 构建会直接失败而不是静默失效)。
-     本文件下面两处功能区选择器用同样写法, 保持 1.13 / 1.14 双兼容。
+   → 修复历史: 3.2.12 基座里全是 `.workspace-ribbon.mod-left`, 靠构建期批量改写兼容 1.14;
+     **4.1.0 基座改用裸 `.workspace-ribbon`**（不再输出方位类），因此那条改写补丁已在 2.0.0 删除
+     （见 scripts/build.mjs 的 PATCHES，现在是空数组）。
+     本文件下面两处功能区选择器仍用 :is(.mod-left,.mod-primary) 写法（对 4.1.0 无害，保留可兼容旧基座）。
      :is() 取参数中最高特异性, 两参数同为 (0,2,0), 所以改写后特异性不变。
    详见 AGENTS.md「Obsidian 1.14 类名适配」。 */
 
@@ -1173,10 +1262,9 @@ body:not(.is-translucent):not(.is-mobile).show-ribbon:not(.hover-ribbon) :is(.wo
    (.cm-highlight-color-widget > img.highlight-swatch, 0.9em 圆点; 该 img 没有 width 属性)。
    基座「全宽元素」规则会命中 .cm-content 下的裸 img, 把它拉成整行宽
    → 用户看到的「颜色红圈被拉宽到和文字一样宽」, 而且同组的 background 还会把圆点染成纸色。
-   当前基座(3.2.12)的 img:not(...) 排除列表由构建期补丁补上 .highlight-swatch(4 处, 见 build.mjs);
-   这里再兜一层, 防止换基座时回归。**故意不设 background-color**,
-   让官方 .highlight-swatch[data-highlight=...] 的配色原样生效。
-   已知: Cupertino 4.1.0 已自行修复(排除列表里带了 .highlight-swatch), 2.0.0 换基座时应删基座补丁、保留本兜底。 */
+   基座在 3.2.12 时会命中, 靠构建期补丁补上 .highlight-swatch(4 处);4.1.0 已自行修复，
+   基座补丁已在 2.0.0 删除。这里保留兜底一层, 防止换基座/上游回退时回归。**故意不设 background-color**,
+   让官方 .highlight-swatch[data-highlight=...] 的配色原样生效。 */
 .cm-s-obsidian .cm-highlight-color-widget .highlight-swatch {
   width: 0.9em !important;
   height: 0.9em !important;
@@ -1225,9 +1313,133 @@ body.vault-switcher-always:not(.is-mobile):not(.is-translucent) .mod-sidedock.mo
 body.vault-switcher-always:not(.is-mobile):not(.is-translucent).theme-dark .mod-sidedock.mod-left-split .workspace-sidedock-vault-profile {
   background-color: #2d2a28 !important;
 }
-/* 不透明底色: 透明(毛玻璃)模式 = 近不透明磨砂, 自带 blur 挡住滚动上来的内容 */
+/* 不透明底色: 透明(毛玻璃)模式 = 近不透明实底（不用 blur）
+   ⚠️ 透明模式下不用 backdrop-filter：macOS 窗口 vibrancy 与 backdrop-filter 已知冲突
+   （electron#39529，NOT_PLANNED），且本主题在透明模式一以贯之「不 blur 防重影」。
+   原来这里是 88% 透明 + blur(24px) 的兜底，现改成接近不透明的实底挡住滚动内容。 */
 body.vault-switcher-always:not(.is-mobile).is-translucent .mod-sidedock.mod-left-split .workspace-sidedock-vault-profile {
-  background-color: color-mix(in srgb, var(--background-secondary) 88%, transparent) !important;
-  backdrop-filter: blur(24px) saturate(160%) !important;
-  -webkit-backdrop-filter: blur(24px) saturate(160%) !important;
+  background-color: color-mix(in srgb, var(--background-primary) 94%, transparent) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* ---------- 17. Cupertino 4.1.0 适配层 ----------
+
+   本节集中放「换基座到 4.x 后 OnePage 主动接管」的观感。
+   每一条都有落地依据与对照截图，见 docs/UPGRADE-CUPERTINO-4.md（§3.4 / §3.5）。
+   把这些集中在一处的原因：下次升级基座时可以整段复核、整段回退。 */
+
+/* 玻璃底色：基座用中性灰 hsl(0 0% 95% / .5)（暗色 hsl(0 0% 20% / .5)），
+   浮在 OnePage 的暖白 #faf7f1 / 暖棕 #262322 上会发灰发脏 → 换成与纸面同色相的暖玻璃。
+   --raised-background 是 linear-gradient(… var(--blur-background) …)，会自动跟随，不用重写渐变。
+   影响面：菜单 / 弹窗 / 命令面板 / 通知 / tooltip / 活动 tab / callout（4.1.0 用 --raised-background 做底色）。 */
+body:is(.mod-macos,.adaptive-mode-off):not(.is-mobile) {
+  --blur-background: hsl(from var(--background-primary) h s l / 50%);
+}
+
+/* 无 backdrop-filter 能力时的兜底：
+   基座把 --raised-background 设成 ~50% 透明的渐变，若渲染层不支持 backdrop-filter，
+   悬浮层就会变成「半透明但没模糊」→ 透字（与 3.2.12 时代「透明模式菜单看穿背景」同源，
+   根因都在 --blur-* 这套变量上）。这里直接退回实色：宁可少一层玻璃，也不要透字。 */
+@supports not (backdrop-filter: blur(1px)) {
+  body:is(.mod-macos,.adaptive-mode-off) {
+    --raised-background: var(--background-primary);
+  }
+}
+
+/* ---------- 18. Callout：无描边 + 暖色墨色配色 + 垂直节奏 ----------
+
+   三条决策（用户 2026-10-10 走查结果）：
+     ① 不要那圈框；
+     ② 基座的系统色（浅色 #6aadfa / #38dbd6 / #bb9ef5 …）与暖白/暖棕纸面不搭 → OnePage 自定一套「墨色」；
+     ③ 相邻 callout 在实时预览里完全贴在一起（core 把 margin 归零）→ 统一垂直节奏。
+
+   设计思路：暖色纸面 + 低彩度「墨」而非高彩度「贴纸」；保留语义色相家族，
+   但把饱和度压下来、明度往暖偏，让 13% 淡染后仍然可辨且不发脏。 */
+
+/* ① 无描边：⚠️ 4.1.0 在 macOS 下 callout 已经是 border:none（实测 border-width: 0px），
+   那圈框来自 box-shadow 里的两层 `0 0 0 0.5pt`：
+     color(accent / var(--callout-border-opacity))   ← 基座自带
+     rgba(0,0,0,.075)（来自 --shadow-edges 首层，视觉上最明显）
+   所以 border:none / --callout-border-width:0 都没用，必须重写 box-shadow。
+   这里保留基座的内高光(inset)与柔和投影（就是那层“玻璃质感”），只去掉环与左右细线。
+   排除 note-toolbar（插件元素）与 banner-icon（基座明确规定：无边框无背景），避免误伤。 */
+.callout:not([data-callout=note-toolbar], [data-callout=banner-icon]) {
+  --callout-border-width: 0px;
+  --callout-border-opacity: 0;
+  border: none !important;
+  box-shadow:
+    inset 0 1.5pt 1.5pt -1.5pt hsl(0 0% 100% / 0.5),
+    inset 0 -1.5pt 1.5pt -1.5pt hsl(0 0% 100% / 0.5),
+    0 2px 8px hsl(0 0% 0% / 0.035) !important;
+}
+body.theme-dark .callout:not([data-callout=note-toolbar], [data-callout=banner-icon]) {
+  box-shadow:
+    inset 0 1.5pt 1.5pt -1.5pt hsl(0 0% 100% / 0.25),
+    inset 0 -1.5pt 1.5pt -1.5pt hsl(0 0% 100% / 0.25),
+    0 2px 8px hsl(0 0% 0% / 0.2) !important;
+}
+
+/* ② 暖色墨色 palette。
+   只改核心的 14 个 --callout-* 语义变量，图标 / 标题 / 淡染底 / 内嵌表格都会自动跟随。
+   浅色（暖白纸 #faf7f1）用“墨”：低彩度、偏暗，当标题色时对比也够。
+   暗色（暖棕 #262322）用“粉”：把同一色相提亮降彩度，避免在暗底上振动。
+   两端保持同一色相关系：石板蓝(陈述) / 青灰绿(摘要) / 赭金(技巧) / 苔绿(成功) /
+   藤紫(疑问) / 琥珀(警告) / 砖红(失败·危险·缺陷) / 暖灰褐(引用)。 */
+body {
+  --callout-default:   #3d6b85;   /* note（无类型的默认） */
+  --callout-info:      #3d6b85;
+  --callout-todo:      #4a6d8c;
+  --callout-summary:   #4e7a72;   /* abstract / summary / tldr */
+  --callout-tip:       #8a6a2c;   /* tip / hint */
+  --callout-important: #a97323;
+  --callout-success:   #4e7a4e;   /* success / check / done */
+  --callout-question:  #6a5a85;   /* question / help / faq */
+  --callout-warning:   #a97323;   /* warning / caution / attention */
+  --callout-fail:      #a5523f;   /* failure / fail / missing */
+  --callout-error:     #9c4436;   /* danger / error */
+  --callout-bug:       #8b4a3c;
+  --callout-example:   #57786f;
+  --callout-quote:     #7d7368;   /* quote / cite */
+}
+body.theme-dark {
+  --callout-default:   #7fa7c4;
+  --callout-info:      #7fa7c4;
+  --callout-todo:      #84a8c6;
+  --callout-summary:   #87b3a8;
+  --callout-tip:       #c9a86a;
+  --callout-important: #d3a765;
+  --callout-success:   #84b489;
+  --callout-question:  #ab97c8;
+  --callout-warning:   #d3a765;
+  --callout-fail:      #cb8272;
+  --callout-error:     #c76f5e;
+  --callout-bug:       #b8827a;
+  --callout-example:   #8fb0a4;
+  --callout-quote:     #a89b8d;
+}
+
+/* ③ 底色：不再叠 --raised-background（那层 ~50% 透明渐变会把淡染冲成灰白，
+   实测 15% 在玻璃下几乎看不出类型区别）→ 直接用「纸面 + 13% 墨」的实色淡染，
+   内高光仍由上面的 inset box-shadow 提供，所以不会变平。 */
+.callout:not([data-callout=note-toolbar], [data-callout=banner-icon]) {
+  background: color-mix(in srgb, var(--background-primary) 87%, var(--callout-color)) !important;
+}
+
+/* ④ 垂直节奏：主正文里**不给 callout 加额外 margin**。
+   相邻 callout 在源码里必须空一行才能分开，那一行本身就是间距：
+   实时预览里它是一个空 `.cm-line`（≈ 一个行高），阅读视图里靠 core 的 `.callout { margin: 1em 0 }`。
+   两者叠加已经够用；再给 `margin-block` 就会变成「空行 + 额外间距」→ 距离明显变大。
+   ⚠️ 踩坑记录：曾用无头 Chrome 合成 DOM 量过“实时预览间距 0px”并据此加了 1.5em，
+   那是合成 DOM 里没放空行 `.cm-line` 造成的假象，真实环境（用户走查）里间距偏大，已回退。 */
+
+/* ④.2 但**嵌入态例外**（`![[笔记#小节]]` / hover 预览）：
+   实时预览里的嵌入内容是一个**嵌套的只读 MarkdownView**（.markdown-embed-content 里再套一层编辑器），
+   于是 core 的 `.markdown-source-view.mod-cm6 .callout { margin: 0 }` 也作用到它，
+   而嵌入里不渲染源码空行 → 相邻 callout **完全没有间距**（用户走查发现）。
+   这里把 1em 还给嵌入内的顶层 callout：与阅读视图里 core 的默认值一致，
+   所以在**阅读视图的嵌入**里等于没改（既不会多也不会少），只有 LP 嵌入会被抬回来。
+   （不用 `.callout + .callout` 相邻选择器：LP 里两个 callout 各自在 `.cm-line > .cm-embed-block` 里，不是兄弟节点，匹配不到。） */
+.markdown-embed .callout:not(.callout .callout) {
+  margin-block: 1em;
 }

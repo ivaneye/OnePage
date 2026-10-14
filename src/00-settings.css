@@ -216,7 +216,7 @@ settings:
         description.en: Disable ligatures and font variants (ss01 / liga, etc.).
         type: class-toggle
     -
-        id: full-width-media-off
+        id: media-width-fit
         title: 关闭全宽元素
         title.en: Disable Full-Width Elements
         type: class-toggle
@@ -224,6 +224,23 @@ settings:
         id: mode-switcher-off
         title: 关闭快速模式切换
         title.en: Disable Quick Mode Switcher
+        type: class-toggle
+    -
+        id: properties-collapsed
+        title: 属性面板默认收起
+        title.en: Collapse Properties by Default
+        description: |
+            正文（实时预览 / 阅读视图）里的属性面板默认收起；**点击属性卡片即展开，点到别处自动收起**（不悬停展开，也不靠 Obsidian 自己的折叠状态）。
+
+            Obsidian 没有这个设置项，而且实时预览下它不会记住收起状态（每次打开都展开），所以用 CSS 补上。
+            若想彻底不显示，改用「设置 → 编辑器 → 属性 → 隐藏」，用右侧栏的「属性」视图查看。
+        description.en: |
+            Collapse the Properties block in the document by default. **Click the card to expand; it collapses when you
+            click away** (no hover-triggered expand, independent of Obsidian's own collapse state).
+
+            Obsidian has no such setting, and in Live Preview the collapsed state is not remembered
+            (it re-expands on every file), so the theme provides it via CSS.
+            To hide properties entirely, use Settings → Editor → Properties → Hidden instead.
         type: class-toggle
 
     -
@@ -251,13 +268,6 @@ settings:
         id: reduce-motion
         title: 减少动效
         title.en: Reduce Motion
-        type: class-toggle
-    -
-        id: dynamic-type-off
-        title: 标准字号
-        title.en: Standard Font Size
-        description: 关闭基于操作系统的动态字号
-        description.en: Disable operating system-based dynamic font sizes.
         type: class-toggle
     -
         id: font-ui-modifier

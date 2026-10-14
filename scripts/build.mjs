@@ -36,23 +36,14 @@ export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "
  * search 必须是全局正则；expected 是期望命中次数（不符即报错）。
  */
 export const PATCHES = [
-  {
-    name: "obsidian-1.14: 功能区类名硬改名 .mod-left → .mod-primary",
-    // 1.13 及以前: .workspace-ribbon.mod-left
-    // 1.14+:       .workspace-ribbon.mod-primary（只输出新类，旧类消失）
-    // :is() 取参数中最高特异性，三个参数同为 (0,2,0)，改写后特异性不变，1.13/1.14 双兼容。
-    search: /\.workspace-ribbon\.mod-left/g,
-    replace: ":is(.workspace-ribbon.mod-left,.workspace-ribbon.mod-primary)",
-    expected: 37,
-  },
-  {
-    name: "obsidian-1.14: 高亮色环 .highlight-swatch 不能吃「全宽元素」规则",
-    // 基座把 .cm-content 下的裸 img 拉成整行宽（色环 img 没有 width 属性），
-    // 会把 0.9em 的圆点拉成整行宽。把它加进排除列表。
-    search: /img:not\(\[width\],\.cm-widgetBuffer,\.link-favicon,\.emoji,\[alt=banner\]\)/g,
-    replace: "img:not([width],.cm-widgetBuffer,.link-favicon,.emoji,[alt=banner],.highlight-swatch)",
-    expected: 4,
-  },
+  // 2.0.0（基座 Cupertino 4.1.0）起，下列两条历史补丁上游已自行解决，遂删除：
+  //   1. obsidian-1.14 功能区类名硬改名：4.1.0 改用裸 `.workspace-ribbon`（不再输出 .mod-left/.mod-primary），
+  //      基座侧不再需要批量改写；定制层仍保留 :is(.mod-left,.mod-primary) 写法，对 1.13 也无害。
+  //   2. 高亮色环 .highlight-swatch：4.1.0 的全宽 img 排除列表里已自带 .highlight-swatch（4 处），
+  //      定制层的 !important 兜底保留（见 src/90-onepage.css「1.14 兼容层」）。
+  //
+  // 新增补丁的写法：search 必须是全局正则、replace 是替换串、expected 是期望命中次数
+  //（命中数不符即构建失败 —— 这是故意设计：宁可报错，不要静默失配）。
 ];
 
 /** 从上游 theme.css 里取出 @charset（若有），并从正文中移除 */
