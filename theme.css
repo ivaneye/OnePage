@@ -231,16 +231,20 @@ settings:
         title: 属性面板默认收起
         title.en: Collapse Properties by Default
         description: |
-            正文（实时预览 / 阅读视图）里的属性面板默认收起；**点击属性卡片即展开，点到别处自动收起**（不悬停展开，也不靠 Obsidian 自己的折叠状态）。
+            正文（实时预览 / 阅读视图）里的属性面板默认收起；**点击属性卡片即展开，点到别处自动收起**。
 
-            Obsidian 没有这个设置项，而且实时预览下它不会记住收起状态（每次打开都展开），所以用 CSS 补上。
+            这是纯 CSS 能做到的最接近的交互（CSS 没有可持久的「点击状态」：只能靠焦点，所以点别处会收起）。
+            若你想要「再点一次面板才收起、点别处不收起」，请装 **Fold Properties By Default** 插件
+            （它走 Obsidian 原生折叠），并**关闭本开关** —— 两者互斥，同时开会互相抵消。
             若想彻底不显示，改用「设置 → 编辑器 → 属性 → 隐藏」，用右侧栏的「属性」视图查看。
         description.en: |
             Collapse the Properties block in the document by default. **Click the card to expand; it collapses when you
-            click away** (no hover-triggered expand, independent of Obsidian's own collapse state).
+            click away.**
 
-            Obsidian has no such setting, and in Live Preview the collapsed state is not remembered
-            (it re-expands on every file), so the theme provides it via CSS.
+            This is as close as pure CSS can get (CSS has no persistent click state — only focus, which ends on click-away).
+            If you want “click the panel again to collapse, clicking elsewhere keeps it open”, install the
+            **Fold Properties By Default** plugin (it uses Obsidian's native folding) and **turn this toggle off** —
+            the two are mutually exclusive and cancel each other out.
             To hide properties entirely, use Settings → Editor → Properties → Hidden instead.
         type: class-toggle
 
