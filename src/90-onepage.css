@@ -969,6 +969,17 @@ body.theme-dark {
   --pill-weight: inherit;
 }
 
+/* 属性面板里的多选药丸（aliases / cssclasses / tags …）：把内边距还回来。
+   踩坑：core 有一条 `.metadata-property-value .multi-select-pill { --pill-padding-x: 0; --pill-padding-y: 0 }`
+   （Obsidian 的设计是让属性面板里的 pill 贴住文字、看起来像纯文本），它比上面那条 `.multi-select-pill`
+   特异性高 → 我们给 pill 加的青色底 + 圆角生效了，内边距却被归零 → 文字直接贴着青色底边缘
+   （用户报告「底框和内容之间没有空隙」，aliases / cssclasses 最明显，因为值比 tag 长）。
+   这里用同特异性 + 后写覆盖，恢复与正文 tag 同一套视觉比例。 */
+.metadata-property-value .multi-select-pill {
+  --pill-padding-x: 0.55em;
+  --pill-padding-y: 0.2em;
+}
+
 /* Bases 表格单元格里的标签: 作用域内直接兜底(不依赖 --pill-* 变量解析链), 保证青色 */
 .bases-td .multi-select-pill,
 .bases-table-cell .multi-select-pill,

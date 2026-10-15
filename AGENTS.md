@@ -285,3 +285,18 @@ OnePage 用 Style Settings 开关 `properties-collapsed`（`src/90-onepage.css` 
 `.metadata-content` 的 computed display）。实测结论：
 点击前 59px（只有标题栏）→ 点击后 137px（展开，`activeElement` = `.metadata-container`）→ 点正文失焦后回到 59px；
 带 `is-collapsed` 残留的容器同样能正常展开。
+
+### 属性面板里的多选药丸（aliases / cssclasses / tags）⚠️
+
+core 有一条 **`.metadata-property-value .multi-select-pill { --pill-padding-x: 0; --pill-padding-y: 0 }`**
+（Obsidian 的设计：属性面板里的 pill 贴住文字、看起来像纯文本）。它比定制层那条全局 `.multi-select-pill`
+（`src/90-onepage.css`「标签 = 青色」章节）**特异性高**，而 OnePage 给这些 pill 加了青色底 + 圆角 →
+**底色生效、内边距被归零** → 文字和 × 按钮直接贴着青色底边缘（用户反馈「底框和内容之间没有空隙」，
+aliases / cssclasses 这种较长的值最明显）。
+
+修法：在同章节里追加一条同特异性、后写的覆盖，把内边距还给属性面板内的 pill
+（`.metadata-property-value .multi-select-pill { --pill-padding-x: 0.55em; --pill-padding-y: 0.2em }`）。
+**Bases 表格/卡片里的 pill 不受影响**（core 那条归零规则不含 Bases 作用域），改这里不要去动 Bases 的规则。
+
+验证手法：无头 Chrome 量「药丸盒子 vs 文字盒子的四个间隙」（`/tmp/probe-pill.mjs`），
+修复前 文字左/下/×右 间隙全是 `0`，修复后为 `6.3 / 2.3 / 6px`，行高仍是 28px（不撑高行）。
