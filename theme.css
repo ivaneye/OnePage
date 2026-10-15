@@ -228,24 +228,10 @@ settings:
         type: class-toggle
     -
         id: properties-collapsed
-        title: 属性面板默认收起
-        title.en: Collapse Properties by Default
-        description: |
-            正文（实时预览 / 阅读视图）里的属性面板默认收起；**点击属性卡片即展开，点到别处自动收起**。
-
-            这是纯 CSS 能做到的最接近的交互（CSS 没有可持久的「点击状态」：只能靠焦点，所以点别处会收起）。
-            若你想要「再点一次面板才收起、点别处不收起」，请装 **Fold Properties By Default** 插件
-            （它走 Obsidian 原生折叠），并**关闭本开关** —— 两者互斥，同时开会互相抵消。
-            若想彻底不显示，改用「设置 → 编辑器 → 属性 → 隐藏」，用右侧栏的「属性」视图查看。
-        description.en: |
-            Collapse the Properties block in the document by default. **Click the card to expand; it collapses when you
-            click away.**
-
-            This is as close as pure CSS can get (CSS has no persistent click state — only focus, which ends on click-away).
-            If you want “click the panel again to collapse, clicking elsewhere keeps it open”, install the
-            **Fold Properties By Default** plugin (it uses Obsidian's native folding) and **turn this toggle off** —
-            the two are mutually exclusive and cancel each other out.
-            To hide properties entirely, use Settings → Editor → Properties → Hidden instead.
+        title: 属性面板默认收起（点击卡片展开）
+        title.en: Collapse Properties by Default (click to expand)
+        description: 交互：默认收起（只留「属性」标题栏）；点击属性卡片展开并保持；再次点击卡片不会收起——收起请点卡片以外的任意位置（点进属性行编辑不算）；状态不记忆，换笔记/重启回到收起；侧栏「属性」视图不受影响。这是纯 CSS 的极限：想「再点一次卡片才收起、点别处不收起」请装 Fold Properties By Default 插件并关闭本开关（互斥）；想彻底隐藏用 设置→编辑器→属性→隐藏。提示：本开关会生成同名命令，可绑快捷键随时切换。
+        description.en: Behavior: collapsed by default (only the Properties heading shows); click the card to expand and it stays; clicking the card again does NOT collapse it — to collapse, click anywhere outside the card (editing a property row does not count). State is not remembered: it resets on note switch/restart. The sidebar Properties view is unaffected. This is the CSS limit: for "click the card again to collapse, clicking elsewhere keeps it open" install the Fold Properties By Default plugin and turn this toggle off (mutually exclusive); to hide entirely use Settings → Editor → Properties → Hidden. Tip: this toggle also registers a command you can bind to a hotkey.
         type: class-toggle
 
     -

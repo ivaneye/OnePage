@@ -258,7 +258,15 @@ Obsidian **没有**「属性面板默认收起」这个设置项（`app.js` 里�
 会 `setCollapse(它)`；**实时预览的 frontmatter 每次新建视图都是展开的** → 用户感受就是「每次都要手动点收起」。
 
 OnePage 用 Style Settings 开关 `properties-collapsed`（`src/90-onepage.css` §12.1）在 CSS 层补上。
-**当前实现 = 焦点机制**（`src` 里有完整注释）：
+**当前实现 = 焦点机制**（`src` 里有完整注释）。
+
+**对外说明（写在 @settings 的 description 里，注意 class-toggle 的描述只支持纯文本单行 ——
+Style Settings 的 class-toggle 渲染走 `setDesc`，不解析 markdown，`\n` 也不会换行）**：
+
+- 默认收起（只留「属性」标题栏）；点击属性卡片展开并保持；
+- **再次点击卡片不会收起** —— 收起要点卡片以外的任意位置（点进属性行编辑不算）；
+- 状态不记忆（换笔记/重启回到收起）；侧栏「属性」视图不受影响；
+- Style Settings 会为 class-toggle 自动注册命令（`Toggle <title>`）→ 可绑快捷键随时切换。
 
 - 默认隐藏 `.metadata-content`；点击属性卡片 → `.metadata-container`（Obsidian 给了 `tabindex="-1"`）获得焦点
   → `:focus-within` 成立 → 展开；点到别处失焦 → 自动收起；
