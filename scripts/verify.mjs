@@ -93,6 +93,37 @@ if (!cssNoComment.includes(".:is(")) ok.push("无 .:is( 残渣");
     if (dupes.length) errors.push(`@settings 里 id 重复：${[...new Set(dupes)].join(", ")}`);
     else ok.push(`@settings id 唯一（共 ${ids.length} 项）`);
     if (noType.length) errors.push(`@settings 缺少 type 字段：${noType.join(", ")}`);
+
+    // 4.1) YAML 值安全：Style Settings 用 js-yaml 解析 @settings，普通标量里出现「冒号+空格」
+    // 会被当成嵌套 mapping → YAMLException: bad indentation of a mapping entry（真实踩坑：232:33）。
+    // 这里扫一遍：未加引号 / 非块标量的值里若含 ASCII「: 」直接报错。
+    {
+      const lines = block.split("\n");
+      let blockBase = null; // 处于块标量（| 或 >）中时的基准缩进
+      const bad = [];
+      lines.forEach((line, idx) => {
+        const indent = line.match(/^ */)[0].length;
+        if (blockBase !== null) {
+          if (line.trim() === "" || indent > blockBase) return; // 块标量内容
+          blockBase = null; // 块结束
+        }
+        const m = line.match(/^(\s*)([A-Za-z][A-Za-z0-9_.]*):(.*)$/);
+        if (!m) return;
+        const [, , key, rest] = m;
+        const value = rest.trim();
+        if (value === "") return;
+        if (/^[|>`"']/.test(value)) {
+          if (/^[|>]/.test(value)) blockBase = indent + 1; // 进入块标量
+          return; // 引号 / 块标量 / 折叠标量都安全
+        }
+        if (/:\s/.test(value)) bad.push(`第 ${idx + 1} 行（${key}）：${value.slice(0, 70)}…`);
+      });
+      if (bad.length)
+        errors.push(
+          `@settings 有 YAML 不安全的值（未加引号的值里含「冒号+空格」，Style Settings 会报 YAMLException）：\n      ${bad.join("\n      ")}\n      → 用 | 块标量书写，或给值加引号`,
+        );
+      else ok.push("@settings 值无 YAML 不安全写法（未加引号的值里无「冒号+空格」）");
+    }
   }
 }
 
