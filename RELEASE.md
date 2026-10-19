@@ -2,6 +2,41 @@
 
 > Full changelog. The README only links here — releases are append-only.
 
+### 2.0.1
+
+**Performance fix: CSS selectors no longer trigger whole-document style recalculation.** No functional or visual change (verified pixel by pixel), but the style recalc that happens on every scroll tick, tab switch, file click and sidebar toggle drops from ~10 ms to well under 1 ms — users who reported the UI feeling sluggish will notice the difference.
+
+#### What changed
+
+- Removed several base-theme selectors that forced a full-document recalc on any DOM mutation:
+  - `… .mod-root:has(+ … :hover)`: it cost this even with the "hover sidebar" option turned off
+  - `… .mod-sidedock:has(> .workspace-tabs.mod-active)`
+  - the `… :hover + / ~ .mod-root …` rule setting `-webkit-app-region` in the hover modes (it only affects window-drag hit areas, never paint)
+  - the mobile keyboard check `:not(html:where([style*="--keyboard-height…"]) body)`, which made *every* inline-style write recalculate the whole document → moved behind `@media (pointer: coarse)`
+- OnePage's "dim other panes while editing" no longer uses `body:has(…)` (now unconditional at 8% / 20% opacity); the ribbon rule uses Obsidian's own `.workspace.is-left-sidedock-open` class instead
+- Layout transitions are turned off while dragging a split or sidebar edge: width now follows the cursor immediately instead of catching up ~263 ms later (Obsidian already adds `.is-grabbing` to `body` while dragging, and `.no-transition` on the app container for sidebar resizing)
+
+#### Measured (synthetic 6k-node workspace, style recalc per interaction)
+
+| Scenario | 2.0.0 | 2.0.1 |
+| --- | --- | --- |
+| Scrolling (5-line viewport churn) | 17.3 ms | 1.8 ms |
+| Switching tabs | 17.0 ms | 0.04 ms |
+| Clicking a file in the explorer | 1.2 ms | 0.03 ms |
+| Collapsing / expanding a sidebar | 17.2 ms | 0.27 ms |
+| Dragging a split (inline width write) | 16.9 ms | 0.13 ms |
+
+#### Appearance
+
+Injecting the old and new `theme.css` into the same DOM and comparing `getComputedStyle` (including pseudo-elements), element geometry and a full-page screenshot pixel by pixel: **9 scenarios (light / dark / translucent / collapsed sidebar / hover ribbon / demo mode / phone keyboard closed & open) show 0 differing pixels.** Two deliberate differences remain:
+
+- With a **non-note view** active (canvas, graph, PDF…), sidebars are also dimmed by 8% (previously only while a note was active)
+- In "hover sidebar" / "hover ribbon" mode (off by default), dragging the tab bar no longer disables window dragging
+
+Known, not addressed: scrolling through notes that contain **blockquotes** costs about 1.5 ms extra per frame (the base theme draws the rounded caps of quote blocks with sibling/`has()` selectors; removing them would flatten the corners).
+
+Minimum Obsidian version is unchanged (1.14.0).
+
 ### 2.0.0
 
 **Base theme upgraded: Cupertino 3.2.12 → 4.1.0** (a full "Liquid Glass" rewrite — roughly 44% of the base's selectors were replaced). This is the biggest visual change since 1.0.0, so please read the notes below.

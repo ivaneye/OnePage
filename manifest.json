@@ -1,6 +1,6 @@
 {
   "name": "OnePage",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "minAppVersion": "1.14.0",
   "description": "macOS 原生 × 极客感。暖白纸张（浅色）与暖棕·冷锚（暗色）双配色，开箱即用。基于 Cupertino 4.1.0，继承其全套 Style Settings 自定义（强调色/布局/编辑器/无障碍）。",
   "author": "PageClear",

@@ -7525,6 +7525,21 @@ body:not(.font-variant-off) .cm-s-obsidian {
   font-variant-ligatures: contextual;
 }
 
+/* 拖动分隔条 / 侧栏边缘期间关掉布局补间
+   原因: 基座给 `body:not(.is-mobile) .workspace-split { transition: var(--anim-duration-moderate) }`
+   —— 那是 `transition: all 0.32s`。而 Obsidian 拖分隔条时是**每帧写 split 的 inline width**
+   （app.js `setElSize`），于是每次写都起一个 320ms 补间：实测宽度要 263ms / 18 帧才跟上光标，
+   拖起来明显发飘。Obsidian 自己已经给了信号：拖动时 body 加 `.is-grabbing`
+   （`aM()` → `body.addClass("is-grabbing")`），侧栏边缘另外调 `disableCssTransition()` → `.app-container.no-transition`。
+   这里按这两个信号临时关闭补间；松手后类名移除，折叠/展开动画照旧。
+   ⚠️ 只关布局期补间，不改任何静态样式（transition 不参与绘制）。 */
+body.is-grabbing .workspace-split,
+body.is-grabbing .app-container,
+.app-container.no-transition,
+.app-container.no-transition .workspace-split {
+  transition: none !important;
+}
+
 /* ---------- 2. 编辑器极客细节 ---------- */
 
 /* 当前行: 极轻的强调条, VSCode 感, 不打扰阅读
