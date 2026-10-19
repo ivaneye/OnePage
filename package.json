@@ -8,6 +8,7 @@
     "verify": "node scripts/verify.mjs",
     "split": "node scripts/split.mjs",
     "check:obsidian": "node scripts/check-obsidian-compat.mjs",
+    "perf": "node scripts/perf-probe.mjs",
     "install:theme": "node scripts/install-theme.mjs"
   }
 }

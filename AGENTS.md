@@ -240,6 +240,64 @@ Cupertino 基座里有一段第三方插件兼容层（上游 `src/app/community
 
 ---
 
+## 性能：不要让选择器触发「全文档样式重算」（⚠️ 2.0.0 踩过，用户反馈"慢"）
+
+CSS 里有几类写法**不报错、不改外观、也不影响任何断言**，但会让浏览器在**每次 DOM 变更**时重算整个文档。
+2.0.0 就因为下面三类混在一起，把常见操作放大 40~250 倍（用户反馈"响应有点慢"，快机器上只表现为轻微掉帧）：
+
+| 场景（6000 节点合成 DOM，µs/次） | 原生 Obsidian | 2.0.0 | 修复后 |
+| --- | --- | --- | --- |
+| 滚动（CM6 视口换 5 行，**笔记含引用块**） | 233 | **17 315** | 1 753 |
+| 滚动（不含引用块） | 228 | 17 315 | **222** |
+| 切标签页 | 60 | **17 028** | 37 |
+| 文件树点选 | 1.7 | **1 203** | 33 |
+| 折叠/展开侧栏 | 90 | **17 240** | 265 |
+| 写一次 inline style（拖分隔条/画布/浮层定位） | 15 | **16 943** | 132 |
+
+### 三类元凶（附 2.0.1 的处理）
+
+1. **挂在 `body` 上的 `:has()`**：任何元素改 class 都要从 body 重新求值一遍。
+   - 基座 `… .mod-root:has(+ .mod-sidedock…:hover)`（**即使 `.hover-sidedock` 关着也照付**）、
+     `… .mod-sidedock:has(> .workspace-tabs.mod-active)` → 已在 `scripts/build.mjs` 的 `PATCHES` 里删掉。
+   - 定制层「聚焦弱化」曾用 `body:has(.workspace-leaf.mod-active .markdown-source-view) …`（8 个选择器）
+     → 改成无条件弱化（见 `src/90-onepage.css` §9）。**想按状态分支时，优先找 Obsidian 已经维护好的类名**
+     （如 `.workspace.is-left-sidedock-open`），而不是写 `:has()`。
+2. **`:hover` 参与的兄弟选择器与 `:has(... :hover)`**：`… :hover + .mod-root …`、`… :hover ~ .mod-root …` 同理，
+   改 class 就要重新判定 hover 依赖，实测 7ms。基座 hover 模式那条 `-webkit-app-region: no-drag` 规则已整块删掉
+   （`-webkit-app-region` 只影响窗口拖拽区，不参与绘制，无视觉影响）。
+3. **在 `<html>` 上按 `style` 属性做子串匹配**：基座三条手机端键盘判定
+   `body.is-phone:not(html:where([style*="--keyboard-height: 0px"], … ) body) …`
+   等于告诉浏览器"任何元素的 style 变化都可能影响根节点" → 每次写 inline style 全文档重算（实测 11ms/次）。
+   已用 `@media (pointer: coarse)` 包起来（桌面端本来就不可能命中，手机端判定不变）。
+
+### 验收方式
+
+```bash
+node scripts/perf-probe.mjs /tmp/ob1144/app.css --tree 2000   # 或 npm run perf -- <app.css>
+```
+
+三行对照 `app`（原生）/ `theme`（当前构建），任一场景超过 `max(2ms, 原生×20)` 会 **exit 1**。
+换基座后必须跑一遍；改定制层里任何带 `:has(` / `:hover +` / `[style*=` 的规则也要跑。
+
+### 已知的"地板"（不必再折腾）
+
+- 基座规则体量本身就比原生多 ~1100 条规则，编辑器每帧样式重算 ≈ 0.2~1.3ms（原生 ~0.2ms）。
+- **笔记里有引用块时**，滚动每帧还要多 ~1.5ms：基座用
+  `.HyperMD-quote:first-child, .cm-line:not(.HyperMD-quote) + .HyperMD-quote` 和
+  `.cm-line.HyperMD-quote:has(+ .cm-line:not(.HyperMD-quote))` 给引用块首尾行做圆角，
+  这两个选择器依赖兄弟/后继节点，删行插行都要重新判定。要抹掉它就得放弃引用块首尾圆角，暂不处理。
+- 无头 Chrome 量到的绝对值和真机不同，看**相对倍数**，别看绝对值。
+
+### 改视觉时的回归检查（合成 DOM 对比）
+
+改动若声称"不影响外观"，用同一份 DOM 把旧/新 `theme.css` 先后注入，逐元素比
+`getComputedStyle`（含 `::before/::after`）+ `getBoundingClientRect` + 整页截图逐像素；
+同时用**同一份 CSS 连拍两张**做噪声对照（跨帧重绘会有假差异）。
+2.0.1 实测 9 个场景（浅/深/透明/侧栏折叠/悬停功能区/演示模式/手机键盘收放）像素差异 0，
+仅两处**有意**差异：非笔记视图（画布/图谱）激活时侧栏也会 8% 弱化；hover 模式下拖 tab 头不再禁用窗口拖拽。
+
+---
+
 ## 变更纪律
 
 - **只改 `src/`，改完必须重建并校验**：

@@ -388,25 +388,26 @@ body:is(.mod-macos,.adaptive-mode-off):not(.is-mobile).is-focused.is-translucent
 
 /* ---------- 9. 聚焦编辑时弱化其它 ---------- */
 
-/* 当激活的是笔记(编辑/阅读)时, 侧栏和其余 tab 弱化, 悬停/点击恢复 */
-body:has(.workspace-leaf.mod-active .markdown-source-view) .workspace-split.mod-sidedock,
-body:has(.workspace-leaf.mod-active .markdown-reading-view) .workspace-split.mod-sidedock {
+/* 侧栏和未激活 tab 弱化, 悬停/点击恢复。
+
+   ⚠️ 原来是 `body:has(.workspace-leaf.mod-active .markdown-source-view) ...`（「仅当激活的是笔记时」才弱化）。
+   这种挂在 body 上的 `:has()` 会让 Blink 在**任何元素改 class 时**都从 body 重新求值一遍 →
+   实测单次 class 变更 0.9~13ms（切 tab / 点文件 / 滚动换视口行都吃这个，见 AGENTS.md「性能」一节）。
+   改成无条件弱化：8% / 20% 的不透明度差在视觉上就是「弱化」，而现实中激活的几乎总是笔记，
+   唯一差别是非笔记视图（画布 / 图谱 / PDF）激活时侧栏也会弱化一点 —— 观感一致，无功能影响。 */
+.workspace-split.mod-sidedock {
   opacity: 0.92;
 }
-body:has(.workspace-leaf.mod-active .markdown-source-view) .workspace-split.mod-sidedock:hover,
-body:has(.workspace-leaf.mod-active .markdown-source-view) .workspace-split.mod-sidedock:focus-within,
-body:has(.workspace-leaf.mod-active .markdown-reading-view) .workspace-split.mod-sidedock:hover,
-body:has(.workspace-leaf.mod-active .markdown-reading-view) .workspace-split.mod-sidedock:focus-within {
+.workspace-split.mod-sidedock:hover,
+.workspace-split.mod-sidedock:focus-within {
   opacity: 1;
 }
 
 /* 主编辑区的其它 tab: 轻微弱化(可读), 悬停恢复 */
-body:has(.workspace-leaf.mod-active .markdown-source-view) .mod-root .workspace-tab-header:not(.is-active),
-body:has(.workspace-leaf.mod-active .markdown-reading-view) .mod-root .workspace-tab-header:not(.is-active) {
+.mod-root .workspace-tab-header:not(.is-active) {
   opacity: 0.8;
 }
-body:has(.workspace-leaf.mod-active .markdown-source-view) .mod-root .workspace-tab-header:not(.is-active):hover,
-body:has(.workspace-leaf.mod-active .markdown-reading-view) .mod-root .workspace-tab-header:not(.is-active):hover {
+.mod-root .workspace-tab-header:not(.is-active):hover {
   opacity: 1;
 }
 
@@ -1232,8 +1233,15 @@ body:not(.is-translucent):not(.is-mobile).show-ribbon:not(.hover-ribbon) .worksp
   padding-left: var(--ribbon-width, 44px) !important;
 }
 /* 功能区: 透明浮在卡片上, 图标在上层; 贴左边框(x=0), 图标经 padding-left 落在卡片上;
-   顶部保留默认 header-height 偏移(避开 macOS 窗口按钮), 底部 8px 与卡片对齐 */
-body:not(.is-translucent):not(.is-mobile).show-ribbon:not(.hover-ribbon):has(.workspace-split.mod-sidedock.mod-left-split:not(.is-sidedock-collapsed)) :is(.workspace-ribbon.mod-left,.workspace-ribbon.mod-primary):not(.is-collapsed) {
+   顶部保留默认 header-height 偏移(避开 macOS 窗口按钮), 底部 8px 与卡片对齐
+
+   ⚠️ 原来是 `body:…:has(.workspace-split…) :is(.workspace-ribbon…)`，即「body 下存在未折叠的左侧栏」。
+   挂在 body 上的 `:has()` 会让**任何 class 变更都触发全文档样式重算**（实测 1~13ms，见 AGENTS.md「性能」）。
+   也不用 `:has(+ 兄弟)`：折叠/展开侧栏时同样会重新求值（实测 13ms）。
+   改用 Obsidian 自己维护的类名：展开/折叠侧栏时它会往 `.workspace` 上挂/摘
+   `is-primary-sidedock-open` + `is-left-sidedock-open`（app.js 里 `AS(side, "is-{side}-sidedock-open")`，两个都输出）。
+   纯类名选择器，无语义损失、无失效代价。 */
+body:not(.is-translucent):not(.is-mobile).show-ribbon:not(.hover-ribbon) .workspace:is(.is-primary-sidedock-open,.is-left-sidedock-open) :is(.workspace-ribbon.mod-left,.workspace-ribbon.mod-primary):not(.is-collapsed) {
   position: relative;
   z-index: 12;
   margin: var(--header-height) 0 8px 0 !important;
