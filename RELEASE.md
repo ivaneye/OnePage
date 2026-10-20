@@ -2,6 +2,32 @@
 
 > Full changelog. The README only links here — releases are append-only.
 
+### 2.0.2
+
+**Fix: with “Translucent window” enabled, a full-height vertical divider appeared between the left ribbon and the file explorer.**
+
+#### Cause
+
+OnePage's “ribbon merged into the sidebar card” rules in `src/90-onepage.css` are scoped with `:not(.is-translucent)`, so with **Settings → Appearance → Translucent window** on, the card no longer extends left underneath the ribbon. The translucent-mode sidebar card also carries a `1px` hairline border (the “frosted glass” section), and that border lands exactly at the ribbon's right edge (`x = --ribbon-width`) — running from top to bottom, it reads as a divider.
+
+Measured in a real Obsidian 1.14.4: in opaque mode the card uses `margin-left: -36px / padding-left: 44px`, so its left edge sits at x=8 (left of the icons, visually the card's rounded edge); in translucent mode it uses `margin: 0 / padding-left: 0`, putting the left edge at x=44 with the hairline right on the ribbon boundary.
+
+#### Fix
+
+The card now slides under the ribbon in translucent mode as well. The translucent card has no 8px outer gutter (`margin: 0`, flush with the window edge), so the offset is the **full** `--ribbon-width` (opaque mode uses `-ribbon-width + 8px`); the card's left border — now sitting on the window's left edge — is made transparent, otherwise it leaves a 1px band slightly darker than its surroundings. The ribbon needs no extra rule: the base theme already gives it `position: relative; z-index: 11`, while the card's `z-index` is auto, so the icons stay on top.
+
+#### Verified
+
+- Translucent mode: vertical borders in the 0–130 px band go from `borderL @44` to **none** (light and dark), the file tree stays at x=45, and the content column now matches opaque mode (254 px)
+- Opaque mode is untouched (regression check: card at x=8, `margin-left: -36px`, `padding-left: 44px`, tree at x=53 — identical to 2.0.1)
+- Collapsed sidebar / ribbon disabled / hover-ribbon states unaffected
+
+#### Known, not fixed
+
+On iPad / tablets Obsidian moves the ribbon into the drawer and renames it to `.workspace-drawer-ribbon`; core keeps a `border-inline-end` on that class (`--background-modifier-border`) and neither the base theme nor OnePage resets it — tablets still show a grey vertical line there. Left for a future release.
+
+Minimum Obsidian version is unchanged (1.14.0).
+
 ### 2.0.1
 
 **Performance fix: CSS selectors no longer trigger whole-document style recalculation.** No functional or visual change (verified pixel by pixel), but the style recalc that happens on every scroll tick, tab switch, file click and sidebar toggle drops from ~10 ms to well under 1 ms — users who reported the UI feeling sluggish will notice the difference.
