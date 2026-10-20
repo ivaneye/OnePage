@@ -1195,6 +1195,7 @@ body:is(.mod-macos,.adaptive-mode-off):not(.is-mobile):not(.is-translucent):not(
 
 /* ---------- OnePage: 全平台保留边栏卡片 (半透明关闭时兜底) ----------
    判定开关: 半透明开启(is-translucent, 仅 macOS 原生支持) → 保持上方毛玻璃卡片样式, 本块不介入
+             （⚠️ 功能区合并规则已不再排除透明模式，见下方「窗口透明时同样让功能区落在卡片上」）
              半透明关闭(非 is-translucent, 含 Win/Linux)   → 各平台统一显示实色悬浮卡片
    浅色: 卡片 #f4f2ee, 整体背景 #e9e9e9 (用户指定)
    暗色: 卡片 #2d2a28, 整体背景 #1e1c1b (暂用同关系暗色对应, 待定)
@@ -1267,6 +1268,23 @@ body:not(.is-translucent):not(.is-mobile).show-ribbon:not(.hover-ribbon) .worksp
 /* 去掉功能区左上角顶栏色块补丁, 避免盖住卡片圆角 */
 body:not(.is-translucent):not(.is-mobile).show-ribbon:not(.hover-ribbon) :is(.workspace-ribbon.mod-left,.workspace-ribbon.mod-primary):not(.is-collapsed)::before {
   display: none !important;
+}
+
+/* ---------- OnePage: 窗口透明时同样让功能区落在卡片上 ----------
+   【修的是用户反馈的「侧边工具栏和目录栏之间有一条纵向分割线」】
+   上面这组「功能区融入卡片」的规则全都带 :not(.is-translucent)，于是「设置 → 外观 → 窗口透明」
+   开启后卡片不再向左延伸：卡片左缘停在 x = --ribbon-width（功能区右缘）处，而透明模式的卡片带一条
+   `border: 1px solid`（见上方 §7 毛玻璃），这条发丝描边就正好落在功能区与目录栏之间，
+   从顶贯通到底 —— 实测 1.14.4 + 透明模式：透明关闭时卡片 margin-left: -36 / padding-left: 44（左缘 x=8，
+   描边在图标左侧、视觉上是卡片圆角边）；透明开启时 margin: 0 / padding-left: 0 → 左缘 x=44，
+   描边正压在功能区右缘，就是那条线。
+   透明模式卡片没有 8px 外留白（margin: 0，贴着窗口左边），所以这里减掉整条 --ribbon-width；
+   功能区本来就由 Cupertino 给了 position: relative + z-index: 11，仍在卡片之上，图标不受影响。 */
+body.is-translucent:not(.is-mobile).show-ribbon:not(.hover-ribbon) .workspace-split.mod-sidedock.mod-left-split:not(.is-sidedock-collapsed) {
+  margin-left: calc(-1 * var(--ribbon-width, 44px)) !important;
+  padding-left: var(--ribbon-width, 44px) !important;
+  /* 卡片左边框此时落在窗口最左缘（x=0），只会剩一条比旁边深 1px 的竖带，去掉；其余三边描边不变 */
+  border-left-color: transparent !important;
 }
 
 /* ---------- Obsidian 1.14 兼容层 ----------

@@ -240,6 +240,36 @@ Cupertino 基座里有一段第三方插件兼容层（上游 `src/app/community
 
 ---
 
+## 窗口透明（`is-translucent`）不是「非透明换色版」（⚠️ 2.0.2 用户反馈过「竖线」）
+
+透明模式（macOS 设置 → 外观 → 窗口透明）下，边栏卡片的**几何完全不同**，别直接套用非透明模式的数值：
+
+| | 非透明（默认） | 透明（`is-translucent`） |
+| --- | --- | --- |
+| 卡片 `margin` | `8px`（四周留白，浮起的卡片） | `0`（贴窗口左边、贯通全高） |
+| 卡片 `padding-left` | `0`（靠合并规则给 44px） | `0` |
+| 卡片左边框落点 | 合并后 x=8（图标左侧，像卡片圆角边） | 合并前 x=44 = **功能区右缘** |
+
+- **症状**：用户报「侧边工具栏和目录栏之间有一条纵向分割线」。原因不是谁多画了线，而是透明模式下
+  「功能区融入卡片」那组规则被 `:not(.is-translucent)` 排除掉，卡片停在 x = `--ribbon-width` 处，
+  它自己那条 `border: 1px solid color-mix(text-muted 14%)`（§7 毛玻璃）正好压在功能区右缘、从头贯到底。
+- **修法**（已落在 `src/90-onepage.css`「窗口透明时同样让功能区落在卡片上」）：透明模式的卡片**没有 8px 外留白**，
+  所以合并公式是 `margin-left: calc(-1 * var(--ribbon-width))`（不是 `-ribbon + 8px`）+ `padding-left: var(--ribbon-width)`，
+  并把卡片左边框置透明（它此时落在窗口最左缘，只会剩一条比旁边深 1px 的竖带）。
+  修完透明 / 非透明的**内容列几何一致**（内容 x=45 vs 53，树宽都是 254）。
+- 功能区不用另加规则：Cupertino 已给它 `position: relative; z-index: 11`，卡片 z-index 为 auto，图标本来就在卡片之上。
+- **仍未修（已知遗留）**：移动端/平板 Obsidian 会把功能区搬进抽屉并改名 `.workspace-drawer-ribbon`
+  （`app.js`: `removeClass("workspace-ribbon"); addClass("workspace-drawer-ribbon")`），
+  core 给这个类留了 `border-inline-end: 1px solid var(--background-modifier-border)`，
+  而 Cupertino（只重置 `.workspace-ribbon`）与 OnePage（只重置 `:is(.mod-left,.mod-primary)`）都没覆盖
+  → iPad 上仍有一条冷灰竖线。要修就补一条 `body .workspace-drawer-ribbon { border-inline-end: none !important }`。
+- **测量方法**：这类间距/描边要在**真机**里量（独立 `--user-data-dir` 起第二个 Obsidian + CDP 枚举所有竖向 border）。
+  用合成 DOM 容易漏 DOM 结构；而且基座给 `.workspace-split` 挂了 `transition: all .32s`，
+  后台窗口里 transition 可能不推进，`getComputedStyle` 会一直返回旧值 → **量之前先注入
+  `*{transition:none!important}`**（否则会误判成「透明模式也合并了」）。
+
+---
+
 ## 性能：不要让选择器触发「全文档样式重算」（⚠️ 2.0.0 踩过，用户反馈"慢"）
 
 CSS 里有几类写法**不报错、不改外观、也不影响任何断言**，但会让浏览器在**每次 DOM 变更**时重算整个文档。
