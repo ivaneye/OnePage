@@ -1,8 +1,8 @@
 {
   "name": "OnePage",
-  "version": "2.0.2",
+  "version": "2.1.0",
   "minAppVersion": "1.14.0",
-  "description": "macOS 原生 × 极客感。暖白纸张（浅色）与暖棕·冷锚（暗色）双配色，开箱即用。基于 Cupertino 4.1.0，继承其全套 Style Settings 自定义（强调色/布局/编辑器/无障碍）。",
+  "description": "macOS 原生 × 极客感。暖白纸张（浅色）与暖棕·冷锚（暗色）双配色，开箱即用。基于 Cupertino 4.1.0，继承其全套 Style Settings 自定义（配色/标题/Callout/背景/布局/内容宽度/编辑器/无障碍）。",
   "author": "PageClear",
   "authorUrl": "https://github.com/ivaneye",
   "fundingUrl": ""

@@ -8,21 +8,29 @@ settings:
         description: |
             OnePage 基于 **Cupertino**，完整继承了其 Style Settings 自定义能力。
 
-            - **配色**：强调色（浅/暗）、彩色排版、彩色侧边栏
-            - **布局**：悬停功能区/侧栏、聚焦视图、Vault 选择常驻、状态栏悬浮等
-            - **演示**：演示模式（投屏）、演示字号
-            - **编辑器**：当前行高亮、横幅、块宽、字体特性等
-            - **无障碍**：自适应模式、对比度、动效、界面字号等
+            - **配色**：强调色、加粗提醒色、高亮浓度、彩色排版开关、彩色侧边栏；展开子组可逐项调标题色（6）、Callout 配色（14）、背景（5）、文字与控件灰阶（7）
+            - **排版**：内容宽度（含强制限宽）、正文行高
+            - **布局**：侧栏卡片留白/圆角；子组「侧栏行为」「标签页与状态栏」
+            - **演示**：演示模式（投屏）、演示字号、演示行宽
+            - **编辑器**：当前行高亮、属性面板、横幅、块宽、字体特性等
+            - **界面**：界面字号、图标尺寸、链接下划线
+            - **无障碍**：自适应模式、对比度、动效
+
+            配置较多，按上面的 7 个分组浏览即可；颜色类集中在「配色」下的 4 个折叠子组（标题色 / Callout 配色 / 背景色 / 文字与控件灰阶）。
 
             默认值即 OnePage 设计固化值，无需配置即可开箱即用；标签页默认靠左。
         description.en: |
             OnePage is built on **Cupertino** and inherits its full Style Settings customization.
 
-            - **Colors**: accent (light/dark), typographic colors, tinted sidebar
-            - **Layout**: hover ribbon/sidebar, focus view, always-visible vault switcher & status bar, etc.
-            - **Demo**: demo mode (presenting), demo font size
-            - **Editor**: active line, banner, block width, font variants, etc.
-            - **Accessibility**: adaptive mode, contrast, motion, UI font size, etc.
+            - **Colors**: accent, bold reminder color, highlight opacity, typographic color switch, tinted sidebar; expand sub-sections for headings (6), callouts (14), backgrounds (5) and text/surface shades (7)
+            - **Typography**: content width (with force readable width), body line height
+            - **Layout**: sidebar card gap/radius; sub-sections “Sidebar Behavior” and “Tabs & Status Bar”
+            - **Demo**: demo mode (presenting), demo font size, demo line width
+            - **Editor**: active line, properties, banner, block width, font variants, etc.
+            - **Interface**: UI font size, icon size, underlined links
+            - **Accessibility**: adaptive mode, contrast, motion
+
+            With this many options, browse the seven sections above; all color options live in the four collapsible sub-sections under Colors (headings, callouts, backgrounds, text & surfaces).
 
             Defaults match OnePage's fixed design — works out of the box without Style Settings; tabs default to left-aligned.
         type: info-text
@@ -39,8 +47,8 @@ settings:
         id: onepage-accent
         title: 强调色
         title.en: Accent Color
-        description: 浅色「暖白纸张」默认 #0e6e63（深青），暗色「暖棕·冷锚」默认 #6db3a3（浅青）。修改后强调色、链接、按钮、图形视图等同步变化
-        description.en: Light "Warm Paper" defaults to #0e6e63 (deep teal); dark "Warm Brown · Cool Anchor" defaults to #6db3a3 (light teal). Accent, links, buttons, and the graph view update together.
+        description: '浅色「暖白纸张」默认 #0e6e63（深青），暗色「暖棕·冷锚」默认 #6db3a3（浅青）。修改后强调色、链接、按钮、图形视图等同步变化'
+        description.en: 'Light "Warm Paper" defaults to #0e6e63 (deep teal); dark "Warm Brown · Cool Anchor" defaults to #6db3a3 (light teal). Accent, links, buttons, and the graph view update together.'
         type: variable-themed-color
         format: hsl-split
         alt-format:
@@ -53,6 +61,28 @@ settings:
         default-light: '#0e6e63'
         default-dark: '#6db3a3'
     -
+        id: onepage-bold-color
+        title: 加粗强调色（提醒色）
+        title.en: Bold Accent Color
+        description: '正文加粗文字的颜色（浅色默认 #c2410c 深陶红，暗色默认 #e89a60）。想要微信公众号点赞那种橙色，直接换成你取的色值'
+        description.en: 'Color of bold text (light defaults to #c2410c, dark to #e89a60). To match the orange used by WeChat likes, paste the hex you picked.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#c2410c'
+        default-dark: '#e89a60'
+    -
+        id: onepage-highlight-opacity
+        title: 高亮浓度
+        title.en: Highlight Opacity
+        description: '「==高亮==」的底色浓度（Obsidian 1.14 的 6 种高亮色共用这一档）'
+        description.en: Background opacity of ==highlight== (shared by all six highlight colors in Obsidian 1.14).
+        type: variable-number-slider
+        default: 30
+        min: 5
+        max: 60
+        step: 5
+        format: '%'
+    -
         id: onepage-typo-off
         title: 关闭彩色排版
         title.en: Disable Typographic Colors
@@ -60,17 +90,6 @@ settings:
         description.en: Headings / bold / italic fall back to the normal text color (defaults to OnePage's layered color scheme).
         type: class-toggle
         default: false
-    -
-        id: line-height-normal
-        title: 正文行高
-        title.en: Body Line Height
-        description: 默认 1.7
-        description.en: Default 1.7
-        type: variable-number-slider
-        default: 1.7
-        min: 1.3
-        max: 2.4
-        step: 0.05
     -
         id: colorful-frame
         title: 彩色侧边栏
@@ -87,12 +106,447 @@ settings:
         type: class-toggle
 
     -
+        id: onepage-heading-colors
+        title: 标题色（6）
+        title.en: Heading Colors (6)
+        description: '六档标题各自独立。只改看着不顺眼的那一档即可，默认是「暖白纸张 / 暖棕·冷锚」的原生色阶；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Six independent heading colors. Change only the ones you dislike; defaults are the Warm Paper / Warm Brown scales; the swatch in the picker is the default — click it to restore.'
+        type: heading
+        level: 2
+        collapsed: true
+    -
+        id: onepage-typo-h1
+        title: 一级标题
+        title.en: Heading 1
+        description: '默认 #1d345c（浅色） / #4f74af（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #1d345c (light) / #4f74af (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#1d345c'
+        default-dark: '#4f74af'
+    -
+        id: onepage-typo-h2
+        title: 二级标题
+        title.en: Heading 2
+        description: '默认 #52377a（浅色） / #8567bd（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #52377a (light) / #8567bd (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#52377a'
+        default-dark: '#8567bd'
+    -
+        id: onepage-typo-h3
+        title: 三级标题
+        title.en: Heading 3
+        description: '默认 #0e6e63（浅色） / #4e9a8a（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #0e6e63 (light) / #4e9a8a (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#0e6e63'
+        default-dark: '#4e9a8a'
+    -
+        id: onepage-typo-h4
+        title: 四级标题
+        title.en: Heading 4
+        description: '默认 #ce5567（浅色） / #c0765e（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #ce5567 (light) / #c0765e (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#ce5567'
+        default-dark: '#c0765e'
+    -
+        id: onepage-typo-h5
+        title: 五级标题
+        title.en: Heading 5
+        description: '默认 #9c6b1e（浅色） / #c99b5e（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #9c6b1e (light) / #c99b5e (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#9c6b1e'
+        default-dark: '#c99b5e'
+    -
+        id: onepage-typo-h6
+        title: 六级标题
+        title.en: Heading 6
+        description: '默认 #8a8378（浅色） / #8a8478（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #8a8378 (light) / #8a8478 (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#8a8378'
+        default-dark: '#8a8478'
+
+    -
+        id: onepage-callout-colors
+        title: Callout 配色（15）
+        title.en: Callout Colors (15)
+        description: '14 个语义色一一对应 [!note] [!info] [!todo] [!summary] [!tip] [!important] [!success] [!question] [!warning] [!fail] [!error] [!bug] [!example] [!quote]；改单个不影响其它；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: '14 semantic colors, one per callout type. Changing one never affects the others; the swatch in the picker is the default — click it to restore.'
+        type: heading
+        level: 2
+        collapsed: true
+    -
+        id: onepage-callout-tint
+        title: Callout 淡染强度
+        title.en: Callout Tint Strength
+        description: 'Callout 底色里主题色的占比；0 = 纯纸面（只保留内高光与投影），13 = OnePage 默认'
+        description.en: 'Share of the callout accent color in its background; 0 = plain paper (only inner highlight and shadow remain), 13 = OnePage default.'
+        type: variable-number-slider
+        default: 13
+        min: 0
+        max: 40
+        step: 1
+        format: '%'
+    -
+        id: onepage-callout-default
+        title: note（默认）
+        title.en: note (default)
+        description: '默认 #3d6b85（浅色） / #7fa7c4（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #3d6b85 (light) / #7fa7c4 (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#3d6b85'
+        default-dark: '#7fa7c4'
+    -
+        id: onepage-callout-info
+        title: info（信息）
+        title.en: info
+        description: '默认 #3d6b85（浅色） / #7fa7c4（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #3d6b85 (light) / #7fa7c4 (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#3d6b85'
+        default-dark: '#7fa7c4'
+    -
+        id: onepage-callout-todo
+        title: todo（待办）
+        title.en: todo
+        description: '默认 #4a6d8c（浅色） / #84a8c6（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #4a6d8c (light) / #84a8c6 (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#4a6d8c'
+        default-dark: '#84a8c6'
+    -
+        id: onepage-callout-summary
+        title: summary / abstract（摘要）
+        title.en: summary / abstract
+        description: '默认 #4e7a72（浅色） / #87b3a8（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #4e7a72 (light) / #87b3a8 (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#4e7a72'
+        default-dark: '#87b3a8'
+    -
+        id: onepage-callout-tip
+        title: tip / hint（提示）
+        title.en: tip / hint
+        description: '默认 #8a6a2c（浅色） / #c9a86a（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #8a6a2c (light) / #c9a86a (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#8a6a2c'
+        default-dark: '#c9a86a'
+    -
+        id: onepage-callout-important
+        title: important（重要）
+        title.en: important
+        description: '默认 #a97323（浅色） / #d3a765（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #a97323 (light) / #d3a765 (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#a97323'
+        default-dark: '#d3a765'
+    -
+        id: onepage-callout-success
+        title: success / check（成功）
+        title.en: success / check
+        description: '默认 #4e7a4e（浅色） / #84b489（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #4e7a4e (light) / #84b489 (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#4e7a4e'
+        default-dark: '#84b489'
+    -
+        id: onepage-callout-question
+        title: question / help（疑问）
+        title.en: question / help
+        description: '默认 #6a5a85（浅色） / #ab97c8（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #6a5a85 (light) / #ab97c8 (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#6a5a85'
+        default-dark: '#ab97c8'
+    -
+        id: onepage-callout-warning
+        title: warning / caution（警告）
+        title.en: warning / caution
+        description: '默认 #a97323（浅色） / #d3a765（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #a97323 (light) / #d3a765 (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#a97323'
+        default-dark: '#d3a765'
+    -
+        id: onepage-callout-fail
+        title: failure / fail（失败）
+        title.en: failure / fail
+        description: '默认 #a5523f（浅色） / #cb8272（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #a5523f (light) / #cb8272 (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#a5523f'
+        default-dark: '#cb8272'
+    -
+        id: onepage-callout-error
+        title: danger / error（危险）
+        title.en: danger / error
+        description: '默认 #9c4436（浅色） / #c76f5e（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #9c4436 (light) / #c76f5e (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#9c4436'
+        default-dark: '#c76f5e'
+    -
+        id: onepage-callout-bug
+        title: bug（缺陷）
+        title.en: bug
+        description: '默认 #8b4a3c（浅色） / #b8827a（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #8b4a3c (light) / #b8827a (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#8b4a3c'
+        default-dark: '#b8827a'
+    -
+        id: onepage-callout-example
+        title: example（示例）
+        title.en: example
+        description: '默认 #57786f（浅色） / #8fb0a4（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #57786f (light) / #8fb0a4 (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#57786f'
+        default-dark: '#8fb0a4'
+    -
+        id: onepage-callout-quote
+        title: quote / cite（引用）
+        title.en: quote / cite
+        description: '默认 #7d7368（浅色） / #a89b8d（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #7d7368 (light) / #a89b8d (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#7d7368'
+        default-dark: '#a89b8d'
+
+    -
+        id: onepage-background-colors
+        title: 背景色（5）
+        title.en: Background Colors (5)
+        description: '纸面的三层（内容底 / 侧栏·菜单底 / 输入框·悬停底）+ 侧栏卡片 + 窗口留白。建议成套改，只改一层容易不协调；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'The three paper layers (content, sidebar/menu, input/hover) plus sidebar cards and window margins. Change them as a set to keep the hierarchy coherent; the swatch in the picker is the default — click it to restore.'
+        type: heading
+        level: 2
+        collapsed: true
+    -
+        id: onepage-bg-primary
+        title: 主背景（内容底）
+        title.en: Main Background
+        description: '默认 #faf7f1（浅色） / #262322（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #faf7f1 (light) / #262322 (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#faf7f1'
+        default-dark: '#262322'
+    -
+        id: onepage-bg-secondary
+        title: 次级背景（侧栏/菜单）
+        title.en: Secondary Background
+        description: '默认 #f3efe7（浅色） / #312e2d（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #f3efe7 (light) / #312e2d (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#f3efe7'
+        default-dark: '#312e2d'
+    -
+        id: onepage-bg-tertiary
+        title: 三级背景（输入框/悬停）
+        title.en: Tertiary Background
+        description: '默认 #ede8de（浅色） / #2f2b29（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #ede8de (light) / #2f2b29 (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#ede8de'
+        default-dark: '#2f2b29'
+    -
+        id: onepage-sidebar-bg
+        title: 侧栏卡片底色
+        title.en: Sidebar Card
+        description: '默认 #f4f2ee（浅色） / #2d2a28（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #f4f2ee (light) / #2d2a28 (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#f4f2ee'
+        default-dark: '#2d2a28'
+    -
+        id: onepage-window-bg
+        title: 窗口留白
+        title.en: Window Margin
+        description: '默认 #e9e9e9（浅色） / #1e1c1b（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #e9e9e9 (light) / #1e1c1b (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#e9e9e9'
+        default-dark: '#1e1c1b'
+
+
+    -
+        id: onepage-text-colors
+        title: 文字与控件灰阶（7）
+        title.en: Text & Surface Colors (7)
+        description: '正文 / 次要 / 弱化三级文字，加上 Obsidian 原生控件的四档明度阶。极端背景下（纯黑、纯白）建议一并微调，否则控件与文字层次会怪'
+        description.en: 'Three text levels plus the four surface shades used by native controls. With extreme backgrounds (pure black/white) tweak these together, or controls and text will lose their hierarchy.'
+        type: heading
+        level: 2
+        collapsed: true
+    -
+        id: onepage-text-normal
+        title: 正文
+        title.en: body text
+        description: '默认 #3d3730（浅色） / #cfc7bd（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #3d3730 (light) / #cfc7bd (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#3d3730'
+        default-dark: '#cfc7bd'
+    -
+        id: onepage-text-muted
+        title: 次要文字（属性名 / 状态栏）
+        title.en: secondary text
+        description: '默认 #857d70（浅色） / #948d83（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #857d70 (light) / #948d83 (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#857d70'
+        default-dark: '#948d83'
+    -
+        id: onepage-text-faint
+        title: 弱化文字（占位 / 行号）
+        title.en: faint text
+        description: '默认 #c0b8ab（浅色） / #6b665e（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #c0b8ab (light) / #6b665e (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#c0b8ab'
+        default-dark: '#6b665e'
+    -
+        id: onepage-base-00
+        title: 控件灰阶 00（最接近内容底）
+        title.en: surface 00
+        description: '默认 #f8f5ef（浅色） / #242120（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #f8f5ef (light) / #242120 (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#f8f5ef'
+        default-dark: '#242120'
+    -
+        id: onepage-base-10
+        title: 控件灰阶 10
+        title.en: surface 10
+        description: '默认 #f2eee6（浅色） / #2b2725（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #f2eee6 (light) / #2b2725 (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#f2eee6'
+        default-dark: '#2b2725'
+    -
+        id: onepage-base-20
+        title: 控件灰阶 20
+        title.en: surface 20
+        description: '默认 #eae5db（浅色） / #2f2b29（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #eae5db (light) / #2f2b29 (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#eae5db'
+        default-dark: '#2f2b29'
+    -
+        id: onepage-base-25
+        title: 控件灰阶 25（边框 / 阴影）
+        title.en: surface 25
+        description: '默认 #e2dcd0（浅色） / #34302e（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #e2dcd0 (light) / #34302e (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#e2dcd0'
+        default-dark: '#34302e'
+    -
+        id: onepage-typography
+        title: 排版
+        title.en: Typography
+        type: heading
+        level: 1
+        collapsed: true
+    -
+        id: onepage-line-width
+        title: 内容宽度
+        title.en: Content Width
+        description: '开启「设置 → 编辑器 → 可读行长度」时的正文行宽（默认 700px）。该设置关闭时请同时打开下面的「强制限宽」'
+        description.en: 'Reading line width when Settings → Editor → Readable line length is on (default 700px). When that setting is off, also enable “Force Readable Width” below.'
+        type: variable-number-slider
+        default: 700
+        min: 480
+        max: 1400
+        step: 10
+        format: px
+    -
+        id: force-readable-width
+        title: 强制限宽
+        title.en: Force Readable Width
+        description: '即使关闭了 Obsidian 的「可读行长度」，也按上面的「内容宽度」限宽并居中'
+        description.en: 'Apply the content width above (and center it) even when Obsidian’s “Readable line length” is off.'
+        type: class-toggle
+        default: false
+    -
+        id: line-height-normal
+        title: 正文行高
+        title.en: Body Line Height
+        description: 默认 1.7
+        description.en: Default 1.7
+        type: variable-number-slider
+        default: 1.7
+        min: 1.3
+        max: 2.4
+        step: 0.05
+
+    -
         id: onepage-layout
         title: 布局
         title.en: Layout
         type: heading
         level: 1
         collapsed: true
+    -
+        id: onepage-sidebar-gap
+        title: 侧栏卡片留白
+        title.en: Sidebar Card Gap
+        description: '侧栏悬浮卡片与窗口边缘的间距（默认 8px）；0 = 贴边'
+        description.en: 'Gap between the floating sidebar cards and the window edge (default 8px); 0 = flush.'
+        type: variable-number-slider
+        default: 8
+        min: 0
+        max: 16
+        step: 1
+        format: px
+    -
+        id: onepage-radius-window
+        title: 侧栏卡片圆角
+        title.en: Sidebar Card Radius
+        description: '侧栏卡片的圆角（默认 8px）；0 = 直角'
+        description.en: 'Corner radius of the floating sidebar cards (default 8px); 0 = square.'
+        type: variable-number-slider
+        default: 8
+        min: 0
+        max: 20
+        step: 1
+        format: px
     -
         id: hover-ribbon
         title: 悬停功能区
@@ -118,19 +572,32 @@ settings:
         type: class-toggle
         addCommand: true
     -
-        id: nav-action-center
-        title: 关闭紧凑面板操作
-        title.en: Disable Compact Panel Actions
-        description: 恢复默认的面板操作按钮布局
-        description.en: Restore the default panel action button layout.
+        id: vault-switcher-always
+        title: 始终显示 Vault 选择
+        title.en: Always Show Vault Switcher
+        description: 默认关闭（左侧边栏底部 Vault 选择「悬停才显示」）；开启后常驻显示，无需悬停即可点击切换
+        description.en: Off by default (the vault switcher at the bottom of the left sidebar shows only on hover); on keeps it visible so you can switch vaults without hovering.
         type: class-toggle
+
     -
-        id: tab-icon
-        title: 关闭紧凑侧栏标签
-        title.en: Disable Compact Sidebar Tabs
-        description: 恢复侧边栏完整标签图标
-        description.en: Restore the full sidebar tab icons.
-        type: class-toggle
+        id: onepage-chrome
+        title: 标签页与状态栏（4）
+        title.en: Tabs & Status Bar (4)
+        type: heading
+        level: 2
+        collapsed: true
+    -
+        id: onepage-tab-radius
+        title: 标签页圆角
+        title.en: Tab Radius
+        description: '主编辑器标签页的圆角（默认 6px）；0 = 直角'
+        description.en: 'Corner radius of editor tabs (default 6px); 0 = square.'
+        type: variable-number-slider
+        default: 6
+        min: 0
+        max: 16
+        step: 1
+        format: px
     -
         id: status-bar-float
         title: 始终显示状态栏
@@ -140,20 +607,19 @@ settings:
         type: class-toggle
         default: false
     -
-        id: zoom-off
-        title: 关闭媒体缩放
-        title.en: Disable Media Zoom
-        description: 点击图片不再放大预览
-        description.en: Clicking images no longer zooms into the preview.
+        id: tab-icon
+        title: 关闭紧凑侧栏标签
+        title.en: Disable Compact Sidebar Tabs
+        description: 恢复侧边栏完整标签图标
+        description.en: Restore the full sidebar tab icons.
         type: class-toggle
     -
-        id: vault-switcher-always
-        title: 始终显示 Vault 选择
-        title.en: Always Show Vault Switcher
-        description: 默认关闭（左侧边栏底部 Vault 选择「悬停才显示」）；开启后常驻显示，无需悬停即可点击切换
-        description.en: Off by default (the vault switcher at the bottom of the left sidebar shows only on hover); on keeps it visible so you can switch vaults without hovering.
+        id: nav-action-center
+        title: 关闭紧凑面板操作
+        title.en: Disable Compact Panel Actions
+        description: 恢复默认的面板操作按钮布局
+        description.en: Restore the default panel action button layout.
         type: class-toggle
-
     -
         id: onepage-demo
         title: 演示
@@ -182,6 +648,18 @@ settings:
         max: 40
         step: 1
         format: px
+    -
+        id: onepage-demo-line-width
+        title: 演示模式行宽
+        title.en: Demo Mode Line Width
+        description: '演示模式的行宽（默认 880px）。实际取它与「内容宽度」的较大者，调宽正文不会让演示反而变窄'
+        description.en: 'Line width in demo mode (default 880px). The larger of this and “Content Width” wins, so widening the body never narrows demo mode.'
+        type: variable-number-slider
+        default: 880
+        min: 640
+        max: 1600
+        step: 10
+        format: px
 
     -
         id: onepage-editor
@@ -194,37 +672,6 @@ settings:
         id: active-line-off
         title: 关闭当前行高亮
         title.en: Disable Active Line Highlight
-        type: class-toggle
-    -
-        id: banner-off
-        title: 关闭横幅
-        title.en: Disable Banner
-        description: 关闭图片横幅（banner）特性
-        description.en: Disable the image banner feature.
-        type: class-toggle
-    -
-        id: block-width-off
-        title: 关闭块宽
-        title.en: Disable Block Width
-        description: 关闭表格 / 图片等 wide / max / 100 宽块特性
-        description.en: Disable wide / max / 100 width blocks for tables, images, etc.
-        type: class-toggle
-    -
-        id: font-variant-off
-        title: 关闭字体特性
-        title.en: Disable Font Variants
-        description: 关闭连字与字体变体（ss01 / liga 等）
-        description.en: Disable ligatures and font variants (ss01 / liga, etc.).
-        type: class-toggle
-    -
-        id: media-width-fit
-        title: 关闭全宽元素
-        title.en: Disable Full-Width Elements
-        type: class-toggle
-    -
-        id: mode-switcher-off
-        title: 关闭快速模式切换
-        title.en: Disable Quick Mode Switcher
         type: class-toggle
     -
         id: properties-collapsed
@@ -243,31 +690,50 @@ settings:
         type: class-toggle
 
     -
-        id: onepage-a11y
-        title: 无障碍
-        title.en: Accessibility
+        id: zoom-off
+        title: 关闭媒体缩放
+        title.en: Disable Media Zoom
+        description: 点击图片不再放大预览
+        description.en: Clicking images no longer zooms into the preview.
+        type: class-toggle
+    -
+        id: banner-off
+        title: 关闭横幅
+        title.en: Disable Banner
+        description: 关闭图片横幅（banner）特性
+        description.en: Disable the image banner feature.
+        type: class-toggle
+    -
+        id: block-width-off
+        title: 关闭块宽
+        title.en: Disable Block Width
+        description: 关闭表格 / 图片等 wide / max / 100 宽块特性
+        description.en: Disable wide / max / 100 width blocks for tables, images, etc.
+        type: class-toggle
+    -
+        id: media-width-fit
+        title: 关闭全宽元素
+        title.en: Disable Full-Width Elements
+        type: class-toggle
+    -
+        id: font-variant-off
+        title: 关闭字体特性
+        title.en: Disable Font Variants
+        description: 关闭连字与字体变体（ss01 / liga 等）
+        description.en: Disable ligatures and font variants (ss01 / liga, etc.).
+        type: class-toggle
+    -
+        id: mode-switcher-off
+        title: 关闭快速模式切换
+        title.en: Disable Quick Mode Switcher
+        type: class-toggle
+    -
+        id: onepage-interface
+        title: 界面
+        title.en: Interface
         type: heading
         level: 1
         collapsed: true
-    -
-        id: adaptive-mode-off
-        title: 关闭自适应模式
-        title.en: Disable Adaptive Mode
-        description: 禁止根据操作系统自动调整样式
-        description.en: Prevent automatic styling based on the operating system.
-        type: class-toggle
-    -
-        id: reduce-contrast-change
-        title: 减少对比度变化
-        title.en: Reduce Contrast Change
-        description: 窗口失焦时减少对比度跳变
-        description.en: Minimize contrast shifts when the window loses focus.
-        type: class-toggle
-    -
-        id: reduce-motion
-        title: 减少动效
-        title.en: Reduce Motion
-        type: class-toggle
     -
         id: font-ui-modifier
         title: 界面字号
@@ -298,6 +764,32 @@ settings:
         title.en: Underlined Links
         description: 始终给链接加下划线以提升可见性
         description.en: Always underline links for improved visibility.
+        type: class-toggle
+    -
+        id: onepage-a11y
+        title: 无障碍
+        title.en: Accessibility
+        type: heading
+        level: 1
+        collapsed: true
+    -
+        id: adaptive-mode-off
+        title: 关闭自适应模式
+        title.en: Disable Adaptive Mode
+        description: 禁止根据操作系统自动调整样式
+        description.en: Prevent automatic styling based on the operating system.
+        type: class-toggle
+    -
+        id: reduce-contrast-change
+        title: 减少对比度变化
+        title.en: Reduce Contrast Change
+        description: 窗口失焦时减少对比度跳变
+        description.en: Minimize contrast shifts when the window loses focus.
+        type: class-toggle
+    -
+        id: reduce-motion
+        title: 减少动效
+        title.en: Reduce Motion
         type: class-toggle
 */
 
@@ -7483,6 +7975,341 @@ body.mod-linux:not(.is-android):not(.adaptive-mode-off).theme-dark {
 }
 
 /* =====================================================================
+   OnePage 设计令牌（Design Tokens）
+   =====================================================================
+
+   本文件是「可定制项」的单一真相源（single source of truth）。
+
+   - 每个令牌在这里给出 **OnePage 的固化默认值** —— 不装 Style Settings 也完整可用；
+   - src/90-onepage.css 只引用令牌，不再写字面值（新加样式时请遵守）；
+   - Style Settings 的 @settings 项 id 与令牌同名（去掉 --onepage- 前缀），插件通过
+     `body.css-settings-manager` / `body.theme-light.css-settings-manager` /
+     `body.theme-dark.css-settings-manager` 注入同名变量（特异性更高，后写），
+     从而覆盖这里的默认值。它**总是注入 default**（不是只在用户改过之后），
+     所以 @settings 的 default 必须与这里的默认值逐字一致。
+
+   约定
+   ----
+   1. 命名：`--onepage-<组>-<项>`，组 = color | type | layout | component | demo
+   2. 令牌只在本文件定义；90-onepage.css 引用时不写 fallback（避免双份默认值漂移，
+      也便于 scripts/verify.mjs 的变量体检发现拼写错误）
+   3. 需要区分亮/暗的令牌：浅色值写在 `body`，暗色覆盖写在 `body.theme-dark`
+   4. 加令牌前先问一句：这是「用户偏好」还是「主题身份」？
+      身份（暖白/暖棕纸面色、Callout 墨色 14 色、彩色排版色相、毛玻璃架构）
+      **不进令牌** —— 想换身份请换主题或用 CSS snippet，否则主题会失去一致性。
+
+   接线（文件末尾）
+   ----------------
+   有些可调项是「基座 / Obsidian 自己维护的变量」（--line-width、--p-spacing …）。
+   对这类变量，令牌不另起炉灶，而是让原变量指向令牌：值一致 → 默认视觉零变化，
+   用户改令牌 → 基座和定制层同时跟随，不会出现「只改了一半」的割裂。
+   ===================================================================== */
+
+/* ---------------------------------------------------------------------
+   1. 颜色
+   --------------------------------------------------------------------- */
+body {
+  /* 加粗（提醒）色：正文 **加粗** 与 `**…**` 的文字颜色。
+     浅色「暖白纸张」用深陶红；暗色「暖棕·冷锚」提亮降彩度，避免暗底振动。 */
+  --onepage-bold-color: #c2410c;
+
+  /* 标题色（彩色排版）。未定义时回退 currentColor；关闭开关见「关闭彩色排版」。 */
+  --onepage-typo-h1: #1d345c;
+  --onepage-typo-h2: #52377a;
+  --onepage-typo-h3: #0e6e63;
+  --onepage-typo-h4: #ce5567;
+  --onepage-typo-h5: #9c6b1e;
+  --onepage-typo-h6: #8a8378;
+
+  /* 纸面（背景）层级：内容底 / 侧栏·菜单底 / 输入框·悬停底。
+     --background-primary-alt 派生自 primary（浅色两者同值），其余层级独立。 */
+  --onepage-bg-primary: #faf7f1;
+  --onepage-bg-secondary: #f3efe7;
+  --onepage-bg-tertiary: #ede8de;
+  /* 不开放：primary-alt 与主背景同值；secondary-alt 是独立的浅一阶 */
+  --onepage-bg-primary-alt: var(--onepage-bg-primary);
+  --onepage-bg-secondary-alt: #efeae1;
+
+  /* Callout「墨色」：浅色用低彩度、偏暗的墨，压在暖白纸面上不发贴纸。
+     只改这组变量即可，图标 / 标题 / 淡染底 / 内嵌表格会自动跟随。 */
+  --onepage-callout-default: #3d6b85;
+  --onepage-callout-info: #3d6b85;
+  --onepage-callout-todo: #4a6d8c;
+  --onepage-callout-summary: #4e7a72;
+  --onepage-callout-tip: #8a6a2c;
+  --onepage-callout-important: #a97323;
+  --onepage-callout-success: #4e7a4e;
+  --onepage-callout-question: #6a5a85;
+  --onepage-callout-warning: #a97323;
+  --onepage-callout-fail: #a5523f;
+  --onepage-callout-error: #9c4436;
+  --onepage-callout-bug: #8b4a3c;
+  --onepage-callout-example: #57786f;
+  --onepage-callout-quote: #7d7368;
+
+  /* 正文文字：normal = 正文 / muted = 次要（属性名、状态栏） / faint = 弱化（占位、行号） */
+  --onepage-text-normal: #3d3730;
+  --onepage-text-muted: #857d70;
+  --onepage-text-faint: #c0b8ab;
+
+  /* Obsidian 原生控件的明度阶：00 最接近内容底，25 最远（边框 / 阴影 / 控件底） */
+  --onepage-base-00: #f8f5ef;
+  --onepage-base-10: #f2eee6;
+  --onepage-base-20: #eae5db;
+  --onepage-base-25: #e2dcd0;
+
+  /* Callout 淡染强度：纸面 87% + 墨色 13%（13% = 1 - 87%）。
+     值越大越接近 Callout 主题色；调到 0 就是纯纸面（只剩内高光与投影）。 */
+  --onepage-callout-tint: 13%;
+
+  /* 侧栏卡片 / 窗口底色（非透明模式）。
+     「悬停才显示」的 Vault 选择、彩色侧边栏染层都从这两个值派生。 */
+  --onepage-sidebar-bg: #f4f2ee;
+  --onepage-window-bg: #e9e9e9;
+
+  /* 强调色淡染的三处用法：当前行高亮 / 选中文本 / 文件树·大纲的激活项 */
+  --onepage-active-line-tint: 6%;
+  --onepage-selection-tint: 30%;
+  --onepage-active-tint: 10%;
+  --onepage-active-text: 72%;
+
+  /* 表格网格语言：数据格 1px 线、表头文字、表头 2px 底线
+     （Bases 复用同一组，保证「表格 / 数据库」同脸） */
+  --onepage-grid-line: 15%;
+  --onepage-head-text: 55%;
+  --onepage-head-line: 45%;
+
+  /* Style Settings 颜色控件的预览块底色。
+     必须是**不随当前模式变化**的常量：插件把浅/暗两个色块画在同一个面板里，
+     若用 --onepage-bg-primary，两块会拿到同一个（当前模式的）值，看不出差异。
+     这是主题默认纸面，不跟随用户自定义背景（预览的语义是「在默认纸面上是什么样」）。 */
+  --onepage-preview-bg-light: #faf7f1;
+  --onepage-preview-bg-dark: #262322;
+}
+
+body.theme-dark {
+  --onepage-bold-color: #e89a60;
+  --onepage-sidebar-bg: #2d2a28;
+  --onepage-window-bg: #1e1c1b;
+
+  /* 彩色排版：亮/暗同源，各提亮一档适配暗底 */
+  --onepage-typo-h1: #4f74af;
+  --onepage-typo-h2: #8567bd;
+  --onepage-typo-h3: #4e9a8a;
+  --onepage-typo-h4: #c0765e;
+  --onepage-typo-h5: #c99b5e;
+  --onepage-typo-h6: #8a8478;
+
+  /* 纸面：暖棕底 + 逐级提亮（secondary / secondary-alt 由 primary 派生，见规则层） */
+  --onepage-bg-primary: #262322;
+  --onepage-bg-secondary: #312e2d;
+  --onepage-bg-tertiary: #2f2b29;
+  /* 不开放：两层 alt 由主背景派生 → 用户改主背景时自动跟随 */
+  --onepage-bg-primary-alt: color-mix(in srgb, var(--onepage-bg-primary), white 3%);
+  --onepage-bg-secondary-alt: color-mix(in srgb, var(--onepage-bg-primary), white 8%);
+
+  /* Callout「粉」：同一色相提亮降彩度，避免在暗底上振动 */
+  --onepage-callout-default: #7fa7c4;
+  --onepage-callout-info: #7fa7c4;
+  --onepage-callout-todo: #84a8c6;
+  --onepage-callout-summary: #87b3a8;
+  --onepage-callout-tip: #c9a86a;
+  --onepage-callout-important: #d3a765;
+  --onepage-callout-success: #84b489;
+  --onepage-callout-question: #ab97c8;
+  --onepage-callout-warning: #d3a765;
+  --onepage-callout-fail: #cb8272;
+  --onepage-callout-error: #c76f5e;
+  --onepage-callout-bug: #b8827a;
+  --onepage-callout-example: #8fb0a4;
+  --onepage-callout-quote: #a89b8d;
+
+  --onepage-text-normal: #cfc7bd;
+  --onepage-text-muted: #948d83;
+  --onepage-text-faint: #6b665e;
+
+  --onepage-base-00: #242120;
+  --onepage-base-10: #2b2725;
+  --onepage-base-20: #2f2b29;
+  --onepage-base-25: #34302e;
+}
+
+/* ---------------------------------------------------------------------
+   2. 排版
+   --------------------------------------------------------------------- */
+body {
+  /* 可读行宽（需开启「设置 → 编辑器 → 可读行长度」；
+     未开启时由 Style Settings 的「强制限宽」开关接管） */
+  --onepage-line-width: 700px;
+  /* wide / max 块（.wide、.table-wide …）的宽度基准 */
+  --onepage-line-width-wide: 50rem;
+  /* 段落间距（基座默认 1.25rem）。
+     ⚠️ 暂不进 Style Settings：基座的垂直节奏是「零 margin + 源码空行」，
+     --p-spacing 只影响「标题后首个块」与「标题下边框 padding」，
+     开放给用户会得到「调了几乎没反应」的差体验。保留接线，等基座改成
+     真实块间距（或换成标题间距项）时再评估。 */
+  --onepage-paragraph-spacing: 1.25rem;
+  /* 正文行高（OnePage 比基座 1.625 略松；Style Settings 直接注入同名变量） */
+  --line-height-normal: 1.7;
+  /* `==高亮==` 的浓度（Obsidian 1.14：6 种高亮色共用这个透明度） */
+  --onepage-highlight-opacity: 30%;
+
+  /* 行内代码：字号与圆角（正文 code 药丸） */
+  --onepage-code-size: 0.88em;
+  --onepage-code-radius: 5px;
+
+  /* 文件树 / 大纲的每级缩进（Notion 风格收窄，不含行内 padding） */
+  --onepage-tree-indent: 8px;
+  --onepage-outline-indent: 7px;
+}
+
+/* ---------------------------------------------------------------------
+   3. 布局
+   --------------------------------------------------------------------- */
+body {
+  /* 侧栏悬浮卡片：四周留白 + 圆角 */
+  --onepage-sidebar-gap: 8px;
+  --onepage-radius-window: 8px;
+
+  /* 主编辑器标签页：圆角 + 左缘内缩 */
+  --onepage-tab-radius: 6px;
+  --onepage-tab-inset: 6px;
+
+  /* 滚动条粗细（mac overlay 风格） */
+  --onepage-scrollbar-size: 8px;
+
+  /* 状态栏悬浮胶囊 */
+  --onepage-statusbar-height: 40px;
+  --onepage-statusbar-font-size: 11px;
+
+  /* 聚焦编辑时的弱化强度（1 = 不弱化） */
+  --onepage-dim-opacity: 0.92;
+  --onepage-dim-opacity-tab: 0.8;
+}
+
+/* ---------------------------------------------------------------------
+   4. 组件（表格 / Bases）
+   --------------------------------------------------------------------- */
+body {
+  --onepage-table-pad-y: 8px;
+  --onepage-table-pad-x: 12px;
+
+  --onepage-bases-row-height: 34px;
+  --onepage-bases-group-gap: 18px;
+  --onepage-bases-card-radius: 12px;
+}
+
+/* ---------------------------------------------------------------------
+   5. 演示模式
+   --------------------------------------------------------------------- */
+body {
+  /* 演示时正文放大字号（标题按比例缩放） */
+  --onepage-demo-font: 24px;
+  /* 演示行宽取「演示行宽」与「正文行宽」的较大者：
+     用户把正文调宽后，演示模式不会反而变窄。 */
+  --onepage-demo-line-width: 880px;
+  /* 未开启可读行宽时，顶部留给窗口按钮的空白 */
+  --onepage-demo-padding-top: 56px;
+  --onepage-demo-line-height: 1.9;
+}
+
+/* ---------------------------------------------------------------------
+   6. 接线：基座 / Obsidian 变量 → 令牌
+   ---------------------------------------------------------------------
+
+   值必须与基座当前值逐字一致，否则重构本身就会改变外观。
+   基座定义这些变量的位置（Cupertino 4.1.0）：
+     --line-width            6412  body
+     --line-width-wide       6416  body:not(.block-width-off)
+     --p-spacing             2919  @media screen, print { body }
+     --radius-window         3833  @media screen, print { body }
+   Obsidian 本体（1.14.4 app.css）：
+     --highlight-opacity     2372  body                                  */
+body {
+  --line-width: var(--onepage-line-width);
+  --p-spacing: var(--onepage-paragraph-spacing);
+  --radius-window: var(--onepage-radius-window);
+  --highlight-opacity: var(--onepage-highlight-opacity);
+}
+
+/* 与基座同特异性 + 后写，才能覆盖「关闭块宽」开关内的那一条 */
+body:not(.block-width-off) {
+  --line-width-wide: var(--onepage-line-width-wide);
+}
+
+/* =====================================================================
+   Style Settings 颜色控件的初始色（由 scripts/build.mjs 自动生成，请勿手改）
+   来源：src/00-settings.css 里每个 variable-themed-color 的 default-light/dark
+   ===================================================================== */
+.setting-item[data-id="onepage-accent"] .themed-color-wrapper > .theme-light { --pcr-color: #0e6e63; }
+.setting-item[data-id="onepage-accent"] .themed-color-wrapper > .theme-dark { --pcr-color: #6db3a3; }
+.setting-item[data-id="onepage-bold-color"] .themed-color-wrapper > .theme-light { --pcr-color: #c2410c; }
+.setting-item[data-id="onepage-bold-color"] .themed-color-wrapper > .theme-dark { --pcr-color: #e89a60; }
+.setting-item[data-id="onepage-typo-h1"] .themed-color-wrapper > .theme-light { --pcr-color: #1d345c; }
+.setting-item[data-id="onepage-typo-h1"] .themed-color-wrapper > .theme-dark { --pcr-color: #4f74af; }
+.setting-item[data-id="onepage-typo-h2"] .themed-color-wrapper > .theme-light { --pcr-color: #52377a; }
+.setting-item[data-id="onepage-typo-h2"] .themed-color-wrapper > .theme-dark { --pcr-color: #8567bd; }
+.setting-item[data-id="onepage-typo-h3"] .themed-color-wrapper > .theme-light { --pcr-color: #0e6e63; }
+.setting-item[data-id="onepage-typo-h3"] .themed-color-wrapper > .theme-dark { --pcr-color: #4e9a8a; }
+.setting-item[data-id="onepage-typo-h4"] .themed-color-wrapper > .theme-light { --pcr-color: #ce5567; }
+.setting-item[data-id="onepage-typo-h4"] .themed-color-wrapper > .theme-dark { --pcr-color: #c0765e; }
+.setting-item[data-id="onepage-typo-h5"] .themed-color-wrapper > .theme-light { --pcr-color: #9c6b1e; }
+.setting-item[data-id="onepage-typo-h5"] .themed-color-wrapper > .theme-dark { --pcr-color: #c99b5e; }
+.setting-item[data-id="onepage-typo-h6"] .themed-color-wrapper > .theme-light { --pcr-color: #8a8378; }
+.setting-item[data-id="onepage-typo-h6"] .themed-color-wrapper > .theme-dark { --pcr-color: #8a8478; }
+.setting-item[data-id="onepage-callout-default"] .themed-color-wrapper > .theme-light { --pcr-color: #3d6b85; }
+.setting-item[data-id="onepage-callout-default"] .themed-color-wrapper > .theme-dark { --pcr-color: #7fa7c4; }
+.setting-item[data-id="onepage-callout-info"] .themed-color-wrapper > .theme-light { --pcr-color: #3d6b85; }
+.setting-item[data-id="onepage-callout-info"] .themed-color-wrapper > .theme-dark { --pcr-color: #7fa7c4; }
+.setting-item[data-id="onepage-callout-todo"] .themed-color-wrapper > .theme-light { --pcr-color: #4a6d8c; }
+.setting-item[data-id="onepage-callout-todo"] .themed-color-wrapper > .theme-dark { --pcr-color: #84a8c6; }
+.setting-item[data-id="onepage-callout-summary"] .themed-color-wrapper > .theme-light { --pcr-color: #4e7a72; }
+.setting-item[data-id="onepage-callout-summary"] .themed-color-wrapper > .theme-dark { --pcr-color: #87b3a8; }
+.setting-item[data-id="onepage-callout-tip"] .themed-color-wrapper > .theme-light { --pcr-color: #8a6a2c; }
+.setting-item[data-id="onepage-callout-tip"] .themed-color-wrapper > .theme-dark { --pcr-color: #c9a86a; }
+.setting-item[data-id="onepage-callout-important"] .themed-color-wrapper > .theme-light { --pcr-color: #a97323; }
+.setting-item[data-id="onepage-callout-important"] .themed-color-wrapper > .theme-dark { --pcr-color: #d3a765; }
+.setting-item[data-id="onepage-callout-success"] .themed-color-wrapper > .theme-light { --pcr-color: #4e7a4e; }
+.setting-item[data-id="onepage-callout-success"] .themed-color-wrapper > .theme-dark { --pcr-color: #84b489; }
+.setting-item[data-id="onepage-callout-question"] .themed-color-wrapper > .theme-light { --pcr-color: #6a5a85; }
+.setting-item[data-id="onepage-callout-question"] .themed-color-wrapper > .theme-dark { --pcr-color: #ab97c8; }
+.setting-item[data-id="onepage-callout-warning"] .themed-color-wrapper > .theme-light { --pcr-color: #a97323; }
+.setting-item[data-id="onepage-callout-warning"] .themed-color-wrapper > .theme-dark { --pcr-color: #d3a765; }
+.setting-item[data-id="onepage-callout-fail"] .themed-color-wrapper > .theme-light { --pcr-color: #a5523f; }
+.setting-item[data-id="onepage-callout-fail"] .themed-color-wrapper > .theme-dark { --pcr-color: #cb8272; }
+.setting-item[data-id="onepage-callout-error"] .themed-color-wrapper > .theme-light { --pcr-color: #9c4436; }
+.setting-item[data-id="onepage-callout-error"] .themed-color-wrapper > .theme-dark { --pcr-color: #c76f5e; }
+.setting-item[data-id="onepage-callout-bug"] .themed-color-wrapper > .theme-light { --pcr-color: #8b4a3c; }
+.setting-item[data-id="onepage-callout-bug"] .themed-color-wrapper > .theme-dark { --pcr-color: #b8827a; }
+.setting-item[data-id="onepage-callout-example"] .themed-color-wrapper > .theme-light { --pcr-color: #57786f; }
+.setting-item[data-id="onepage-callout-example"] .themed-color-wrapper > .theme-dark { --pcr-color: #8fb0a4; }
+.setting-item[data-id="onepage-callout-quote"] .themed-color-wrapper > .theme-light { --pcr-color: #7d7368; }
+.setting-item[data-id="onepage-callout-quote"] .themed-color-wrapper > .theme-dark { --pcr-color: #a89b8d; }
+.setting-item[data-id="onepage-bg-primary"] .themed-color-wrapper > .theme-light { --pcr-color: #faf7f1; }
+.setting-item[data-id="onepage-bg-primary"] .themed-color-wrapper > .theme-dark { --pcr-color: #262322; }
+.setting-item[data-id="onepage-bg-secondary"] .themed-color-wrapper > .theme-light { --pcr-color: #f3efe7; }
+.setting-item[data-id="onepage-bg-secondary"] .themed-color-wrapper > .theme-dark { --pcr-color: #312e2d; }
+.setting-item[data-id="onepage-bg-tertiary"] .themed-color-wrapper > .theme-light { --pcr-color: #ede8de; }
+.setting-item[data-id="onepage-bg-tertiary"] .themed-color-wrapper > .theme-dark { --pcr-color: #2f2b29; }
+.setting-item[data-id="onepage-sidebar-bg"] .themed-color-wrapper > .theme-light { --pcr-color: #f4f2ee; }
+.setting-item[data-id="onepage-sidebar-bg"] .themed-color-wrapper > .theme-dark { --pcr-color: #2d2a28; }
+.setting-item[data-id="onepage-window-bg"] .themed-color-wrapper > .theme-light { --pcr-color: #e9e9e9; }
+.setting-item[data-id="onepage-window-bg"] .themed-color-wrapper > .theme-dark { --pcr-color: #1e1c1b; }
+.setting-item[data-id="onepage-text-normal"] .themed-color-wrapper > .theme-light { --pcr-color: #3d3730; }
+.setting-item[data-id="onepage-text-normal"] .themed-color-wrapper > .theme-dark { --pcr-color: #cfc7bd; }
+.setting-item[data-id="onepage-text-muted"] .themed-color-wrapper > .theme-light { --pcr-color: #857d70; }
+.setting-item[data-id="onepage-text-muted"] .themed-color-wrapper > .theme-dark { --pcr-color: #948d83; }
+.setting-item[data-id="onepage-text-faint"] .themed-color-wrapper > .theme-light { --pcr-color: #c0b8ab; }
+.setting-item[data-id="onepage-text-faint"] .themed-color-wrapper > .theme-dark { --pcr-color: #6b665e; }
+.setting-item[data-id="onepage-base-00"] .themed-color-wrapper > .theme-light { --pcr-color: #f8f5ef; }
+.setting-item[data-id="onepage-base-00"] .themed-color-wrapper > .theme-dark { --pcr-color: #242120; }
+.setting-item[data-id="onepage-base-10"] .themed-color-wrapper > .theme-light { --pcr-color: #f2eee6; }
+.setting-item[data-id="onepage-base-10"] .themed-color-wrapper > .theme-dark { --pcr-color: #2b2725; }
+.setting-item[data-id="onepage-base-20"] .themed-color-wrapper > .theme-light { --pcr-color: #eae5db; }
+.setting-item[data-id="onepage-base-20"] .themed-color-wrapper > .theme-dark { --pcr-color: #2f2b29; }
+.setting-item[data-id="onepage-base-25"] .themed-color-wrapper > .theme-light { --pcr-color: #e2dcd0; }
+.setting-item[data-id="onepage-base-25"] .themed-color-wrapper > .theme-dark { --pcr-color: #34302e; }
+/* =====================================================================
    ============== OnePage 定制层 (以下为 OnePage 专属样式) ==============
    固化配色: 暗色 = 暖棕·冷锚 | 浅色 = 暖白纸张
    不依赖 Style Settings, 开箱即用
@@ -7513,8 +8340,6 @@ body {
   /* 代码字体: JetBrainsMono NFM(Nerd Font, 图标字形全) > JetBrains Mono > 系统
      注意: 用 --font-monospace-theme(主题兜底), 用户在外观里设置的代码字体优先 */
   --font-monospace-theme: "JetBrainsMono NFM", "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
-  /* 正文行高: 略松, 阅读舒适 */
-  --line-height-normal: 1.7;
 }
 
 /* 编辑器正文: 打开连字与特性 (JetBrains Mono 的 -> => 等自动连字)
@@ -7545,7 +8370,7 @@ body.is-grabbing .app-container,
 /* 当前行: 极轻的强调条, VSCode 感, 不打扰阅读
    :not(.active-line-off) 让 Style Settings「关闭当前行高亮」开关可关闭 */
 body:not(.active-line-off) .markdown-source-view.mod-cm6 .cm-active.cm-line {
-  background-color: color-mix(in srgb, var(--text-accent) 6%, transparent);
+  background-color: color-mix(in srgb, var(--text-accent) var(--onepage-active-line-tint), transparent);
   border-radius: 4px;
 }
 
@@ -7597,7 +8422,7 @@ body:not(.active-line-off) .markdown-source-view.mod-cm6 .cm-active.cm-gutterEle
 /* 文本选中: 强调色半透明 */
 .cm-s-obsidian ::selection,
 .markdown-source-view ::selection {
-  background: color-mix(in srgb, var(--text-accent) 30%, transparent);
+  background: color-mix(in srgb, var(--text-accent) var(--onepage-selection-tint), transparent);
 }
 
 /* 折叠指示: 更轻 */
@@ -7628,9 +8453,9 @@ body:not(.active-line-off) .markdown-source-view.mod-cm6 .cm-active.cm-gutterEle
 
 /* 行内代码: 圆角药丸, 更精致 */
 .markdown-rendered code:not(pre code) {
-  font-size: 0.88em;
+  font-size: var(--onepage-code-size);
   padding: 0.15em 0.42em;
-  border-radius: 5px;
+  border-radius: var(--onepage-code-radius);
   background-color: var(--background-modifier-border);
 }
 
@@ -7739,7 +8564,7 @@ body {
 
 /* 状态栏: 更轻更紧凑 */
 .status-bar {
-  font-size: 11px;
+  font-size: var(--onepage-statusbar-font-size);
   padding: 2px 10px;
 }
 .status-bar-item {
@@ -7772,7 +8597,7 @@ body.status-bar-float .status-bar:not(:hover) {
   border-width: var(--border-width) !important;
   padding: 8px !important;
   max-width: 100% !important;
-  height: 40px !important;
+  height: var(--onepage-statusbar-height) !important;
   transform: none !important;
   opacity: 1 !important;
   filter: none !important;
@@ -7811,8 +8636,8 @@ body.status-bar-float .status-bar:not(:hover)::before {
 
 /* 滚动条: 极细, mac overlay 风格 */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: var(--onepage-scrollbar-size);
+  height: var(--onepage-scrollbar-size);
 }
 ::-webkit-scrollbar-thumb {
   background-color: var(--background-modifier-border);
@@ -7838,9 +8663,9 @@ body:is(.mod-macos,.adaptive-mode-off):not(.is-mobile) .mod-sidedock.mod-right-s
   box-shadow: none !important;
 }
 
-/* 右侧边栏: 与左侧对称 (8px 贴编辑器一侧留空 + 8px 贴窗口边缘) */
+/* 右侧边栏: 与左侧对称 (四周留白 + 贴窗口边缘) */
 body:is(.mod-macos,.adaptive-mode-off):not(.is-mobile) .mod-sidedock.mod-right-split {
-  margin: 8px 8px 8px 8px !important;
+  margin: var(--onepage-sidebar-gap) !important;
   height: -webkit-fill-available !important;
   border-radius: var(--radius-window, var(--radius-m));
   overflow: hidden;
@@ -7895,7 +8720,7 @@ body:is(.mod-macos,.adaptive-mode-off):not(.is-mobile).is-focused.is-translucent
    改成无条件弱化：8% / 20% 的不透明度差在视觉上就是「弱化」，而现实中激活的几乎总是笔记，
    唯一差别是非笔记视图（画布 / 图谱 / PDF）激活时侧栏也会弱化一点 —— 观感一致，无功能影响。 */
 .workspace-split.mod-sidedock {
-  opacity: 0.92;
+  opacity: var(--onepage-dim-opacity);
 }
 .workspace-split.mod-sidedock:hover,
 .workspace-split.mod-sidedock:focus-within {
@@ -7904,7 +8729,7 @@ body:is(.mod-macos,.adaptive-mode-off):not(.is-mobile).is-focused.is-translucent
 
 /* 主编辑区的其它 tab: 轻微弱化(可读), 悬停恢复 */
 .mod-root .workspace-tab-header:not(.is-active) {
-  opacity: 0.8;
+  opacity: var(--onepage-dim-opacity-tab);
 }
 .mod-root .workspace-tab-header:not(.is-active):hover {
   opacity: 1;
@@ -7914,12 +8739,12 @@ body:is(.mod-macos,.adaptive-mode-off):not(.is-mobile).is-focused.is-translucent
 
 /* 去掉 Cupertino 的 80px 内缩, 让 tab 靠到最左边 */
 .mod-root .workspace-tab-header-container-inner {
-  padding-left: 6px !important;
+  padding-left: var(--onepage-tab-inset) !important;
 }
 
 /* 圆角: 868px 胶囊 → 6px 小圆角 (更极客) */
 .workspace-tab-header {
-  border-radius: 6px !important;
+  border-radius: var(--onepage-tab-radius) !important;
 }
 
 /* tab: 不要任何边框/描边
@@ -7958,18 +8783,18 @@ body:is(.mod-macos,.adaptive-mode-off):not(.is-mobile).is-focused.is-translucent
 
 /* 暖棕·冷锚 (暖底 + 冷青绿强调, 照搬暖白纸张的冷暖对比结构) */
 body.theme-dark {
-  --background-primary: #262322 !important;
-  --background-primary-alt: color-mix(in srgb, #262322, white 3%) !important;
-  --background-secondary: color-mix(in srgb, #262322, white 5%) !important;
-  --background-secondary-alt: color-mix(in srgb, #262322, white 8%) !important;
-  --background-tertiary: #2f2b29 !important;
-  --color-base-00: #242120 !important;
-  --color-base-10: #2b2725 !important;
-  --color-base-20: #2f2b29 !important;
-  --color-base-25: #34302e !important;
-  --text-normal: #cfc7bd !important;
-  --text-muted: #948d83 !important;
-  --text-faint: #6b665e !important;
+  --background-primary: var(--onepage-bg-primary) !important;
+  --background-primary-alt: var(--onepage-bg-primary-alt) !important;
+  --background-secondary: var(--onepage-bg-secondary) !important;
+  --background-secondary-alt: var(--onepage-bg-secondary-alt) !important;
+  --background-tertiary: var(--onepage-bg-tertiary) !important;
+  --color-base-00: var(--onepage-base-00) !important;
+  --color-base-10: var(--onepage-base-10) !important;
+  --color-base-20: var(--onepage-base-20) !important;
+  --color-base-25: var(--onepage-base-25) !important;
+  --text-normal: var(--onepage-text-normal) !important;
+  --text-muted: var(--onepage-text-muted) !important;
+  --text-faint: var(--onepage-text-faint) !important;
   /* 强调改冷色: 青绿 */
   /* 强调色可经 Style Settings 覆盖: 精确 hex 走 onepage-accent-hex, 通道走 hsl/rgb split; 未设置时回退主题默认值 */
   --text-accent: var(--onepage-accent-hex, #6db3a3) !important;
@@ -7985,13 +8810,13 @@ body.theme-dark {
   --interactive-accent-hover: var(--accent-hover) !important;
   /* 彩色排版: 以暖白纸张标题色系为基础, 各提亮一档适配暗底 (亮暗同源) */
   /* 彩色排版: h2 深紫/h3 深青绿, 都与 h1 皇家蓝、h4 深陶土同为饱和不显白的色系 */
-  --typo-h1: #4F74AF !important;
-  --typo-h2: #8567BD !important;
-  --typo-h3: #4E9A8A !important;
-  --typo-h4: #C0765E !important;
-  --typo-h5: #C99B5E !important;
-  --typo-h6: #8A8478 !important;
-  --typo-bold: #E89A60 !important;
+  --typo-h1: var(--onepage-typo-h1) !important;
+  --typo-h2: var(--onepage-typo-h2) !important;
+  --typo-h3: var(--onepage-typo-h3) !important;
+  --typo-h4: var(--onepage-typo-h4) !important;
+  --typo-h5: var(--onepage-typo-h5) !important;
+  --typo-h6: var(--onepage-typo-h6) !important;
+  --typo-bold: var(--onepage-bold-color) !important;
   --typo-italic: #A6BA9D !important;
   /* graph 适配 */
   --graph-node-tag: var(--text-accent) !important;
@@ -8005,18 +8830,18 @@ body.theme-dark {
 
 /* 暖白纸张 */
 body.theme-light {
-  --background-primary: #faf7f1 !important;
-  --background-primary-alt: #faf7f1 !important;
-  --background-secondary: #f3efe7 !important;
-  --background-secondary-alt: #efeae1 !important;
-  --background-tertiary: #ede8de !important;
-  --color-base-00: #f8f5ef !important;
-  --color-base-10: #f2eee6 !important;
-  --color-base-20: #eae5db !important;
-  --color-base-25: #e2dcd0 !important;
-  --text-normal: #3d3730 !important;
-  --text-muted: #857d70 !important;
-  --text-faint: #c0b8ab !important;
+  --background-primary: var(--onepage-bg-primary) !important;
+  --background-primary-alt: var(--onepage-bg-primary-alt) !important;
+  --background-secondary: var(--onepage-bg-secondary) !important;
+  --background-secondary-alt: var(--onepage-bg-secondary-alt) !important;
+  --background-tertiary: var(--onepage-bg-tertiary) !important;
+  --color-base-00: var(--onepage-base-00) !important;
+  --color-base-10: var(--onepage-base-10) !important;
+  --color-base-20: var(--onepage-base-20) !important;
+  --color-base-25: var(--onepage-base-25) !important;
+  --text-normal: var(--onepage-text-normal) !important;
+  --text-muted: var(--onepage-text-muted) !important;
+  --text-faint: var(--onepage-text-faint) !important;
   --text-accent: var(--onepage-accent-hex, #0e6e63) !important;  /* 深青强调色, 与暖棕正文区分明显 */
   --accent: var(--text-accent) !important;
   --color-accent-rgb: var(--onepage-accent-rgb-r, 14), var(--onepage-accent-rgb-g, 110), var(--onepage-accent-rgb-b, 99) !important;
@@ -8038,21 +8863,37 @@ body.theme-light {
   --graph-color-3: var(--text-muted) !important;
   /* 彩色排版: 标题 / 加粗 / 斜体 */
   /* 彩色排版: 标题 / 加粗 / 斜体 (渲染规则见文件末尾「通用彩色排版」) */
-  --typo-h1: #1D345C;
-  --typo-h2: #52377A;
-  --typo-h3: #0e6e63;
-  --typo-h4: #CE5567;
-  --typo-h5: #9C6B1E;
-  --typo-h6: #8A8378;
-  --typo-bold: #C2410C;
+  --typo-h1: var(--onepage-typo-h1);
+  --typo-h2: var(--onepage-typo-h2);
+  --typo-h3: var(--onepage-typo-h3);
+  --typo-h4: var(--onepage-typo-h4);
+  --typo-h5: var(--onepage-typo-h5);
+  --typo-h6: var(--onepage-typo-h6);
+  --typo-bold: var(--onepage-bold-color);
   --typo-italic: #4A704F;  /* 深鼠尾草绿, 提升斜体区分度 */
+}
+
+/* ---------- 阅读宽度 (Style Settings: 内容宽度 / 强制限宽) ----------
+
+   内容宽度本身不需要规则：--line-width 已在 src/20-tokens.css 接到
+   --onepage-line-width，--file-line-width 由基座从 --line-width 派生。
+
+   但 Obsidian 只在开启「设置 → 编辑器 → 可读行长度」时才会用 --file-line-width 限宽；
+   关闭时正文是 100% 全宽，滑块看似「调了没反应」（真实用户反馈）。
+   开启「强制限宽」后，两种情况都按同一行宽居中。
+   默认无 .force-readable-width 类 → 不命中，行为与以前完全一致。 */
+body.force-readable-width .markdown-source-view.mod-cm6:not(.is-readable-line-width) .cm-sizer,
+body.force-readable-width .markdown-preview-view:not(.is-readable-line-width) .markdown-preview-sizer {
+  width: 100%;
+  max-width: var(--file-line-width);
+  margin-inline: auto !important;
 }
 
 /* ---------- 11. 演示模式 (Style Settings 开关 + 热键) ---------- */
 
-/* 演示时: 加宽可读行宽 */
+/* 演示时: 加宽可读行宽（取演示行宽与正文行宽的较大者, 避免用户调宽正文后演示反而变窄） */
 body.demo-mode {
-  --file-line-width: 880px !important;
+  --file-line-width: max(var(--onepage-demo-line-width), var(--onepage-line-width)) !important;
 }
 
 /* 演示时: 按「可读行长度」开关判定顶部留白
@@ -8060,25 +8901,25 @@ body.demo-mode {
    - 未开启 → 内容全宽铺满, 加顶部留白避免文字被窗口按钮遮挡 */
 body.demo-mode .markdown-source-view.mod-cm6:not(.is-readable-line-width) .cm-sizer,
 body.demo-mode .markdown-preview-view:not(.is-readable-line-width) {
-  padding-top: 56px !important;
+  padding-top: var(--onepage-demo-padding-top) !important;
 }
 
 /* 放大字号 + 舒展行距 (编辑/阅读视图都生效) */
 /* 字号可经 Style Settings「演示模式字号」调整, 未设置时回退 24px */
 body.demo-mode .markdown-source-view,
 body.demo-mode .markdown-preview-view {
-  font-size: var(--onepage-demo-font, 24px) !important;
-  line-height: 1.9 !important;
+  font-size: var(--onepage-demo-font) !important;
+  line-height: var(--onepage-demo-line-height) !important;
 }
 
 /* 标题更大 (按演示字号比例缩放, 避免 em 叠加爆大; 默认字号下 h1 对齐文档标题 36px) */
-body.demo-mode .markdown-preview-view h1 { font-size: calc(var(--onepage-demo-font, 24px) * 1.5) !important; }
-body.demo-mode .markdown-preview-view h2 { font-size: calc(var(--onepage-demo-font, 24px) * 1.25) !important; }
-body.demo-mode .markdown-preview-view h3 { font-size: calc(var(--onepage-demo-font, 24px) * 1.08) !important; }
-body.demo-mode .markdown-preview-view h4 { font-size: calc(var(--onepage-demo-font, 24px) * 1) !important; }
-body.demo-mode .markdown-source-view .cm-header-1 { font-size: calc(var(--onepage-demo-font, 24px) * 1.5) !important; }
-body.demo-mode .markdown-source-view .cm-header-2 { font-size: calc(var(--onepage-demo-font, 24px) * 1.25) !important; }
-body.demo-mode .markdown-source-view .cm-header-3 { font-size: calc(var(--onepage-demo-font, 24px) * 1.08) !important; }
+body.demo-mode .markdown-preview-view h1 { font-size: calc(var(--onepage-demo-font) * 1.5) !important; }
+body.demo-mode .markdown-preview-view h2 { font-size: calc(var(--onepage-demo-font) * 1.25) !important; }
+body.demo-mode .markdown-preview-view h3 { font-size: calc(var(--onepage-demo-font) * 1.08) !important; }
+body.demo-mode .markdown-preview-view h4 { font-size: calc(var(--onepage-demo-font) * 1) !important; }
+body.demo-mode .markdown-source-view .cm-header-1 { font-size: calc(var(--onepage-demo-font) * 1.5) !important; }
+body.demo-mode .markdown-source-view .cm-header-2 { font-size: calc(var(--onepage-demo-font) * 1.25) !important; }
+body.demo-mode .markdown-source-view .cm-header-3 { font-size: calc(var(--onepage-demo-font) * 1.08) !important; }
 
 /* 隐藏左侧栏 / 状态栏 / 标题栏 / 标签栏 → 保留右侧目录 */
 body.demo-mode .mod-sidedock.mod-left-split,
@@ -8310,7 +9151,7 @@ body.properties-collapsed :is(.markdown-source-view, .markdown-preview-view) .me
 
 /* 收窄每级缩进 (Notion 风格: 克制缩进, 无图标无引导线) */
 .nav-files-container .tree-item-children {
-  margin-left: 8px !important;
+  margin-left: var(--onepage-tree-indent) !important;
   padding-left: 3px !important;
 }
 
@@ -8324,8 +9165,8 @@ body.properties-collapsed :is(.markdown-source-view, .markdown-preview-view) .me
 
 /* 激活文件: 强调色底(弱化) + 强调色文字(弱化) — 还原原风格并降一档 */
 .nav-file-title.is-active {
-  background-color: color-mix(in srgb, var(--text-accent) 10%, transparent) !important;
-  color: color-mix(in srgb, var(--text-accent) 72%, var(--text-normal)) !important;
+  background-color: color-mix(in srgb, var(--text-accent) var(--onepage-active-tint), transparent) !important;
+  color: color-mix(in srgb, var(--text-accent) var(--onepage-active-text), var(--text-normal)) !important;
   border-radius: 6px;
   box-shadow: none !important;
 }
@@ -8333,14 +9174,14 @@ body.properties-collapsed :is(.markdown-source-view, .markdown-preview-view) .me
 /* ===== 大纲 (Outline) ===== */
 /* 收窄每级缩进 */
 [data-type="outline"] .tree-item-children {
-  margin-left: 7px !important;
+  margin-left: var(--onepage-outline-indent) !important;
   padding-left: 3px !important;
 }
 
 /* 当前所在标题: 强调色底(弱化) + 强调色文字(弱化) */
 [data-type="outline"] .tree-item-self.is-active {
-  background-color: color-mix(in srgb, var(--text-accent) 10%, transparent) !important;
-  color: color-mix(in srgb, var(--text-accent) 72%, var(--text-normal)) !important;
+  background-color: color-mix(in srgb, var(--text-accent) var(--onepage-active-tint), transparent) !important;
+  color: color-mix(in srgb, var(--text-accent) var(--onepage-active-text), var(--text-normal)) !important;
   border-radius: 6px;
   box-shadow: none !important;
 }
@@ -8422,17 +9263,17 @@ body.theme-dark {
 /* 表头: 克制主色文字 + 加粗, 无单元格边框, 只留分隔线 */
 .markdown-rendered th {
   font-weight: 600;
-  color: color-mix(in srgb, var(--text-accent) 55%, var(--text-muted)) !important;
+  color: color-mix(in srgb, var(--text-accent) var(--onepage-head-text), var(--text-muted)) !important;
   background: transparent !important;
   border: none !important;
-  border-bottom: 2px solid color-mix(in srgb, var(--text-accent) 45%, var(--text-muted)) !important;
-  padding: 8px 12px;
+  border-bottom: 2px solid color-mix(in srgb, var(--text-accent) var(--onepage-head-line), var(--text-muted)) !important;
+  padding: var(--onepage-table-pad-y) var(--onepage-table-pad-x);
 }
 
 /* 数据行: 格子(纵线+横线) */
 .markdown-rendered td {
-  border: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent) !important;
-  padding: 8px 12px;
+  border: 1px solid color-mix(in srgb, var(--text-muted) var(--onepage-grid-line), transparent) !important;
+  padding: var(--onepage-table-pad-y) var(--onepage-table-pad-x);
 }
 
 /* Tab 分隔: 未选中 tab 之间加细微竖线, 避免连成一片 */
@@ -8525,16 +9366,16 @@ body.theme-dark {
   --bases-table-header-background: var(--background-primary);
   /* 表头单元格悬浮: 与行悬浮/当前行高亮同配方 (accent 6%) */
   --bases-table-header-background-hover: color-mix(in srgb, var(--text-accent) 6%, transparent);
-  --bases-table-header-color: color-mix(in srgb, var(--text-accent) 55%, var(--text-muted));
+  --bases-table-header-color: color-mix(in srgb, var(--text-accent) var(--onepage-head-text), var(--text-muted));
   --bases-table-header-weight: 600;
   /* 数据格: 1px hairline 全网格 (同 td); 行线/列线颜色都走这组变量, 作用域限 bases */
-  --onepage-bases-grid: color-mix(in srgb, var(--text-muted) 15%, transparent);
-  --onepage-bases-header-line: color-mix(in srgb, var(--text-accent) 45%, var(--text-muted));
+  --onepage-bases-grid: color-mix(in srgb, var(--text-muted) var(--onepage-grid-line), transparent);
+  --onepage-bases-header-line: color-mix(in srgb, var(--text-accent) var(--onepage-head-line), var(--text-muted));
   --bases-table-column-border-width: 1px;
   --bases-table-row-border-width: 1px;
   --table-border-color: var(--onepage-bases-grid);
   --bases-table-border-color: var(--onepage-bases-grid);
-  --bases-table-row-height: 34px;  /* ≈ 表格 8px padding 行高 */
+  --bases-table-row-height: var(--onepage-bases-row-height);  /* ≈ 表格行高 */
   /* 行悬浮: 与「当前行高亮」同配方 (accent 6% 透明), 全主题同一反馈色 */
   --bases-table-row-background-hover: color-mix(in srgb, var(--text-accent) 6%, transparent);
   /* 分组标题 (迷你章节): 属性名=极淡小标签, 值=放大加粗当主角; 组间呼吸 10→18px */
@@ -8544,7 +9385,7 @@ body.theme-dark {
   --bases-group-heading-property-color: var(--text-faint);
   --bases-group-heading-value-size: var(--font-ui-medium);
   --bases-group-heading-value-weight: 600;
-  --bases-table-group-gap: 18px;
+  --bases-table-group-gap: var(--onepage-bases-group-gap);
   /* 字号: 对齐主题 markdown 表格(--table-text-size=0.933em); 官方默认是更小的
      --font-smaller(0.875em), 会比正文小一档、比表格又小半档, 观感偏小 */
   --bases-table-font-size: var(--table-text-size);
@@ -8607,7 +9448,7 @@ body.theme-dark {
 /* 4) 卡片视图: 封面贴边出血 + hairline 接缝 + 标题 600 + 组名条与表格同脸
    + hover 轻抬升/按压回落 (默认: 1px 灰环无质感, 封面顶部缩进 8px 像裱在卡里) */
 .bases-view {
-  --bases-cards-radius: 12px;
+  --bases-cards-radius: var(--onepage-bases-card-radius);
   --bases-cards-shadow: 0 0 0 1px color-mix(in srgb, var(--text-muted) 16%, transparent);
   --bases-cards-shadow-hover: 0 0 0 1px color-mix(in srgb, var(--text-muted) 30%, transparent), var(--shadow-tactile, var(--shadow-s));
 }
@@ -8681,34 +9522,34 @@ body:is(.mod-macos,.adaptive-mode-off):not(.is-mobile):not(.is-translucent):not(
    判定开关: 半透明开启(is-translucent, 仅 macOS 原生支持) → 保持上方毛玻璃卡片样式, 本块不介入
              （⚠️ 功能区合并规则已不再排除透明模式，见下方「窗口透明时同样让功能区落在卡片上」）
              半透明关闭(非 is-translucent, 含 Win/Linux)   → 各平台统一显示实色悬浮卡片
-   浅色: 卡片 #f4f2ee, 整体背景 #e9e9e9 (用户指定)
-   暗色: 卡片 #2d2a28, 整体背景 #1e1c1b (暂用同关系暗色对应, 待定)
+   浅色: 卡片 var(--onepage-sidebar-bg)（默认 #f4f2ee）, 整体背景 var(--onepage-window-bg)（默认 #e9e9e9）(用户指定)
+   暗色: 卡片 / 整体背景同样由这两个令牌派生（默认 #2d2a28 / #1e1c1b）
    Win/Linux 没有 is-translucent, 边栏卡片(留白/圆角/投影)原被 :is(.mod-macos,.adaptive-mode-off)
    锁死而整体失效 → 这里用 :not(.is-translucent) 在全部桌面平台兜底复刻: 8px 留白 + 圆角 +
    柔和投影 + 发丝描边; 折叠态不参与, 避免窄条出现奇怪留白 */
 
 /* 整体背景: 卡片四周留白/窗口底色 */
 body:not(.is-translucent):not(.is-mobile) {
-  background-color: #e9e9e9 !important;
+  background-color: var(--onepage-window-bg) !important;
 }
 body.theme-dark:not(.is-translucent):not(.is-mobile) {
-  background-color: #1e1c1b !important;
+  background-color: var(--onepage-window-bg) !important;
 }
 
 /* 左右悬浮卡片 */
 body:not(.is-translucent):not(.is-mobile) .workspace-split.mod-sidedock.mod-left-split:not(.is-sidedock-collapsed),
 body:not(.is-translucent):not(.is-mobile) .workspace-split.mod-sidedock.mod-right-split:not(.is-sidedock-collapsed) {
-  margin: 8px 8px 8px 8px !important;
+  margin: var(--onepage-sidebar-gap) !important;
   border-radius: var(--radius-window, var(--radius-m)) !important;
   overflow: hidden !important;
   height: -webkit-fill-available !important;
-  background-color: #f4f2ee !important;
+  background-color: var(--onepage-sidebar-bg) !important;
   box-shadow: 0 8px 24px rgba(0,0,0,0.06), 0 2px 6px rgba(0,0,0,0.03) !important;
   border: 1px solid color-mix(in srgb, var(--text-muted) 14%, transparent) !important;
 }
 body.theme-dark:not(.is-translucent):not(.is-mobile) .workspace-split.mod-sidedock.mod-left-split:not(.is-sidedock-collapsed),
 body.theme-dark:not(.is-translucent):not(.is-mobile) .workspace-split.mod-sidedock.mod-right-split:not(.is-sidedock-collapsed) {
-  background-color: #2d2a28 !important;
+  background-color: var(--onepage-sidebar-bg) !important;
   box-shadow: 0 8px 24px rgba(0,0,0,0.28), 0 2px 6px rgba(0,0,0,0.14) !important;
 }
 
@@ -8729,7 +9570,7 @@ body:not(.is-mobile) .workspace-split.mod-sidedock.mod-right-split > .workspace-
 body:not(.is-translucent):not(.is-mobile).show-ribbon:not(.hover-ribbon) .workspace-split.mod-sidedock.mod-left-split:not(.is-sidedock-collapsed) {
   /* --ribbon-width 是 Obsidian 本体变量(桌面 44px); 加 fallback 防止老版本/异常构建下取不到值
      导致整条 calc() 失效、卡片不再向左延伸 */
-  margin-left: calc(-1 * var(--ribbon-width, 44px) + 8px) !important;
+  margin-left: calc(-1 * var(--ribbon-width, 44px) + var(--onepage-sidebar-gap)) !important;
   padding-left: var(--ribbon-width, 44px) !important;
 }
 /* 功能区: 透明浮在卡片上, 图标在上层; 贴左边框(x=0), 图标经 padding-left 落在卡片上;
@@ -8821,11 +9662,11 @@ body.is-translucent:not(.is-mobile).show-ribbon:not(.hover-ribbon) .workspace-sp
    与上游 Cupertino 同名开关一致。左侧/右侧都染色, 保持卡片观感 */
 body:not(.is-translucent):not(.is-mobile).colorful-frame.theme-light .workspace-split.mod-sidedock.mod-left-split:not(.is-sidedock-collapsed),
 body:not(.is-translucent):not(.is-mobile).colorful-frame.theme-light .workspace-split.mod-sidedock.mod-right-split:not(.is-sidedock-collapsed) {
-  background-color: color-mix(in srgb, #f4f2ee 92%, var(--text-accent)) !important;
+  background-color: color-mix(in srgb, var(--onepage-sidebar-bg) 92%, var(--text-accent)) !important;
 }
 body:not(.is-translucent):not(.is-mobile).colorful-frame.theme-dark .workspace-split.mod-sidedock.mod-left-split:not(.is-sidedock-collapsed),
 body:not(.is-translucent):not(.is-mobile).colorful-frame.theme-dark .workspace-split.mod-sidedock.mod-right-split:not(.is-sidedock-collapsed) {
-  background-color: color-mix(in srgb, #2d2a28 92%, var(--text-accent)) !important;
+  background-color: color-mix(in srgb, var(--onepage-sidebar-bg) 92%, var(--text-accent)) !important;
 }
 
 /* ---------- Style Settings「始终显示 Vault 选择」: 取消上游悬停才显示 ----------
@@ -8842,12 +9683,12 @@ body.vault-switcher-always:not(.is-mobile) .mod-sidedock.mod-left-split .workspa
   pointer-events: auto !important;
   transform: none !important;
 }
-/* 不透明底色: 非透明模式 = OnePage 边栏卡片同色(浅 #f4f2ee / 暗 #2d2a28), 无缝融入 */
+/* 不透明底色: 非透明模式 = OnePage 边栏卡片同色(var(--onepage-sidebar-bg)), 无缝融入 */
 body.vault-switcher-always:not(.is-mobile):not(.is-translucent) .mod-sidedock.mod-left-split .workspace-sidedock-vault-profile {
-  background-color: #f4f2ee !important;
+  background-color: var(--onepage-sidebar-bg) !important;
 }
 body.vault-switcher-always:not(.is-mobile):not(.is-translucent).theme-dark .mod-sidedock.mod-left-split .workspace-sidedock-vault-profile {
-  background-color: #2d2a28 !important;
+  background-color: var(--onepage-sidebar-bg) !important;
 }
 /* 不透明底色: 透明(毛玻璃)模式 = 近不透明实底（不用 blur）
    ⚠️ 透明模式下不用 backdrop-filter：macOS 窗口 vibrancy 与 backdrop-filter 已知冲突
@@ -8857,6 +9698,46 @@ body.vault-switcher-always:not(.is-mobile).is-translucent .mod-sidedock.mod-left
   background-color: color-mix(in srgb, var(--background-primary) 94%, transparent) !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
+}
+
+/* ---------- Style Settings 颜色控件的浅/暗预览底 ----------
+
+   插件的 themed-color 控件是两个块（`.themed-color-wrapper > .theme-light` /
+   `.theme-dark`），底色写的是 `background: var(--background-primary)`。
+   但 OnePage 的 `--background-primary` 只定义在 `body.theme-light/dark` 上，
+   预览块不是 body → 只能继承**当前模式**的值 ⇒ 浅/暗两块底色完全相同（实测都是 rgb(250,247,241)），
+   用户看不出「这个颜色在暗色下是什么样」。
+
+   这里用两套不随模式变化的纸面常量钉住底色，并补一圈发丝描边让色块边界清楚。
+   （不用 var(--onepage-bg-primary)：它在当前模式下只有一个值，同样会让两块一样） */
+/* 预览底：类名 + 位置双保险。插件的 `.theme-light` / `.theme-dark` 是稳定契约，
+   但旧版本或结构变化时用 nth-child 也能命中；`--onepage-preview-*` 是固定纸面常量。 */
+.themed-color-wrapper > .theme-light,
+.themed-color-wrapper > div:nth-child(1) {
+  background-color: var(--onepage-preview-bg-light) !important;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, #857d70 22%, transparent);
+}
+.themed-color-wrapper > .theme-dark,
+.themed-color-wrapper > div:nth-child(2) {
+  background-color: var(--onepage-preview-bg-dark) !important;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, #cfc7bd 22%, transparent);
+}
+
+/* 重置按钮：强制 flex 居中。
+   插件只写了 padding: 9px + line-height: 1，svg 仍是 inline 基线对齐；
+   叠上基座的 `.clickable-icon { padding: 10px }` 与全局 svg 规则后，图标会贴近下缘。
+   flex + align-items:center 不依赖 baseline，不管字体/行高怎么变都居中。 */
+.themed-color-wrapper .pickr-reset > button {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 9px !important;
+  line-height: 1 !important;
+}
+.themed-color-wrapper .pickr-reset > button svg {
+  display: block !important;
+  margin: 0 !important;
+  vertical-align: middle !important;
 }
 
 /* ---------- 17. Cupertino 4.1.0 适配层 ----------
@@ -8923,43 +9804,47 @@ body.theme-dark .callout:not([data-callout=note-toolbar], [data-callout=banner-i
    两端保持同一色相关系：石板蓝(陈述) / 青灰绿(摘要) / 赭金(技巧) / 苔绿(成功) /
    藤紫(疑问) / 琥珀(警告) / 砖红(失败·危险·缺陷) / 暖灰褐(引用)。 */
 body {
-  --callout-default:   #3d6b85;   /* note（无类型的默认） */
-  --callout-info:      #3d6b85;
-  --callout-todo:      #4a6d8c;
-  --callout-summary:   #4e7a72;   /* abstract / summary / tldr */
-  --callout-tip:       #8a6a2c;   /* tip / hint */
-  --callout-important: #a97323;
-  --callout-success:   #4e7a4e;   /* success / check / done */
-  --callout-question:  #6a5a85;   /* question / help / faq */
-  --callout-warning:   #a97323;   /* warning / caution / attention */
-  --callout-fail:      #a5523f;   /* failure / fail / missing */
-  --callout-error:     #9c4436;   /* danger / error */
-  --callout-bug:       #8b4a3c;
-  --callout-example:   #57786f;
-  --callout-quote:     #7d7368;   /* quote / cite */
+  --callout-default:   var(--onepage-callout-default);   /* note（无类型的默认） */
+  --callout-info:      var(--onepage-callout-info);
+  --callout-todo:      var(--onepage-callout-todo);
+  --callout-summary:   var(--onepage-callout-summary);   /* abstract / summary / tldr */
+  --callout-tip:       var(--onepage-callout-tip);   /* tip / hint */
+  --callout-important: var(--onepage-callout-important);
+  --callout-success:   var(--onepage-callout-success);   /* success / check / done */
+  --callout-question:  var(--onepage-callout-question);   /* question / help / faq */
+  --callout-warning:   var(--onepage-callout-warning);   /* warning / caution / attention */
+  --callout-fail:      var(--onepage-callout-fail);   /* failure / fail / missing */
+  --callout-error:     var(--onepage-callout-error);   /* danger / error */
+  --callout-bug:       var(--onepage-callout-bug);
+  --callout-example:   var(--onepage-callout-example);
+  --callout-quote:     var(--onepage-callout-quote);   /* quote / cite */
 }
 body.theme-dark {
-  --callout-default:   #7fa7c4;
-  --callout-info:      #7fa7c4;
-  --callout-todo:      #84a8c6;
-  --callout-summary:   #87b3a8;
-  --callout-tip:       #c9a86a;
-  --callout-important: #d3a765;
-  --callout-success:   #84b489;
-  --callout-question:  #ab97c8;
-  --callout-warning:   #d3a765;
-  --callout-fail:      #cb8272;
-  --callout-error:     #c76f5e;
-  --callout-bug:       #b8827a;
-  --callout-example:   #8fb0a4;
-  --callout-quote:     #a89b8d;
+  --callout-default:   var(--onepage-callout-default);
+  --callout-info:      var(--onepage-callout-info);
+  --callout-todo:      var(--onepage-callout-todo);
+  --callout-summary:   var(--onepage-callout-summary);
+  --callout-tip:       var(--onepage-callout-tip);
+  --callout-important: var(--onepage-callout-important);
+  --callout-success:   var(--onepage-callout-success);
+  --callout-question:  var(--onepage-callout-question);
+  --callout-warning:   var(--onepage-callout-warning);
+  --callout-fail:      var(--onepage-callout-fail);
+  --callout-error:     var(--onepage-callout-error);
+  --callout-bug:       var(--onepage-callout-bug);
+  --callout-example:   var(--onepage-callout-example);
+  --callout-quote:     var(--onepage-callout-quote);
 }
 
 /* ③ 底色：不再叠 --raised-background（那层 ~50% 透明渐变会把淡染冲成灰白，
    实测 15% 在玻璃下几乎看不出类型区别）→ 直接用「纸面 + 13% 墨」的实色淡染，
    内高光仍由上面的 inset box-shadow 提供，所以不会变平。 */
 .callout:not([data-callout=note-toolbar], [data-callout=banner-icon]) {
-  background: color-mix(in srgb, var(--background-primary) 87%, var(--callout-color)) !important;
+  background: color-mix(
+    in srgb,
+    var(--background-primary) calc(100% - var(--onepage-callout-tint)),
+    var(--callout-color)
+  ) !important;
 }
 
 /* ④ 垂直节奏：主正文里**不给 callout 加额外 margin**。

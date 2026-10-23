@@ -1,0 +1,262 @@
+/* =====================================================================
+   OnePage 设计令牌（Design Tokens）
+   =====================================================================
+
+   本文件是「可定制项」的单一真相源（single source of truth）。
+
+   - 每个令牌在这里给出 **OnePage 的固化默认值** —— 不装 Style Settings 也完整可用；
+   - src/90-onepage.css 只引用令牌，不再写字面值（新加样式时请遵守）；
+   - Style Settings 的 @settings 项 id 与令牌同名（去掉 --onepage- 前缀），插件通过
+     `body.css-settings-manager` / `body.theme-light.css-settings-manager` /
+     `body.theme-dark.css-settings-manager` 注入同名变量（特异性更高，后写），
+     从而覆盖这里的默认值。它**总是注入 default**（不是只在用户改过之后），
+     所以 @settings 的 default 必须与这里的默认值逐字一致。
+
+   约定
+   ----
+   1. 命名：`--onepage-<组>-<项>`，组 = color | type | layout | component | demo
+   2. 令牌只在本文件定义；90-onepage.css 引用时不写 fallback（避免双份默认值漂移，
+      也便于 scripts/verify.mjs 的变量体检发现拼写错误）
+   3. 需要区分亮/暗的令牌：浅色值写在 `body`，暗色覆盖写在 `body.theme-dark`
+   4. 加令牌前先问一句：这是「用户偏好」还是「主题身份」？
+      身份（暖白/暖棕纸面色、Callout 墨色 14 色、彩色排版色相、毛玻璃架构）
+      **不进令牌** —— 想换身份请换主题或用 CSS snippet，否则主题会失去一致性。
+
+   接线（文件末尾）
+   ----------------
+   有些可调项是「基座 / Obsidian 自己维护的变量」（--line-width、--p-spacing …）。
+   对这类变量，令牌不另起炉灶，而是让原变量指向令牌：值一致 → 默认视觉零变化，
+   用户改令牌 → 基座和定制层同时跟随，不会出现「只改了一半」的割裂。
+   ===================================================================== */
+
+/* ---------------------------------------------------------------------
+   1. 颜色
+   --------------------------------------------------------------------- */
+body {
+  /* 加粗（提醒）色：正文 **加粗** 与 `**…**` 的文字颜色。
+     浅色「暖白纸张」用深陶红；暗色「暖棕·冷锚」提亮降彩度，避免暗底振动。 */
+  --onepage-bold-color: #c2410c;
+
+  /* 标题色（彩色排版）。未定义时回退 currentColor；关闭开关见「关闭彩色排版」。 */
+  --onepage-typo-h1: #1d345c;
+  --onepage-typo-h2: #52377a;
+  --onepage-typo-h3: #0e6e63;
+  --onepage-typo-h4: #ce5567;
+  --onepage-typo-h5: #9c6b1e;
+  --onepage-typo-h6: #8a8378;
+
+  /* 纸面（背景）层级：内容底 / 侧栏·菜单底 / 输入框·悬停底。
+     --background-primary-alt 派生自 primary（浅色两者同值），其余层级独立。 */
+  --onepage-bg-primary: #faf7f1;
+  --onepage-bg-secondary: #f3efe7;
+  --onepage-bg-tertiary: #ede8de;
+  /* 不开放：primary-alt 与主背景同值；secondary-alt 是独立的浅一阶 */
+  --onepage-bg-primary-alt: var(--onepage-bg-primary);
+  --onepage-bg-secondary-alt: #efeae1;
+
+  /* Callout「墨色」：浅色用低彩度、偏暗的墨，压在暖白纸面上不发贴纸。
+     只改这组变量即可，图标 / 标题 / 淡染底 / 内嵌表格会自动跟随。 */
+  --onepage-callout-default: #3d6b85;
+  --onepage-callout-info: #3d6b85;
+  --onepage-callout-todo: #4a6d8c;
+  --onepage-callout-summary: #4e7a72;
+  --onepage-callout-tip: #8a6a2c;
+  --onepage-callout-important: #a97323;
+  --onepage-callout-success: #4e7a4e;
+  --onepage-callout-question: #6a5a85;
+  --onepage-callout-warning: #a97323;
+  --onepage-callout-fail: #a5523f;
+  --onepage-callout-error: #9c4436;
+  --onepage-callout-bug: #8b4a3c;
+  --onepage-callout-example: #57786f;
+  --onepage-callout-quote: #7d7368;
+
+  /* 正文文字：normal = 正文 / muted = 次要（属性名、状态栏） / faint = 弱化（占位、行号） */
+  --onepage-text-normal: #3d3730;
+  --onepage-text-muted: #857d70;
+  --onepage-text-faint: #c0b8ab;
+
+  /* Obsidian 原生控件的明度阶：00 最接近内容底，25 最远（边框 / 阴影 / 控件底） */
+  --onepage-base-00: #f8f5ef;
+  --onepage-base-10: #f2eee6;
+  --onepage-base-20: #eae5db;
+  --onepage-base-25: #e2dcd0;
+
+  /* Callout 淡染强度：纸面 87% + 墨色 13%（13% = 1 - 87%）。
+     值越大越接近 Callout 主题色；调到 0 就是纯纸面（只剩内高光与投影）。 */
+  --onepage-callout-tint: 13%;
+
+  /* 侧栏卡片 / 窗口底色（非透明模式）。
+     「悬停才显示」的 Vault 选择、彩色侧边栏染层都从这两个值派生。 */
+  --onepage-sidebar-bg: #f4f2ee;
+  --onepage-window-bg: #e9e9e9;
+
+  /* 强调色淡染的三处用法：当前行高亮 / 选中文本 / 文件树·大纲的激活项 */
+  --onepage-active-line-tint: 6%;
+  --onepage-selection-tint: 30%;
+  --onepage-active-tint: 10%;
+  --onepage-active-text: 72%;
+
+  /* 表格网格语言：数据格 1px 线、表头文字、表头 2px 底线
+     （Bases 复用同一组，保证「表格 / 数据库」同脸） */
+  --onepage-grid-line: 15%;
+  --onepage-head-text: 55%;
+  --onepage-head-line: 45%;
+
+  /* Style Settings 颜色控件的预览块底色。
+     必须是**不随当前模式变化**的常量：插件把浅/暗两个色块画在同一个面板里，
+     若用 --onepage-bg-primary，两块会拿到同一个（当前模式的）值，看不出差异。
+     这是主题默认纸面，不跟随用户自定义背景（预览的语义是「在默认纸面上是什么样」）。 */
+  --onepage-preview-bg-light: #faf7f1;
+  --onepage-preview-bg-dark: #262322;
+}
+
+body.theme-dark {
+  --onepage-bold-color: #e89a60;
+  --onepage-sidebar-bg: #2d2a28;
+  --onepage-window-bg: #1e1c1b;
+
+  /* 彩色排版：亮/暗同源，各提亮一档适配暗底 */
+  --onepage-typo-h1: #4f74af;
+  --onepage-typo-h2: #8567bd;
+  --onepage-typo-h3: #4e9a8a;
+  --onepage-typo-h4: #c0765e;
+  --onepage-typo-h5: #c99b5e;
+  --onepage-typo-h6: #8a8478;
+
+  /* 纸面：暖棕底 + 逐级提亮（secondary / secondary-alt 由 primary 派生，见规则层） */
+  --onepage-bg-primary: #262322;
+  --onepage-bg-secondary: #312e2d;
+  --onepage-bg-tertiary: #2f2b29;
+  /* 不开放：两层 alt 由主背景派生 → 用户改主背景时自动跟随 */
+  --onepage-bg-primary-alt: color-mix(in srgb, var(--onepage-bg-primary), white 3%);
+  --onepage-bg-secondary-alt: color-mix(in srgb, var(--onepage-bg-primary), white 8%);
+
+  /* Callout「粉」：同一色相提亮降彩度，避免在暗底上振动 */
+  --onepage-callout-default: #7fa7c4;
+  --onepage-callout-info: #7fa7c4;
+  --onepage-callout-todo: #84a8c6;
+  --onepage-callout-summary: #87b3a8;
+  --onepage-callout-tip: #c9a86a;
+  --onepage-callout-important: #d3a765;
+  --onepage-callout-success: #84b489;
+  --onepage-callout-question: #ab97c8;
+  --onepage-callout-warning: #d3a765;
+  --onepage-callout-fail: #cb8272;
+  --onepage-callout-error: #c76f5e;
+  --onepage-callout-bug: #b8827a;
+  --onepage-callout-example: #8fb0a4;
+  --onepage-callout-quote: #a89b8d;
+
+  --onepage-text-normal: #cfc7bd;
+  --onepage-text-muted: #948d83;
+  --onepage-text-faint: #6b665e;
+
+  --onepage-base-00: #242120;
+  --onepage-base-10: #2b2725;
+  --onepage-base-20: #2f2b29;
+  --onepage-base-25: #34302e;
+}
+
+/* ---------------------------------------------------------------------
+   2. 排版
+   --------------------------------------------------------------------- */
+body {
+  /* 可读行宽（需开启「设置 → 编辑器 → 可读行长度」；
+     未开启时由 Style Settings 的「强制限宽」开关接管） */
+  --onepage-line-width: 700px;
+  /* wide / max 块（.wide、.table-wide …）的宽度基准 */
+  --onepage-line-width-wide: 50rem;
+  /* 段落间距（基座默认 1.25rem）。
+     ⚠️ 暂不进 Style Settings：基座的垂直节奏是「零 margin + 源码空行」，
+     --p-spacing 只影响「标题后首个块」与「标题下边框 padding」，
+     开放给用户会得到「调了几乎没反应」的差体验。保留接线，等基座改成
+     真实块间距（或换成标题间距项）时再评估。 */
+  --onepage-paragraph-spacing: 1.25rem;
+  /* 正文行高（OnePage 比基座 1.625 略松；Style Settings 直接注入同名变量） */
+  --line-height-normal: 1.7;
+  /* `==高亮==` 的浓度（Obsidian 1.14：6 种高亮色共用这个透明度） */
+  --onepage-highlight-opacity: 30%;
+
+  /* 行内代码：字号与圆角（正文 code 药丸） */
+  --onepage-code-size: 0.88em;
+  --onepage-code-radius: 5px;
+
+  /* 文件树 / 大纲的每级缩进（Notion 风格收窄，不含行内 padding） */
+  --onepage-tree-indent: 8px;
+  --onepage-outline-indent: 7px;
+}
+
+/* ---------------------------------------------------------------------
+   3. 布局
+   --------------------------------------------------------------------- */
+body {
+  /* 侧栏悬浮卡片：四周留白 + 圆角 */
+  --onepage-sidebar-gap: 8px;
+  --onepage-radius-window: 8px;
+
+  /* 主编辑器标签页：圆角 + 左缘内缩 */
+  --onepage-tab-radius: 6px;
+  --onepage-tab-inset: 6px;
+
+  /* 滚动条粗细（mac overlay 风格） */
+  --onepage-scrollbar-size: 8px;
+
+  /* 状态栏悬浮胶囊 */
+  --onepage-statusbar-height: 40px;
+  --onepage-statusbar-font-size: 11px;
+
+  /* 聚焦编辑时的弱化强度（1 = 不弱化） */
+  --onepage-dim-opacity: 0.92;
+  --onepage-dim-opacity-tab: 0.8;
+}
+
+/* ---------------------------------------------------------------------
+   4. 组件（表格 / Bases）
+   --------------------------------------------------------------------- */
+body {
+  --onepage-table-pad-y: 8px;
+  --onepage-table-pad-x: 12px;
+
+  --onepage-bases-row-height: 34px;
+  --onepage-bases-group-gap: 18px;
+  --onepage-bases-card-radius: 12px;
+}
+
+/* ---------------------------------------------------------------------
+   5. 演示模式
+   --------------------------------------------------------------------- */
+body {
+  /* 演示时正文放大字号（标题按比例缩放） */
+  --onepage-demo-font: 24px;
+  /* 演示行宽取「演示行宽」与「正文行宽」的较大者：
+     用户把正文调宽后，演示模式不会反而变窄。 */
+  --onepage-demo-line-width: 880px;
+  /* 未开启可读行宽时，顶部留给窗口按钮的空白 */
+  --onepage-demo-padding-top: 56px;
+  --onepage-demo-line-height: 1.9;
+}
+
+/* ---------------------------------------------------------------------
+   6. 接线：基座 / Obsidian 变量 → 令牌
+   ---------------------------------------------------------------------
+
+   值必须与基座当前值逐字一致，否则重构本身就会改变外观。
+   基座定义这些变量的位置（Cupertino 4.1.0）：
+     --line-width            6412  body
+     --line-width-wide       6416  body:not(.block-width-off)
+     --p-spacing             2919  @media screen, print { body }
+     --radius-window         3833  @media screen, print { body }
+   Obsidian 本体（1.14.4 app.css）：
+     --highlight-opacity     2372  body                                  */
+body {
+  --line-width: var(--onepage-line-width);
+  --p-spacing: var(--onepage-paragraph-spacing);
+  --radius-window: var(--onepage-radius-window);
+  --highlight-opacity: var(--onepage-highlight-opacity);
+}
+
+/* 与基座同特异性 + 后写，才能覆盖「关闭块宽」开关内的那一条 */
+body:not(.block-width-off) {
+  --line-width-wide: var(--onepage-line-width-wide);
+}

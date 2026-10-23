@@ -7,21 +7,29 @@ settings:
         description: |
             OnePage 基于 **Cupertino**，完整继承了其 Style Settings 自定义能力。
 
-            - **配色**：强调色（浅/暗）、彩色排版、彩色侧边栏
-            - **布局**：悬停功能区/侧栏、聚焦视图、Vault 选择常驻、状态栏悬浮等
-            - **演示**：演示模式（投屏）、演示字号
-            - **编辑器**：当前行高亮、横幅、块宽、字体特性等
-            - **无障碍**：自适应模式、对比度、动效、界面字号等
+            - **配色**：强调色、加粗提醒色、高亮浓度、彩色排版开关、彩色侧边栏；展开子组可逐项调标题色（6）、Callout 配色（14）、背景（5）、文字与控件灰阶（7）
+            - **排版**：内容宽度（含强制限宽）、正文行高
+            - **布局**：侧栏卡片留白/圆角；子组「侧栏行为」「标签页与状态栏」
+            - **演示**：演示模式（投屏）、演示字号、演示行宽
+            - **编辑器**：当前行高亮、属性面板、横幅、块宽、字体特性等
+            - **界面**：界面字号、图标尺寸、链接下划线
+            - **无障碍**：自适应模式、对比度、动效
+
+            配置较多，按上面的 7 个分组浏览即可；颜色类集中在「配色」下的 4 个折叠子组（标题色 / Callout 配色 / 背景色 / 文字与控件灰阶）。
 
             默认值即 OnePage 设计固化值，无需配置即可开箱即用；标签页默认靠左。
         description.en: |
             OnePage is built on **Cupertino** and inherits its full Style Settings customization.
 
-            - **Colors**: accent (light/dark), typographic colors, tinted sidebar
-            - **Layout**: hover ribbon/sidebar, focus view, always-visible vault switcher & status bar, etc.
-            - **Demo**: demo mode (presenting), demo font size
-            - **Editor**: active line, banner, block width, font variants, etc.
-            - **Accessibility**: adaptive mode, contrast, motion, UI font size, etc.
+            - **Colors**: accent, bold reminder color, highlight opacity, typographic color switch, tinted sidebar; expand sub-sections for headings (6), callouts (14), backgrounds (5) and text/surface shades (7)
+            - **Typography**: content width (with force readable width), body line height
+            - **Layout**: sidebar card gap/radius; sub-sections “Sidebar Behavior” and “Tabs & Status Bar”
+            - **Demo**: demo mode (presenting), demo font size, demo line width
+            - **Editor**: active line, properties, banner, block width, font variants, etc.
+            - **Interface**: UI font size, icon size, underlined links
+            - **Accessibility**: adaptive mode, contrast, motion
+
+            With this many options, browse the seven sections above; all color options live in the four collapsible sub-sections under Colors (headings, callouts, backgrounds, text & surfaces).
 
             Defaults match OnePage's fixed design — works out of the box without Style Settings; tabs default to left-aligned.
         type: info-text
@@ -38,8 +46,8 @@ settings:
         id: onepage-accent
         title: 强调色
         title.en: Accent Color
-        description: 浅色「暖白纸张」默认 #0e6e63（深青），暗色「暖棕·冷锚」默认 #6db3a3（浅青）。修改后强调色、链接、按钮、图形视图等同步变化
-        description.en: Light "Warm Paper" defaults to #0e6e63 (deep teal); dark "Warm Brown · Cool Anchor" defaults to #6db3a3 (light teal). Accent, links, buttons, and the graph view update together.
+        description: '浅色「暖白纸张」默认 #0e6e63（深青），暗色「暖棕·冷锚」默认 #6db3a3（浅青）。修改后强调色、链接、按钮、图形视图等同步变化'
+        description.en: 'Light "Warm Paper" defaults to #0e6e63 (deep teal); dark "Warm Brown · Cool Anchor" defaults to #6db3a3 (light teal). Accent, links, buttons, and the graph view update together.'
         type: variable-themed-color
         format: hsl-split
         alt-format:
@@ -52,6 +60,28 @@ settings:
         default-light: '#0e6e63'
         default-dark: '#6db3a3'
     -
+        id: onepage-bold-color
+        title: 加粗强调色（提醒色）
+        title.en: Bold Accent Color
+        description: '正文加粗文字的颜色（浅色默认 #c2410c 深陶红，暗色默认 #e89a60）。想要微信公众号点赞那种橙色，直接换成你取的色值'
+        description.en: 'Color of bold text (light defaults to #c2410c, dark to #e89a60). To match the orange used by WeChat likes, paste the hex you picked.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#c2410c'
+        default-dark: '#e89a60'
+    -
+        id: onepage-highlight-opacity
+        title: 高亮浓度
+        title.en: Highlight Opacity
+        description: '「==高亮==」的底色浓度（Obsidian 1.14 的 6 种高亮色共用这一档）'
+        description.en: Background opacity of ==highlight== (shared by all six highlight colors in Obsidian 1.14).
+        type: variable-number-slider
+        default: 30
+        min: 5
+        max: 60
+        step: 5
+        format: '%'
+    -
         id: onepage-typo-off
         title: 关闭彩色排版
         title.en: Disable Typographic Colors
@@ -59,17 +89,6 @@ settings:
         description.en: Headings / bold / italic fall back to the normal text color (defaults to OnePage's layered color scheme).
         type: class-toggle
         default: false
-    -
-        id: line-height-normal
-        title: 正文行高
-        title.en: Body Line Height
-        description: 默认 1.7
-        description.en: Default 1.7
-        type: variable-number-slider
-        default: 1.7
-        min: 1.3
-        max: 2.4
-        step: 0.05
     -
         id: colorful-frame
         title: 彩色侧边栏
@@ -86,12 +105,447 @@ settings:
         type: class-toggle
 
     -
+        id: onepage-heading-colors
+        title: 标题色（6）
+        title.en: Heading Colors (6)
+        description: '六档标题各自独立。只改看着不顺眼的那一档即可，默认是「暖白纸张 / 暖棕·冷锚」的原生色阶；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Six independent heading colors. Change only the ones you dislike; defaults are the Warm Paper / Warm Brown scales; the swatch in the picker is the default — click it to restore.'
+        type: heading
+        level: 2
+        collapsed: true
+    -
+        id: onepage-typo-h1
+        title: 一级标题
+        title.en: Heading 1
+        description: '默认 #1d345c（浅色） / #4f74af（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #1d345c (light) / #4f74af (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#1d345c'
+        default-dark: '#4f74af'
+    -
+        id: onepage-typo-h2
+        title: 二级标题
+        title.en: Heading 2
+        description: '默认 #52377a（浅色） / #8567bd（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #52377a (light) / #8567bd (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#52377a'
+        default-dark: '#8567bd'
+    -
+        id: onepage-typo-h3
+        title: 三级标题
+        title.en: Heading 3
+        description: '默认 #0e6e63（浅色） / #4e9a8a（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #0e6e63 (light) / #4e9a8a (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#0e6e63'
+        default-dark: '#4e9a8a'
+    -
+        id: onepage-typo-h4
+        title: 四级标题
+        title.en: Heading 4
+        description: '默认 #ce5567（浅色） / #c0765e（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #ce5567 (light) / #c0765e (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#ce5567'
+        default-dark: '#c0765e'
+    -
+        id: onepage-typo-h5
+        title: 五级标题
+        title.en: Heading 5
+        description: '默认 #9c6b1e（浅色） / #c99b5e（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #9c6b1e (light) / #c99b5e (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#9c6b1e'
+        default-dark: '#c99b5e'
+    -
+        id: onepage-typo-h6
+        title: 六级标题
+        title.en: Heading 6
+        description: '默认 #8a8378（浅色） / #8a8478（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #8a8378 (light) / #8a8478 (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#8a8378'
+        default-dark: '#8a8478'
+
+    -
+        id: onepage-callout-colors
+        title: Callout 配色（15）
+        title.en: Callout Colors (15)
+        description: '14 个语义色一一对应 [!note] [!info] [!todo] [!summary] [!tip] [!important] [!success] [!question] [!warning] [!fail] [!error] [!bug] [!example] [!quote]；改单个不影响其它；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: '14 semantic colors, one per callout type. Changing one never affects the others; the swatch in the picker is the default — click it to restore.'
+        type: heading
+        level: 2
+        collapsed: true
+    -
+        id: onepage-callout-tint
+        title: Callout 淡染强度
+        title.en: Callout Tint Strength
+        description: 'Callout 底色里主题色的占比；0 = 纯纸面（只保留内高光与投影），13 = OnePage 默认'
+        description.en: 'Share of the callout accent color in its background; 0 = plain paper (only inner highlight and shadow remain), 13 = OnePage default.'
+        type: variable-number-slider
+        default: 13
+        min: 0
+        max: 40
+        step: 1
+        format: '%'
+    -
+        id: onepage-callout-default
+        title: note（默认）
+        title.en: note (default)
+        description: '默认 #3d6b85（浅色） / #7fa7c4（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #3d6b85 (light) / #7fa7c4 (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#3d6b85'
+        default-dark: '#7fa7c4'
+    -
+        id: onepage-callout-info
+        title: info（信息）
+        title.en: info
+        description: '默认 #3d6b85（浅色） / #7fa7c4（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #3d6b85 (light) / #7fa7c4 (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#3d6b85'
+        default-dark: '#7fa7c4'
+    -
+        id: onepage-callout-todo
+        title: todo（待办）
+        title.en: todo
+        description: '默认 #4a6d8c（浅色） / #84a8c6（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #4a6d8c (light) / #84a8c6 (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#4a6d8c'
+        default-dark: '#84a8c6'
+    -
+        id: onepage-callout-summary
+        title: summary / abstract（摘要）
+        title.en: summary / abstract
+        description: '默认 #4e7a72（浅色） / #87b3a8（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #4e7a72 (light) / #87b3a8 (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#4e7a72'
+        default-dark: '#87b3a8'
+    -
+        id: onepage-callout-tip
+        title: tip / hint（提示）
+        title.en: tip / hint
+        description: '默认 #8a6a2c（浅色） / #c9a86a（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #8a6a2c (light) / #c9a86a (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#8a6a2c'
+        default-dark: '#c9a86a'
+    -
+        id: onepage-callout-important
+        title: important（重要）
+        title.en: important
+        description: '默认 #a97323（浅色） / #d3a765（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #a97323 (light) / #d3a765 (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#a97323'
+        default-dark: '#d3a765'
+    -
+        id: onepage-callout-success
+        title: success / check（成功）
+        title.en: success / check
+        description: '默认 #4e7a4e（浅色） / #84b489（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #4e7a4e (light) / #84b489 (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#4e7a4e'
+        default-dark: '#84b489'
+    -
+        id: onepage-callout-question
+        title: question / help（疑问）
+        title.en: question / help
+        description: '默认 #6a5a85（浅色） / #ab97c8（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #6a5a85 (light) / #ab97c8 (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#6a5a85'
+        default-dark: '#ab97c8'
+    -
+        id: onepage-callout-warning
+        title: warning / caution（警告）
+        title.en: warning / caution
+        description: '默认 #a97323（浅色） / #d3a765（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #a97323 (light) / #d3a765 (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#a97323'
+        default-dark: '#d3a765'
+    -
+        id: onepage-callout-fail
+        title: failure / fail（失败）
+        title.en: failure / fail
+        description: '默认 #a5523f（浅色） / #cb8272（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #a5523f (light) / #cb8272 (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#a5523f'
+        default-dark: '#cb8272'
+    -
+        id: onepage-callout-error
+        title: danger / error（危险）
+        title.en: danger / error
+        description: '默认 #9c4436（浅色） / #c76f5e（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #9c4436 (light) / #c76f5e (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#9c4436'
+        default-dark: '#c76f5e'
+    -
+        id: onepage-callout-bug
+        title: bug（缺陷）
+        title.en: bug
+        description: '默认 #8b4a3c（浅色） / #b8827a（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #8b4a3c (light) / #b8827a (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#8b4a3c'
+        default-dark: '#b8827a'
+    -
+        id: onepage-callout-example
+        title: example（示例）
+        title.en: example
+        description: '默认 #57786f（浅色） / #8fb0a4（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #57786f (light) / #8fb0a4 (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#57786f'
+        default-dark: '#8fb0a4'
+    -
+        id: onepage-callout-quote
+        title: quote / cite（引用）
+        title.en: quote / cite
+        description: '默认 #7d7368（浅色） / #a89b8d（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #7d7368 (light) / #a89b8d (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#7d7368'
+        default-dark: '#a89b8d'
+
+    -
+        id: onepage-background-colors
+        title: 背景色（5）
+        title.en: Background Colors (5)
+        description: '纸面的三层（内容底 / 侧栏·菜单底 / 输入框·悬停底）+ 侧栏卡片 + 窗口留白。建议成套改，只改一层容易不协调；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'The three paper layers (content, sidebar/menu, input/hover) plus sidebar cards and window margins. Change them as a set to keep the hierarchy coherent; the swatch in the picker is the default — click it to restore.'
+        type: heading
+        level: 2
+        collapsed: true
+    -
+        id: onepage-bg-primary
+        title: 主背景（内容底）
+        title.en: Main Background
+        description: '默认 #faf7f1（浅色） / #262322（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #faf7f1 (light) / #262322 (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#faf7f1'
+        default-dark: '#262322'
+    -
+        id: onepage-bg-secondary
+        title: 次级背景（侧栏/菜单）
+        title.en: Secondary Background
+        description: '默认 #f3efe7（浅色） / #312e2d（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #f3efe7 (light) / #312e2d (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#f3efe7'
+        default-dark: '#312e2d'
+    -
+        id: onepage-bg-tertiary
+        title: 三级背景（输入框/悬停）
+        title.en: Tertiary Background
+        description: '默认 #ede8de（浅色） / #2f2b29（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #ede8de (light) / #2f2b29 (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#ede8de'
+        default-dark: '#2f2b29'
+    -
+        id: onepage-sidebar-bg
+        title: 侧栏卡片底色
+        title.en: Sidebar Card
+        description: '默认 #f4f2ee（浅色） / #2d2a28（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #f4f2ee (light) / #2d2a28 (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#f4f2ee'
+        default-dark: '#2d2a28'
+    -
+        id: onepage-window-bg
+        title: 窗口留白
+        title.en: Window Margin
+        description: '默认 #e9e9e9（浅色） / #1e1c1b（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #e9e9e9 (light) / #1e1c1b (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#e9e9e9'
+        default-dark: '#1e1c1b'
+
+
+    -
+        id: onepage-text-colors
+        title: 文字与控件灰阶（7）
+        title.en: Text & Surface Colors (7)
+        description: '正文 / 次要 / 弱化三级文字，加上 Obsidian 原生控件的四档明度阶。极端背景下（纯黑、纯白）建议一并微调，否则控件与文字层次会怪'
+        description.en: 'Three text levels plus the four surface shades used by native controls. With extreme backgrounds (pure black/white) tweak these together, or controls and text will lose their hierarchy.'
+        type: heading
+        level: 2
+        collapsed: true
+    -
+        id: onepage-text-normal
+        title: 正文
+        title.en: body text
+        description: '默认 #3d3730（浅色） / #cfc7bd（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #3d3730 (light) / #cfc7bd (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#3d3730'
+        default-dark: '#cfc7bd'
+    -
+        id: onepage-text-muted
+        title: 次要文字（属性名 / 状态栏）
+        title.en: secondary text
+        description: '默认 #857d70（浅色） / #948d83（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #857d70 (light) / #948d83 (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#857d70'
+        default-dark: '#948d83'
+    -
+        id: onepage-text-faint
+        title: 弱化文字（占位 / 行号）
+        title.en: faint text
+        description: '默认 #c0b8ab（浅色） / #6b665e（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #c0b8ab (light) / #6b665e (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#c0b8ab'
+        default-dark: '#6b665e'
+    -
+        id: onepage-base-00
+        title: 控件灰阶 00（最接近内容底）
+        title.en: surface 00
+        description: '默认 #f8f5ef（浅色） / #242120（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #f8f5ef (light) / #242120 (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#f8f5ef'
+        default-dark: '#242120'
+    -
+        id: onepage-base-10
+        title: 控件灰阶 10
+        title.en: surface 10
+        description: '默认 #f2eee6（浅色） / #2b2725（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #f2eee6 (light) / #2b2725 (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#f2eee6'
+        default-dark: '#2b2725'
+    -
+        id: onepage-base-20
+        title: 控件灰阶 20
+        title.en: surface 20
+        description: '默认 #eae5db（浅色） / #2f2b29（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #eae5db (light) / #2f2b29 (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#eae5db'
+        default-dark: '#2f2b29'
+    -
+        id: onepage-base-25
+        title: 控件灰阶 25（边框 / 阴影）
+        title.en: surface 25
+        description: '默认 #e2dcd0（浅色） / #34302e（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description.en: 'Default #e2dcd0 (light) / #34302e (dark); the swatch in the picker is the default — click it to restore.'
+        type: variable-themed-color
+        format: hex
+        default-light: '#e2dcd0'
+        default-dark: '#34302e'
+    -
+        id: onepage-typography
+        title: 排版
+        title.en: Typography
+        type: heading
+        level: 1
+        collapsed: true
+    -
+        id: onepage-line-width
+        title: 内容宽度
+        title.en: Content Width
+        description: '开启「设置 → 编辑器 → 可读行长度」时的正文行宽（默认 700px）。该设置关闭时请同时打开下面的「强制限宽」'
+        description.en: 'Reading line width when Settings → Editor → Readable line length is on (default 700px). When that setting is off, also enable “Force Readable Width” below.'
+        type: variable-number-slider
+        default: 700
+        min: 480
+        max: 1400
+        step: 10
+        format: px
+    -
+        id: force-readable-width
+        title: 强制限宽
+        title.en: Force Readable Width
+        description: '即使关闭了 Obsidian 的「可读行长度」，也按上面的「内容宽度」限宽并居中'
+        description.en: 'Apply the content width above (and center it) even when Obsidian’s “Readable line length” is off.'
+        type: class-toggle
+        default: false
+    -
+        id: line-height-normal
+        title: 正文行高
+        title.en: Body Line Height
+        description: 默认 1.7
+        description.en: Default 1.7
+        type: variable-number-slider
+        default: 1.7
+        min: 1.3
+        max: 2.4
+        step: 0.05
+
+    -
         id: onepage-layout
         title: 布局
         title.en: Layout
         type: heading
         level: 1
         collapsed: true
+    -
+        id: onepage-sidebar-gap
+        title: 侧栏卡片留白
+        title.en: Sidebar Card Gap
+        description: '侧栏悬浮卡片与窗口边缘的间距（默认 8px）；0 = 贴边'
+        description.en: 'Gap between the floating sidebar cards and the window edge (default 8px); 0 = flush.'
+        type: variable-number-slider
+        default: 8
+        min: 0
+        max: 16
+        step: 1
+        format: px
+    -
+        id: onepage-radius-window
+        title: 侧栏卡片圆角
+        title.en: Sidebar Card Radius
+        description: '侧栏卡片的圆角（默认 8px）；0 = 直角'
+        description.en: 'Corner radius of the floating sidebar cards (default 8px); 0 = square.'
+        type: variable-number-slider
+        default: 8
+        min: 0
+        max: 20
+        step: 1
+        format: px
     -
         id: hover-ribbon
         title: 悬停功能区
@@ -117,19 +571,32 @@ settings:
         type: class-toggle
         addCommand: true
     -
-        id: nav-action-center
-        title: 关闭紧凑面板操作
-        title.en: Disable Compact Panel Actions
-        description: 恢复默认的面板操作按钮布局
-        description.en: Restore the default panel action button layout.
+        id: vault-switcher-always
+        title: 始终显示 Vault 选择
+        title.en: Always Show Vault Switcher
+        description: 默认关闭（左侧边栏底部 Vault 选择「悬停才显示」）；开启后常驻显示，无需悬停即可点击切换
+        description.en: Off by default (the vault switcher at the bottom of the left sidebar shows only on hover); on keeps it visible so you can switch vaults without hovering.
         type: class-toggle
+
     -
-        id: tab-icon
-        title: 关闭紧凑侧栏标签
-        title.en: Disable Compact Sidebar Tabs
-        description: 恢复侧边栏完整标签图标
-        description.en: Restore the full sidebar tab icons.
-        type: class-toggle
+        id: onepage-chrome
+        title: 标签页与状态栏（4）
+        title.en: Tabs & Status Bar (4)
+        type: heading
+        level: 2
+        collapsed: true
+    -
+        id: onepage-tab-radius
+        title: 标签页圆角
+        title.en: Tab Radius
+        description: '主编辑器标签页的圆角（默认 6px）；0 = 直角'
+        description.en: 'Corner radius of editor tabs (default 6px); 0 = square.'
+        type: variable-number-slider
+        default: 6
+        min: 0
+        max: 16
+        step: 1
+        format: px
     -
         id: status-bar-float
         title: 始终显示状态栏
@@ -139,20 +606,19 @@ settings:
         type: class-toggle
         default: false
     -
-        id: zoom-off
-        title: 关闭媒体缩放
-        title.en: Disable Media Zoom
-        description: 点击图片不再放大预览
-        description.en: Clicking images no longer zooms into the preview.
+        id: tab-icon
+        title: 关闭紧凑侧栏标签
+        title.en: Disable Compact Sidebar Tabs
+        description: 恢复侧边栏完整标签图标
+        description.en: Restore the full sidebar tab icons.
         type: class-toggle
     -
-        id: vault-switcher-always
-        title: 始终显示 Vault 选择
-        title.en: Always Show Vault Switcher
-        description: 默认关闭（左侧边栏底部 Vault 选择「悬停才显示」）；开启后常驻显示，无需悬停即可点击切换
-        description.en: Off by default (the vault switcher at the bottom of the left sidebar shows only on hover); on keeps it visible so you can switch vaults without hovering.
+        id: nav-action-center
+        title: 关闭紧凑面板操作
+        title.en: Disable Compact Panel Actions
+        description: 恢复默认的面板操作按钮布局
+        description.en: Restore the default panel action button layout.
         type: class-toggle
-
     -
         id: onepage-demo
         title: 演示
@@ -181,6 +647,18 @@ settings:
         max: 40
         step: 1
         format: px
+    -
+        id: onepage-demo-line-width
+        title: 演示模式行宽
+        title.en: Demo Mode Line Width
+        description: '演示模式的行宽（默认 880px）。实际取它与「内容宽度」的较大者，调宽正文不会让演示反而变窄'
+        description.en: 'Line width in demo mode (default 880px). The larger of this and “Content Width” wins, so widening the body never narrows demo mode.'
+        type: variable-number-slider
+        default: 880
+        min: 640
+        max: 1600
+        step: 10
+        format: px
 
     -
         id: onepage-editor
@@ -193,37 +671,6 @@ settings:
         id: active-line-off
         title: 关闭当前行高亮
         title.en: Disable Active Line Highlight
-        type: class-toggle
-    -
-        id: banner-off
-        title: 关闭横幅
-        title.en: Disable Banner
-        description: 关闭图片横幅（banner）特性
-        description.en: Disable the image banner feature.
-        type: class-toggle
-    -
-        id: block-width-off
-        title: 关闭块宽
-        title.en: Disable Block Width
-        description: 关闭表格 / 图片等 wide / max / 100 宽块特性
-        description.en: Disable wide / max / 100 width blocks for tables, images, etc.
-        type: class-toggle
-    -
-        id: font-variant-off
-        title: 关闭字体特性
-        title.en: Disable Font Variants
-        description: 关闭连字与字体变体（ss01 / liga 等）
-        description.en: Disable ligatures and font variants (ss01 / liga, etc.).
-        type: class-toggle
-    -
-        id: media-width-fit
-        title: 关闭全宽元素
-        title.en: Disable Full-Width Elements
-        type: class-toggle
-    -
-        id: mode-switcher-off
-        title: 关闭快速模式切换
-        title.en: Disable Quick Mode Switcher
         type: class-toggle
     -
         id: properties-collapsed
@@ -242,31 +689,50 @@ settings:
         type: class-toggle
 
     -
-        id: onepage-a11y
-        title: 无障碍
-        title.en: Accessibility
+        id: zoom-off
+        title: 关闭媒体缩放
+        title.en: Disable Media Zoom
+        description: 点击图片不再放大预览
+        description.en: Clicking images no longer zooms into the preview.
+        type: class-toggle
+    -
+        id: banner-off
+        title: 关闭横幅
+        title.en: Disable Banner
+        description: 关闭图片横幅（banner）特性
+        description.en: Disable the image banner feature.
+        type: class-toggle
+    -
+        id: block-width-off
+        title: 关闭块宽
+        title.en: Disable Block Width
+        description: 关闭表格 / 图片等 wide / max / 100 宽块特性
+        description.en: Disable wide / max / 100 width blocks for tables, images, etc.
+        type: class-toggle
+    -
+        id: media-width-fit
+        title: 关闭全宽元素
+        title.en: Disable Full-Width Elements
+        type: class-toggle
+    -
+        id: font-variant-off
+        title: 关闭字体特性
+        title.en: Disable Font Variants
+        description: 关闭连字与字体变体（ss01 / liga 等）
+        description.en: Disable ligatures and font variants (ss01 / liga, etc.).
+        type: class-toggle
+    -
+        id: mode-switcher-off
+        title: 关闭快速模式切换
+        title.en: Disable Quick Mode Switcher
+        type: class-toggle
+    -
+        id: onepage-interface
+        title: 界面
+        title.en: Interface
         type: heading
         level: 1
         collapsed: true
-    -
-        id: adaptive-mode-off
-        title: 关闭自适应模式
-        title.en: Disable Adaptive Mode
-        description: 禁止根据操作系统自动调整样式
-        description.en: Prevent automatic styling based on the operating system.
-        type: class-toggle
-    -
-        id: reduce-contrast-change
-        title: 减少对比度变化
-        title.en: Reduce Contrast Change
-        description: 窗口失焦时减少对比度跳变
-        description.en: Minimize contrast shifts when the window loses focus.
-        type: class-toggle
-    -
-        id: reduce-motion
-        title: 减少动效
-        title.en: Reduce Motion
-        type: class-toggle
     -
         id: font-ui-modifier
         title: 界面字号
@@ -297,6 +763,32 @@ settings:
         title.en: Underlined Links
         description: 始终给链接加下划线以提升可见性
         description.en: Always underline links for improved visibility.
+        type: class-toggle
+    -
+        id: onepage-a11y
+        title: 无障碍
+        title.en: Accessibility
+        type: heading
+        level: 1
+        collapsed: true
+    -
+        id: adaptive-mode-off
+        title: 关闭自适应模式
+        title.en: Disable Adaptive Mode
+        description: 禁止根据操作系统自动调整样式
+        description.en: Prevent automatic styling based on the operating system.
+        type: class-toggle
+    -
+        id: reduce-contrast-change
+        title: 减少对比度变化
+        title.en: Reduce Contrast Change
+        description: 窗口失焦时减少对比度跳变
+        description.en: Minimize contrast shifts when the window loses focus.
+        type: class-toggle
+    -
+        id: reduce-motion
+        title: 减少动效
+        title.en: Reduce Motion
         type: class-toggle
 */
 

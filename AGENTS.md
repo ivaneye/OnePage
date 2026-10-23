@@ -75,6 +75,86 @@ Obsidian 社区主题靠 **GitHub Release** 分发更新：**只推代码/tag �
 
 ---
 
+## 设计令牌与 Style Settings（⚠️ 2.1.0 起的分层）
+
+`src/` 现在四层。**改样式前先确认改哪一层**：
+
+| 文件 | 职责 |
+| --- | --- |
+| `src/00-settings.css` | Style Settings 的 `@settings` 元数据（id / default / 中英描述） |
+| `src/10-header.css` | 版权头（与规则无关） |
+| `vendor/cupertino/<版本>/theme.css` | 上游基座，**永不手改** |
+| `src/20-tokens.css` | **设计令牌**：所有「用户可调项」的默认值 + 基座变量接线 |
+| `src/90-onepage.css` | 规则层：只引用令牌，不写字面值 |
+
+构建顺序（`scripts/build.mjs` 里固定）：settings → header → 基座 → **tokens** → onepage。
+令牌必须在基座之后（才能覆盖 `--line-width` / `--p-spacing` 这类基座变量），又必须在规则之前。
+
+### 令牌约定
+
+1. 命名 `--onepage-<组>-<项>`，组 = color | type | layout | component | demo。
+2. 令牌**只在 `20-tokens.css` 定义一次**；`90-onepage.css` 引用时不写 fallback —— 避免双份默认值漂移，也让 `verify` 的变量体检能抓到拼写错误。
+3. 亮/暗两套：浅色值写 `body`，暗色覆盖写 `body.theme-dark`。
+4. 加令牌前先判断：这是**用户偏好**还是**主题身份**？
+   - 身份也可以进令牌（2.1.0 起标题色 / Callout 14 墨色 / 背景层级都已开放），但**默认值必须逐字等于 OnePage 的原生设计** —— 开放不等于改默认。
+   - 仍不进令牌的：毛玻璃架构（透明模式不用 blur 的技术决策）、字体默认值（`--font-monospace-theme` 走外观设置，见下节）。
+
+### Style Settings 注入机制（决定了 CSS 怎么写）
+
+插件把变量写进 `<style>` 里的 **`body.css-settings-manager`**（通用变量）、
+**`body.theme-light.css-settings-manager`** / **`body.theme-dark.css-settings-manager`**
+（`variable-themed-color` 的浅/暗值，变量名相同）。
+
+- 特异性 `(0,1,1)` / `(0,2,1)`，**高于**主题里的 `body` / `body.theme-light` → 只要不写 `!important`，注入就能覆盖令牌默认值。
+- 但配色层有大量 `body.theme-light { --x: … !important }`，**`!important` 会赢过注入** → 这类变量必须走间接层：
+  ```css
+  body.theme-light { --typo-bold: var(--onepage-bold-color); }   /* ✅ 可被注入 */
+  body.theme-light { --typo-bold: #c2410c !important; }           /* ❌ 永远改不动 */
+  ```
+- 插件**总是注入 `default`**（不是只在用户改过之后）。所以 `@settings` 的 default 必须与 `20-tokens.css` 逐字一致 —— 否则用户一装插件、什么都没改，主题就变样了。
+- 新增注入变量要登记 `scripts/verify.mjs` 的 `EXTERNAL_VARS`。
+- **id 一经发布不能改名**（Style Settings 用它当存储键；`media-width-fit` 改名丢过配置，见 RELEASE 记录）。
+- `description` 里出现 ` #xxxxxx` 要用引号或块标量包裹 —— YAML 会把 ` #` 之后当注释（强调色那条曾经因此显示不全，2.1.0 已修）。
+
+### 已开放 / 不开放
+
+2.1.0 新增：加粗提醒色、高亮浓度、Callout 淡染、标题色 6 档、**Callout 配色 14 个**、
+背景层级 3 个 + 侧栏卡片 + 窗口留白、内容宽度、强制限宽、侧栏卡片留白/圆角、标签页圆角、演示行宽。
+
+不开放或有依据地暂缓：
+
+- `--font-text-size`：就是「外观 → 正文字号」，再开一个入口必然打架；代码字体同理（走 `--font-monospace-theme`）。
+- `--p-spacing`（段落间距）：基座是「零 margin + 源码空行」的垂直节奏，它只影响「标题后首个块」和「标题下边框 padding」→ 开放会得到「调了没反应」。令牌保留，暂不进 @settings。
+
+### ⚠️ 暴露给 Style Settings 的变量，不要依赖另一个暴露变量
+
+插件**总是注入 default**（哪怕用户没改），所以一旦把派生关系写在一个暴露变量上：
+
+```css
+--onepage-bg-secondary: color-mix(in srgb, var(--onepage-bg-primary), white 5%);  /* ❌ 用户改 primary 不跟随 */
+```
+
+用户改主背景后，次级背景会被注入的固定 hex 顶住，不再跟随。
+
+- 想让 A 跟随 B：**A 不要暴露**，留在 tokens 里用 `var()` / `mix()` 派生 —— 例如暗色的 `--onepage-bg-primary-alt`。
+- 必须两个都暴露时，在 description 里明确写「建议成套改」（现在的背景色子组就是这么写的）。
+- 反过来，规则层里的派发没问题：`--file-line-width: max(演示行宽, 内容宽度)` 在 CSS 里算，两个输入都可被注入。
+
+### 验证（重构 / 新增配置项都必须做）
+
+```bash
+npm run build && npm run verify
+npm run diff:style -- /tmp/ob1144/app.css <旧 theme.css> theme.css   # 期望「零视觉差异」
+npm run perf -- /tmp/ob1144/app.css --tree 2000
+```
+
+`verify` 现在会额外校验 **@settings 的 default 与 `20-tokens.css` 的令牌逐字一致**（插件总是注入 default，两边不一致 = 用户什么都没改主题就变样）——新增配置项忘了同步默认值会直接失败。
+
+`diff:style` 在 4 个场景（浅色 / 暗色 / 演示模式 / 窗口透明）下逐元素比对 `getComputedStyle`（含 `::before/::after`）+ 坐标；自带「同一份 CSS 连拍两次」的噪声对照，并按「元素 + 属性」整键扣掉抖动。
+新增配置项后，还要模拟插件注入确认真的生效（`body.css-settings-manager{--onepage-x:…}`，注意 body 要同时有 `css-settings-manager` 类）。
+
+---
+
 ## 字体规范（易错 ⚠️）
 
 **代码字体必须用 `--font-monospace-theme`，禁止用 `--font-monospace`。**
@@ -108,9 +188,10 @@ Obsidian 的解析链：`--font-monospace = var(--font-monospace-override(用户
   ```
   注意：库里启用的 CSS snippet（如 callout 相关）会叠在主题之上，排查“主题是不是没生效”前先看 snippets 列表。
 - 本机官方样式与渲染层 JS 在 `/Applications/Obsidian.app/Contents/Resources/obsidian.asar`（`app.asar` 只是 Electron 壳，里面没有 app.css/app.js）。解压后 `app.css` 查官方默认值，`app.js` grep 元素生成逻辑。旧版本（如 1.13.7）可以从 GitHub Release 单独下载 `obsidian-<ver>.asar.gz`（8.7MB，比整个 dmg 小得多）。
-- **规则分三层，改之前先确认该改哪层**：
+- **规则分四层，改之前先确认该改哪层**（详见「设计令牌与 Style Settings」）：
   - `vendor/cupertino/<版本>/theme.css`：上游原样，**永远不要手改**（升级时整份替换）；需要修正的地方写成 `scripts/build.mjs` 里的声明式补丁。
-  - `src/90-onepage.css`：OnePage 自己的规则，**日常改这里**；改完必须 `npm run build`。
+  - `src/20-tokens.css`：设计令牌（可调项默认值 + 基座变量接线）。
+  - `src/90-onepage.css`：OnePage 自己的规则，**日常改这里**；只引用令牌，不写字面值。
   - `theme.css`：构建产物，直接改会在下次构建被覆盖。
 - ⚠️ 基座 3.2.12 的 `vendor/…/theme.css` **压缩成两行**（每条 200KB+），grep 命中时终端输出会被截断，必须用 python 打印上下文。
   **4.1.0 起上游改为格式化输出（7,314 行），这个坑已消失**（`grep -n` 直接可用）；若回退到 3.2.12 需重新注意。
@@ -183,6 +264,48 @@ Obsidian 1.14 为支持 RTL 翻转，把工作区物理方位类换成了逻辑�
 - **修复（历史）**：3.2.12 时靠 `PATCHES` 补丁在基座该 `img:not(...)` 排除列表里补 `.highlight-swatch`（`expected: 4`）。定制层另有一条 `!important` 兜底（`src/90-onepage.css`「Obsidian 1.14 兼容层」），**兜底规则故意不设 `background-color`**，让官方 `.highlight-swatch[data-highlight=red]{background-color:var(--color-red)}` 的配色原样生效。
 - ✅ **4.1.0 已自行修复**（排除列表里带了 `.highlight-swatch`，4 处）→ 基座补丁已于 2.0.0 删除，**定制层兜底保留**（防上游回退）。
 - 验证示例（无头 Chrome，把 1.14.4 的 `app.css` + `theme.css` 内联进页面）：色环应 `width:14.39px`（0.9em @16px）、`border-radius:50%`、背景为 `--color-red`；同时**真实图片仍是 `width:600px` 全宽**，证明未误伤全宽媒体。
+
+---
+
+## Style Settings 颜色控件的浅/暗预览底（⚠️ 与 `body.` 前缀有关）
+
+`variable-themed-color` 的 UI 是「浅色底 + 色块 / 暗色底 + 色块」两块，插件给它写的是
+`background: var(--background-primary)`（`styles.css:216`）。
+
+坑：OnePage 的背景变量只定义在 `body.theme-light` / `body.theme-dark` 上，而预览块是
+`.themed-color-wrapper > div.theme-light/.theme-dark` —— **不是 body**，只能继承当前模式的值，
+于是两块底色完全相同（实测都是 `rgb(250,247,241)`），用户看不出「这个颜色在暗色下是什么样」。
+
+修法（`src/90-onepage.css`「Style Settings 颜色控件的浅/暗预览底」）：
+用两个**不随当前模式变化**的常量令牌 `--onepage-preview-bg-light/dark`（默认纸面色）钉住底色，
+并加一圈 inset 发丝描边。不能用 `--onepage-bg-primary`：它在当前模式下只有一个值，两块还是会一样。
+
+### 第二个坑：色块本身是透明棋盘格（`--pcr-color` 空值）
+
+插件在「用户从未设置过」时执行 `style.setProperty("--pcr-color", "")` —— **CSSOM 里空字符串等价于移除属性**，
+于是 wrapper 上没有 inline style，`background: var(--pcr-color)` 无 fallback → `::after` 透明，用户看到棋盘格。
+
+修法：`scripts/build.mjs` 的 `buildPreviewColorDefaults()` 从 `@settings` 每个 `variable-themed-color` 的
+`default-light/dark` 生成两条规则：
+
+```css
+.setting-item[data-id="onepage-accent"] .themed-color-wrapper > .theme-light { --pcr-color: #0e6e63; }
+.setting-item[data-id="onepage-accent"] .themed-color-wrapper > .theme-dark  { --pcr-color: #6db3a3; }
+```
+
+- 没设置过 → 规则生效（显示默认色）
+- 用户改过 → 插件写 inline style，**inline 永远赢普通声明** → 显示用户值
+- 值是 @settings 的 default，而 default 又被 `verify` 校验与令牌一致 → 不会漂移
+- `verify` 会检查「生成条数 = themed-color 项数 × 2」，漏生成直接失败
+
+这个坑对所有 `variable-themed-color` 项通用。**验证必须在真机/完整 DOM 上做**（构造 DOM 时 `.picker` 必须带
+`pickr` 类，否则 Pickr 样式不生效，会误判成「色块没颜色」）。
+
+### 第三个坑：重置按钮图标贴下缘
+
+插件 `.themed-color-wrapper .pickr-reset > button` 只设 `padding: 9px; line-height: 1`，svg 仍是 inline 基线对齐；
+叠上基座 `body:is(.mod-macos,…) .clickable-icon { padding: 10px }` 后图标偏下。
+定制层已改为 `display: flex; align-items: center; justify-content: center; padding: 9px`（`src/90-onepage.css` 同一小节）。
 
 ---
 

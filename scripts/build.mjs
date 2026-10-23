@@ -7,12 +7,13 @@
  * 一次可复现、可审查、可回滚的操作，而不是手工把新基座塞回单文件里。
  *
  * 产物 theme.css = [@charset] + src/00-settings.css + src/10-header.css
- *                          + vendor 基座（已打补丁） + src/90-onepage.css
+ *                          + vendor 基座（已打补丁） + src/20-tokens.css + src/90-onepage.css
  *
  *   src/00-settings.css  Style Settings 的 @settings 元数据块（中英双语）
  *   src/10-header.css    版权头注释 + 分隔空行
- *   src/90-onepage.css   OnePage 定制层（16 个章节，覆盖在基座之后，后写者胜）
  *   vendor/cupertino/    上游 Cupertino 原样 CSS（钉版本，见 vendor/cupertino/VERSION）
+ *   src/20-tokens.css    设计令牌（可定制项的默认值 + 基座变量接线）
+ *   src/90-onepage.css   OnePage 定制层（覆盖在基座与令牌之后，后写者胜）
  *
  * 补丁（PATCHES）：
  *   上游基座不能改（保持可 diff、可重新下载覆盖），所有 OnePage 需要的底座修正
@@ -146,14 +147,53 @@ function readSrc(root, name) {
   return fs.readFileSync(p, "utf8");
 }
 
+
+/**
+ * Style Settings 颜色控件的初始色（构建期生成）。
+ *
+ * 插件在「用户从未改过」时把 --pcr-color 设成空字符串，而 CSSOM 里
+ * `style.setProperty("--pcr-color", "")` 等价于**移除该属性** → wrapper 上没有 inline style，
+ * `background: var(--pcr-color)` 无 fallback → ::after 变透明（用户看到的是棋盘格）。
+ *
+ * 这里从 @settings 的 default-light / default-dark 生成两条规则，给色块一个初始色：
+ *   - 用户没改过：规则生效，色块显示默认色
+ *   - 用户改过：插件写 inline style，inline 永远赢普通声明 → 正常显示用户值
+ * 值来自 @settings 的 default，而 default 又由 verify 校验与 20-tokens.css 一致，不会漂移。
+ */
+export function buildPreviewColorDefaults(settingsCss) {
+  const lines = [
+    "/* =====================================================================",
+    "   Style Settings 颜色控件的初始色（由 scripts/build.mjs 自动生成，请勿手改）",
+    "   来源：src/00-settings.css 里每个 variable-themed-color 的 default-light/dark",
+    "   ===================================================================== */",
+  ];
+  let n = 0;
+  for (const item of settingsCss.split(/^ {4}-\s*$/m).slice(1)) {
+    if (!/^ {8}type:\s*variable-themed-color\s*$/m.test(item)) continue;
+    const id = /^ {8}id:\s*(\S+)/m.exec(item)?.[1];
+    const dl = /^ {8}default-light:\s*'?([^'\s]+)'?/m.exec(item)?.[1];
+    const dd = /^ {8}default-dark:\s*'?([^'\s]+)'?/m.exec(item)?.[1];
+    if (!id || !dl || !dd) continue;
+    lines.push(`.setting-item[data-id="${id}"] .themed-color-wrapper > .theme-light { --pcr-color: ${dl}; }`);
+    lines.push(`.setting-item[data-id="${id}"] .themed-color-wrapper > .theme-dark { --pcr-color: ${dd}; }`);
+    n++;
+  }
+  if (!n) return "";
+  return lines.join("\n");
+}
+
 /** 组装最终 theme.css */
 export function build(root = ROOT, opts) {
   const { version, charset, base, report } = buildBase(root, opts);
   const settings = readSrc(root, "00-settings.css");
   const header = readSrc(root, "10-header.css");
+  const tokens = readSrc(root, "20-tokens.css");
   const onepage = readSrc(root, "90-onepage.css");
-  const out = `${charset ? `@charset "${charset}";\n` : ""}${settings}${header}${base}\n\n${onepage}`;
-  return { css: out, version, charset, base, settings, header, onepage, report };
+  // 顺序不可换：令牌必须落在基座之后，才能覆盖基座的同名变量
+  //（如 --line-width / --p-spacing / --radius-window），又必须落在定制层之前。
+  const previews = buildPreviewColorDefaults(settings);
+  const out = `${charset ? `@charset "${charset}";\n` : ""}${settings}${header}${base}\n\n${tokens}\n${previews}\n${onepage}`;
+  return { css: out, version, charset, base, settings, header, tokens, previews, onepage, report };
 }
 
 const isMain = process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href;

@@ -2,6 +2,10 @@
 /**
  * 一次性拆分脚本（provenance / 审计用）。
  *
+ * ⚠️ 2.1.0 起 src/ 多了第四个文件 src/20-tokens.css（设计令牌），本脚本只认识三段，
+ *    再运行会把令牌段归错位置。若产物里已有「OnePage 设计令牌」字样，脚本会直接拒绝。
+ *    它的历史使命（把单文件产物拆成可维护的源）已经完成，不要再用。
+ *
  * 把历史上的「单文件 theme.css」拆成 src/ 下的三个源文件。
  * 拆分完成后，src/ 就是唯一事实来源，theme.css 变成构建产物（见 build.mjs）。
  *
@@ -29,6 +33,13 @@ const force = args.includes("--force");
 const checkOnly = args.includes("--check-only");
 
 const text = fs.readFileSync(THEME, "utf8");
+
+// 2.1.0 起产物包含 src/20-tokens.css 段，本脚本只认识三段 → 拒绝运行，避免把令牌段归错
+if (text.includes("OnePage 设计令牌")) {
+  console.error("❌ 当前 theme.css 已包含「设计令牌」段（2.1.0+），split.mjs 不再适用。");
+  console.error("   它是一次性迁移工具，源文件已是唯一事实来源；请直接编辑 src/ 并 npm run build。");
+  process.exit(1);
+}
 
 /** 定位 @settings 注释块的结束位置（返回注释结束符之后的偏移） */
 function settingsBlockEnd(src) {

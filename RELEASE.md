@@ -2,6 +2,50 @@
 
 > Full changelog. The README only links here — releases are append-only.
 
+### 2.1.0
+
+**Colors and content width are now fully adjustable: 41 new Style Settings options, plus a new design-token layer.**
+
+Heading colors, all 14 callout colors, every background layer, text and surface shades, and content width were previously fixed. They are now individually adjustable — while **every default stays exactly OnePage's native design**. Change nothing and nothing changes: the theme looks identical to 2.0.2 with or without Style Settings installed.
+
+#### New settings (Style Settings → OnePage)
+
+**Colors (35)**
+- Bold accent (reminder) color: the color of `**bold**` text, one value per light/dark mode
+- Highlight opacity: background opacity of `==highlight==` (shared by Obsidian 1.14's six highlight colors)
+- Callout tint strength: 0 = plain paper, 13 = default
+- Six heading colors, 14 callout semantic colors, five background layers (content / sidebar·menu / input·hover / sidebar card / window margin)
+- Three text levels (normal / muted / faint) and four surface shades used by native controls
+
+**Typography (2)**
+- Content width: 480–1400px, default 700
+- Force readable width: applies that width (centered) even when Obsidian's "Readable line length" is off — without it, the width slider has no effect while that setting is disabled
+
+**Layout (3)**
+- Sidebar card gap / sidebar card radius / tab radius
+
+**Demo (1)**
+- Demo mode line width: default 880px, and the larger of this and "Content width" wins — widening the body never narrows demo mode
+
+Every color option states its **default light / dark value** in the description. The control renders two previews — a swatch on the light paper and a swatch on the dark paper — so you can see how the same color looks in both modes. The first swatch inside the picker is the default — one click to restore.
+
+Two Style Settings control glitches were fixed as well:
+
+- **Swatches rendered as a transparent checkerboard**: when a color has never been set, the plugin writes an empty `--pcr-color`, which CSSOM removes entirely, so `background: var(--pcr-color)` is invalid. The build now generates an initial color per option from its `default-light/dark`; once you pick a color, the plugin's inline style overrides it as usual.
+- **Reset icon hugging the bottom edge**: the plugin only sets `padding: 9px` + `line-height: 1`, leaving the SVG baseline-aligned; with the base theme's `.clickable-icon` padding it drifted down. Now centered with flex.
+
+#### Design-token layer (engineering)
+
+- New `src/20-tokens.css`: a single source of truth for every adjustable default plus the base-theme variable wiring. `src/90-onepage.css` now only references tokens, never raw values
+- Build order is fixed: settings → header → base → tokens → onepage (tokens must come after the base to override variables such as `--line-width`)
+- `npm run verify` now checks that each Style Settings `default` matches its token verbatim — Style Settings always injects defaults, so a mismatch changes the theme even when the user changes nothing
+- New `npm run diff:style`: element-by-element `getComputedStyle` comparison (including pseudo-elements and geometry) across light / dark / demo / translucent, used to prove zero visual change
+- Fixed: the accent color description was truncated at `#0e6e63` because YAML treated the trailing text as a comment
+
+#### Compatibility
+
+Minimum Obsidian version unchanged (1.14.0). The panel grows from 28 to 69 adjustable options across 7 sections (Colors, Typography, Layout, Demo, Editor, Interface, Accessibility), with 4 collapsible sub-sections under Colors (headings, callouts, backgrounds, text & surfaces) and a “Tabs & Status Bar” sub-section under Layout. Sub-section titles include their item counts, so you can tell whether a group is worth expanding.
+
 ### 2.0.2
 
 **Fix: with “Translucent window” enabled, a full-height vertical divider appeared between the left ribbon and the file explorer.**

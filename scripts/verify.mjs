@@ -141,10 +141,12 @@ if (!cssNoComment.includes(".:is(")) ok.push("无 .:is( 残渣");
   if (!/^\d+\.\d+\.\d+$/.test(manifest.minAppVersion)) errors.push(`minAppVersion 格式异常：${manifest.minAppVersion}`);
 }
 
-/** 6) 变量体检（只看 OnePage 自己写的两个源文件） */
+/** 6) 变量体检（只看 OnePage 自己写的源文件） */
 {
   const defined = new Set([...css.matchAll(/(--[A-Za-z0-9-]+)\s*:/g)].map((m) => m[1]));
-  const own = ["90-onepage.css", "00-settings.css"].map((f) => fs.readFileSync(path.join(ROOT, "src", f), "utf8")).join("\n");
+  const own = ["90-onepage.css", "20-tokens.css", "00-settings.css"]
+    .map((f) => fs.readFileSync(path.join(ROOT, "src", f), "utf8"))
+    .join("\n");
   // 只挑「var(--x)」这种没有 fallback 的写法
   const bare = new Set([...own.matchAll(/var\(\s*(--[A-Za-z0-9-]+)\s*\)/g)].map((m) => m[1]));
   const unknown = [...bare].filter((v) => !defined.has(v) && !EXTERNAL_VARS.has(v)).sort();
@@ -155,6 +157,82 @@ if (!cssNoComment.includes(".:is(")) ok.push("无 .:is( 残渣");
     );
   } else {
     ok.push(`无 fallback 的外部变量均已登记（${bare.size} 个）`);
+  }
+}
+
+/**
+ * 7) Style Settings default ↔ 设计令牌一致性
+ *
+ * 插件**总是注入 default**（不是只在用户改过之后），所以 @settings 的 default
+ * 必须与 src/20-tokens.css 的令牌默认值逐字一致；否则用户什么都没改，主题就变样。
+ * 配置项涨到几十个后，这条只能靠机器守。
+ */
+{
+  const tokensCss = fs.readFileSync(path.join(ROOT, "src/20-tokens.css"), "utf8");
+  const collect = (block) => {
+    const map = new Map();
+    for (const m of block.matchAll(/^\s*(--[A-Za-z0-9-]+):\s*([^;]+);/gm)) map.set(m[1], m[2].trim());
+    return map;
+  };
+  const light = new Map();
+  for (const m of tokensCss.matchAll(/^body \{\n([\s\S]*?)^\}/gm)) for (const [k, v] of collect(m[1])) light.set(k, v);
+  const dark = new Map(light);
+  for (const m of tokensCss.matchAll(/^body\.theme-dark \{\n([\s\S]*?)^\}/gm)) for (const [k, v] of collect(m[1])) dark.set(k, v);
+
+  // 无对应令牌的项（基座变量 / 走 alt-format 的特殊项）
+  const NO_TOKEN = new Set(["onepage-accent", "font-ui-modifier", "icon-size-modifier"]);
+
+  const start = css.indexOf("/* @settings");
+  const meta = css.slice(start, css.indexOf("*/", start));
+  const items = meta.split(/^ {4}-\s*$/m).slice(1);
+  const bad = [];
+  let checked = 0;
+
+  for (const item of items) {
+    const type = /^ {8}type:\s*(\S+)/m.exec(item)?.[1];
+    if (!type || !type.startsWith("variable-")) continue;
+    const id = /^ {8}id:\s*(\S+)/m.exec(item)?.[1];
+    if (!id || NO_TOKEN.has(id)) continue;
+    const token = `--${id}`;
+    if (!light.has(token)) { bad.push(`「${id}」在 20-tokens.css 里没有对应令牌 ${token}`); continue; }
+
+    if (type === "variable-number-slider") {
+      const def = /^ {8}default:\s*(\S+)/m.exec(item)?.[1];
+      const fmt = /^ {8}format:\s*'?([^'\s]+)'?/m.exec(item)?.[1] ?? "";
+      const expect = `${def}${fmt}`;
+      const actual = light.get(token);
+      checked++;
+      if (expect !== actual) bad.push(`「${id}」default+format = ${expect}，令牌 ${token} = ${actual}`);
+    } else if (type === "variable-themed-color") {
+      const dl = /^ {8}default-light:\s*'?([^'\s]+)'?/m.exec(item)?.[1];
+      const dd = /^ {8}default-dark:\s*'?([^'\s]+)'?/m.exec(item)?.[1];
+      checked += 2;
+      if (String(dl).toLowerCase() !== String(light.get(token)).toLowerCase()) {
+        bad.push(`「${id}」default-light = ${dl}，令牌浅色 = ${light.get(token)}`);
+      }
+      if (String(dd).toLowerCase() !== String(dark.get(token)).toLowerCase()) {
+        bad.push(`「${id}」default-dark = ${dd}，令牌暗色 = ${dark.get(token)}`);
+      }
+    }
+  }
+
+  if (bad.length) {
+    errors.push(
+      `Style Settings default 与设计令牌不一致（插件总是注入 default，用户不改也会变样）：\n      ${bad.join("\n      ")}`,
+    );
+  } else {
+    ok.push(`Style Settings default 与令牌一致（比对 ${checked} 个值）`);
+  }
+}
+
+/** 8) Style Settings 颜色控件的初始色（构建期生成） */
+{
+  const themed = built.settings.split(/^ {4}-\s*$/m).slice(1).filter((i) => /^ {8}type:\s*variable-themed-color\s*$/m.test(i)).length;
+  const generated = (built.previews.match(/--pcr-color:/g) ?? []).length;
+  if (generated !== themed * 2) {
+    errors.push(`颜色控件初始色生成数量不对：themed-color 项 ${themed} 个，应生成 ${themed * 2} 条，实际 ${generated} 条`);
+  } else {
+    ok.push(`颜色控件初始色已生成（${themed} 项 / ${generated} 条）`);
   }
 }
 
