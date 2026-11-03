@@ -8237,6 +8237,42 @@ body:not(.block-width-off) {
   --line-width-wide: var(--onepage-line-width-wide);
 }
 
+/* ---------------------------------------------------------------------
+   7. 接线：Mermaid / Pele → 令牌
+   ---------------------------------------------------------------------
+
+   Obsidian 1.15 起 Mermaid 改由 Pele 渲染，Pele **不读 Mermaid 主题**，
+   只认 CSS 变量。Obsidian 在 app.css 的 `body` 上提供 `--mermaid-*`，
+   再由 `body, .mermaid { --pele-*: var(--mermaid-*) }` 转成 Pele 变量，
+   所以这里只覆盖 `--mermaid-*`（不要同时写 `--pele-*`，否则默认值有两份）。
+
+   - 全部指向令牌 → 用户改强调色 / 标题色 / Callout / 背景时，图自动跟随；
+   - `--mermaid-color-1..8` 是图表（饼图 / XY / git 分支）的分类色，
+     复用「彩色排版」的标题色 + Callout 墨色，不另造一套色板；
+   - 边框取「次要文字 + 纸面」的 mix：Cupertino 4.1.0 的
+     --background-modifier-border 是不透明冷灰，压在暖白/暖棕纸上会发青。 */
+body {
+  --mermaid-background: var(--onepage-bg-primary);
+  --mermaid-text-color: var(--onepage-text-normal);
+  --mermaid-muted-color: var(--onepage-text-muted);
+  --mermaid-line-color: var(--onepage-text-normal);
+  --mermaid-surface: var(--onepage-bg-secondary);
+  --mermaid-surface-alt: var(--onepage-bg-tertiary);
+  --mermaid-border-color: color-mix(in srgb, var(--onepage-text-muted) 34%, var(--onepage-bg-primary));
+  --mermaid-accent: var(--text-accent);
+  --mermaid-critical: var(--onepage-callout-fail);
+  --mermaid-error: var(--onepage-callout-error);
+
+  --mermaid-color-1: var(--onepage-typo-h1);
+  --mermaid-color-2: var(--onepage-typo-h4);
+  --mermaid-color-3: var(--onepage-typo-h3);
+  --mermaid-color-4: var(--onepage-typo-h5);
+  --mermaid-color-5: var(--onepage-typo-h2);
+  --mermaid-color-6: var(--onepage-callout-success);
+  --mermaid-color-7: var(--onepage-callout-default);
+  --mermaid-color-8: var(--onepage-typo-h6);
+}
+
 /* =====================================================================
    Style Settings 颜色控件的初始色（由 scripts/build.mjs 自动生成，请勿手改）
    来源：src/00-settings.css 里每个 variable-themed-color 的 default-light/dark

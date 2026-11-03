@@ -267,6 +267,23 @@ Obsidian 1.14 为支持 RTL 翻转，把工作区物理方位类换成了逻辑�
 
 ---
 
+## Mermaid / Pele（Obsidian 1.15+，与旧 Mermaid 完全不同）⚠️
+
+1.15 起笔记里的 mermaid 改由 Pele 渲染（`obsidian.asar` 内 `/lib/pele.min.js`），**Pele 不读 Mermaid 主题**，只认 CSS 变量。
+Obsidian 在 app.css 的 `body` 里提供 `--mermaid-*`，再由 `body, .mermaid { --pele-*: var(--mermaid-*) }` 转成 Pele 变量
+→ 主题**只覆盖 `--mermaid-*`**，不要另写一套 `--pele-*`（双份默认值，还会绕过 Obsidian 的映射）。
+
+- 接线在 `src/20-tokens.css` §7：背景 / 文字 / 墨线 / 面 / 边框 / 强调 / 错误 + 8 个分类色。
+  分类色复用「彩色排版」标题色与 Callout 墨色 → 用户改标题 / Callout 时图表分类色跟着变（有意，别改成写死 hex）。
+- **没有任何设置项**：笔记渲染只给 `pele.mount` 传了 `{zoom:{labels}}`，`config` / `autoDirection` /
+  `directionBreakpoint` / `fontSize` 全是 Pele 默认值（响应式 true、自动转向阈值 **640px 容器宽**、字号 16）。
+  `mermaidAPI.setConfig()` 只影响插件调 `mermaid.render()` 的路径，不影响笔记内渲染。
+- 每张图可用 frontmatter / `%%{init}%%` 覆盖 Mermaid 兼容配置（`useMaxWidth: false` = 按自然尺寸画、不缩到容器宽）。
+  ⚠️ init 里 JSON 非法（例如全角逗号 `，`）会被**静默丢弃**，不报错，看起来像「配置没生效」。
+- `useMaxWidth: false` 挡不住 <640 的自动转纵向；`autoDirection` 不是 Mermaid 配置项，frontmatter 改不了。
+
+---
+
 ## Style Settings 颜色控件的浅/暗预览底（⚠️ 与 `body.` 前缀有关）
 
 `variable-themed-color` 的 UI 是「浅色底 + 色块 / 暗色底 + 色块」两块，插件给它写的是
