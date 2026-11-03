@@ -8246,23 +8246,26 @@ body:not(.block-width-off) {
    再由 `body, .mermaid { --pele-*: var(--mermaid-*) }` 转成 Pele 变量，
    所以这里只覆盖 `--mermaid-*`（不要同时写 `--pele-*`，否则默认值有两份）。
 
-   - 全部指向令牌 → 用户改强调色 / 标题色 / Callout / 背景时，图自动跟随；
-   - `--mermaid-color-1..8` 是图表（饼图 / XY / git 分支）的分类色，
-     复用「彩色排版」的标题色 + Callout 墨色，不另造一套色板；
-   - 边框取「次要文字 + 纸面」的 mix：Cupertino 4.1.0 的
-     --background-modifier-border 是不透明冷灰，压在暖白/暖棕纸上会发青。 */
+   取值照 onepage-diagrams 插件（它给 Pele 做的那套 OnePage 适配）：
+   - 元素底 = 页面纸色，靠 26% 弱化色描边勾形 → 节点像纸面卡片，不是灰块；
+   - 层带底 = 次级底兑六成页面色；连线 = 正文色 55% 透明（比正文软一档）；
+   - 元素文字 = 弱化色 55% + 正文 45%；强调 / 语义标签走强调色与 Callout 墨色。
+   结构性规则（圆角、层带卡片、:::key 等标签）在 90-onepage.css §19。 */
 body {
   --mermaid-background: var(--onepage-bg-primary);
-  --mermaid-text-color: var(--onepage-text-normal);
+  --mermaid-text-color: color-mix(in srgb, var(--onepage-text-muted) 55%, var(--onepage-text-normal));
   --mermaid-muted-color: var(--onepage-text-muted);
-  --mermaid-line-color: var(--onepage-text-normal);
-  --mermaid-surface: var(--onepage-bg-secondary);
-  --mermaid-surface-alt: var(--onepage-bg-tertiary);
-  --mermaid-border-color: color-mix(in srgb, var(--onepage-text-muted) 34%, var(--onepage-bg-primary));
+  --mermaid-line-color: color-mix(in srgb, var(--onepage-text-normal) 55%, transparent);
+  --mermaid-surface: var(--onepage-bg-primary);
+  --mermaid-surface-alt: color-mix(in srgb, var(--onepage-bg-secondary) 60%, var(--onepage-bg-primary));
+  --mermaid-border-color: color-mix(in srgb, var(--onepage-text-muted) 26%, transparent);
   --mermaid-accent: var(--text-accent);
   --mermaid-critical: var(--onepage-callout-fail);
   --mermaid-error: var(--onepage-callout-error);
+  --mermaid-radius: 10px;
 
+  /* 图表分类色（饼图 / XY / git 分支 / 时间线）：复用「彩色排版」标题色 +
+     Callout 的成功 / 钢蓝墨色，不另造一套色板。 */
   --mermaid-color-1: var(--onepage-typo-h1);
   --mermaid-color-2: var(--onepage-typo-h4);
   --mermaid-color-3: var(--onepage-typo-h3);
@@ -9899,4 +9902,148 @@ body.theme-dark {
    （不用 `.callout + .callout` 相邻选择器：LP 里两个 callout 各自在 `.cm-line > .cm-embed-block` 里，不是兄弟节点，匹配不到。） */
 .markdown-embed .callout:not(.callout .callout) {
   margin-block: 1em;
+}
+
+/* ---------- 19. Mermaid / Pele：纸面配色与结构（Obsidian 1.15+） ----------
+
+   变量接线在 src/20-tokens.css §7（取值照 onepage-diagrams 插件的方案），
+   这里只放 Pele DOM 的结构性规则，作用域限定在笔记里的 `.mermaid`。
+
+   DOM 依据：Obsidian 1.15 内置 Pele 1.8 ——
+     .pele-cluster > rect                       层带（默认 fill-opacity .5）
+     .pele-node > rect/circle/ellipse/polygon/path   元素
+     .pele-node.key/.risk/.warn/.ok/.ext/.muted  :::标签（Pele 原样输出 class）
+     .pele-edge path[stroke-width]              ==> 加粗主线
+     .pele-frame-critical                       时序图 critical 段
+   ⚠️ 1.8 的节点矩形圆角写在 style="rx:var(--_r)"（不是 rx 属性），
+   `rect:not([rx])` 会命中全部节点矩形（包括胶囊）；要保留胶囊原弧度就删掉那条。 */
+
+/* 层带：做成「属性面板」那张圆角卡片（Pele 默认 50% 透明，太虚） */
+.mermaid .pele-cluster > rect {
+  rx: 10px !important;
+  fill-opacity: 1 !important;
+  stroke-width: 1;
+}
+.mermaid .pele-cluster-label {
+  fill: var(--onepage-text-normal) !important;
+  opacity: 1 !important;
+  font-weight: 500;
+  font-size: 13px;
+}
+/* 1.12 的层带标题还带一层描边光晕（1.8 无此结构），有就藏掉防重影 */
+.mermaid .pele-cluster-titles text:not(.pele-cluster-label) {
+  display: none !important;
+}
+
+/* 元素：统一描边。圆柱/队列是 path，圆形是 circle，菱形/六边形是 polygon，别只写 rect。
+   纯文本节点的 rect 是 stroke="none"，不碰。 */
+.mermaid .pele-node > rect:not([stroke='none']),
+.mermaid .pele-node > circle,
+.mermaid .pele-node > ellipse,
+.mermaid .pele-node > polygon,
+.mermaid .pele-node > path {
+  stroke: color-mix(in srgb, var(--onepage-text-muted) 30%, transparent);
+  stroke-width: 1;
+}
+.mermaid .pele-node > rect:not([rx]) {
+  rx: 6px !important;
+}
+.mermaid .pele-node .pele-label {
+  font-weight: 400;
+}
+
+/* ---------- 语义标签：:::key / :::risk / :::warn / :::ok / :::ext / :::muted
+   Pele 把 :::name 变成节点上的 class；一个标签只管一行 --pele-tag：
+   外框 32%、淡底跟 Callout 同一浓度、文字与正文按 62/38 混色，都从它算。
+   色相取 OnePage 的 Callout 墨色（为暖白/暖棕纸面调过的低彩度墨，比系统色柔和）。 */
+.mermaid .pele-node.key   { --pele-tag: var(--text-accent); --pele-tint: 10%; }
+.mermaid .pele-node.risk  { --pele-tag: var(--onepage-callout-error); }
+.mermaid .pele-node.warn  { --pele-tag: var(--onepage-callout-warning); }
+.mermaid .pele-node.ok    { --pele-tag: var(--onepage-callout-success); }
+.mermaid .pele-node.ext   { --pele-tag: var(--onepage-callout-info); }
+.mermaid .pele-node.muted { --pele-tag: var(--onepage-callout-quote); }
+
+/* 外框：五种图元一并算；纯文本节点的 rect 是 stroke="none"，不碰 */
+.mermaid .pele-node:is(.key, .risk, .warn, .ok, .ext, .muted)
+  > :is(rect:not([stroke='none']), circle, ellipse, polygon, path) {
+  stroke: color-mix(in srgb, var(--pele-tag) 32%, transparent);
+  stroke-width: 1;
+}
+
+/* 淡底只上在实心图元：圆柱上沿、双圆内圈、子程序分隔线是 fill="none" 的描边线，别灌底。
+   ext / muted 不上色，只靠外框和字区分。浓度跟 Callout 一致。 */
+.mermaid .pele-node:is(.key, .risk, .warn, .ok)
+  > :is(rect, circle, ellipse, polygon, path):not([fill='none']) {
+  fill: color-mix(in srgb, var(--pele-tag) var(--onepage-callout-tint), transparent);
+}
+.mermaid .pele-node.key
+  > :is(rect, circle, ellipse, polygon, path):not([fill='none']) {
+  fill: color-mix(in srgb, var(--pele-tag) var(--pele-tint), transparent);
+}
+
+/* ext：外部系统/第三方，虚线框。muted：次要节点，描边再淡一半 */
+.mermaid .pele-node.ext
+  > :is(rect, circle, ellipse, polygon, path) {
+  stroke-dasharray: 5 4;
+}
+.mermaid .pele-node.muted
+  > :is(rect:not([stroke='none']), circle, ellipse, polygon, path) {
+  stroke: color-mix(in srgb, var(--onepage-text-muted) 18%, transparent);
+}
+
+/* 圆角：带标签的节点再大一档；胶囊/状态节点在 1.8 里也会被一起压平（见文件头说明） */
+.mermaid .pele-node:is(.key, .risk, .warn, .ok, .ext, .muted) > rect:not([rx]) {
+  rx: 8px !important;
+}
+
+/* 文字：有色标签用色相与正文混色，明暗两种主题都读得清；muted 直接弱化色 */
+.mermaid .pele-node:is(.key, .risk, .warn, .ok, .ext) .pele-label {
+  fill: color-mix(in srgb, var(--pele-tag) 62%, var(--onepage-text-normal)) !important;
+  font-weight: 400;
+}
+.mermaid .pele-node.muted .pele-label {
+  fill: var(--onepage-text-muted) !important;
+  font-weight: 400;
+}
+
+/* 时序图的 Note：跟重点节点同一套标签样式，两种图的「重点」长得一致 */
+.mermaid .pele-note > rect {
+  rx: 8px !important;
+  fill: color-mix(in srgb, var(--text-accent) 10%, transparent);
+  stroke: color-mix(in srgb, var(--text-accent) 30%, transparent);
+  stroke-width: 1;
+}
+.mermaid .pele-note > text,
+.mermaid .pele-note .pele-label {
+  fill: var(--text-accent) !important;
+}
+
+/* 主链路：Pele 的加粗连线（==>）连箭头一起染成强调色 */
+.mermaid .pele-edge path[stroke-width] {
+  stroke: var(--text-accent);
+  stroke-width: 1.8;
+}
+.mermaid .pele-edge:has(path[stroke-width]) .pele-marker {
+  fill: var(--text-accent);
+}
+
+/* 时序图关键段：源码写 critical … end，框线与标题跟强调色 */
+.mermaid .pele-frames .pele-frame-critical {
+  stroke: color-mix(in srgb, var(--text-accent) 45%, transparent);
+}
+.mermaid .pele-frame-critical > rect[fill='none'] {
+  fill: color-mix(in srgb, var(--text-accent) 6%, transparent);
+}
+.mermaid .pele-frame-critical > rect:not([fill='none']) {
+  fill: color-mix(in srgb, var(--text-accent) 12%, transparent);
+}
+.mermaid .pele-frame-critical .pele-frame-kind,
+.mermaid .pele-frame-critical .pele-frame-label {
+  fill: var(--text-accent) !important;
+}
+
+/* 连线标签的底框用页面色，只用来遮住穿过的线。
+   Pele 默认就是 var(--_bg)，这里钉住，避免线色改成半透明后从字底下透出来。 */
+.mermaid .pele-edge-label rect {
+  fill: var(--onepage-bg-primary) !important;
 }

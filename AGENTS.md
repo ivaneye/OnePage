@@ -273,8 +273,12 @@ Obsidian 1.14 为支持 RTL 翻转，把工作区物理方位类换成了逻辑�
 Obsidian 在 app.css 的 `body` 里提供 `--mermaid-*`，再由 `body, .mermaid { --pele-*: var(--mermaid-*) }` 转成 Pele 变量
 → 主题**只覆盖 `--mermaid-*`**，不要另写一套 `--pele-*`（双份默认值，还会绕过 Obsidian 的映射）。
 
-- 接线在 `src/20-tokens.css` §7：背景 / 文字 / 墨线 / 面 / 边框 / 强调 / 错误 + 8 个分类色。
-  分类色复用「彩色排版」标题色与 Callout 墨色 → 用户改标题 / Callout 时图表分类色跟着变（有意，别改成写死 hex）。
+- 接线在 `src/20-tokens.css` §7：背景 / 文字 / 墨线 / 面 / 边框 / 强调 / 错误 + 8 个分类色；
+  结构性规则（层带卡片、元素描边/圆角、`:::key` 语义标签、时序 note/critical、`==>` 主线）在 `src/90-onepage.css` §19。
+  配色与结构**照 `~/Documents/ob-dev/.obsidian/plugins/onepage-diagrams/styles.css` 抄**（同作者的临时插件，已走查过）；
+  改之前先对齐那份，别自己另调一套。分类色复用「彩色排版」标题色与 Callout 墨色 → 用户改标题 / Callout 时图表分类色跟着变（有意，别改成写死 hex）。
+- ⚠️ Obsidian 1.15 内置的是 Pele **1.8**，节点矩形圆角写在 `style="rx:var(--_r)"`（不是 `rx` 属性）→
+  `rect:not([rx])` 会命中**全部**节点矩形（胶囊也会被压平）。插件写的是 1.12 的 DOM，抄规则时要按 1.8 校对。
 - **没有任何设置项**：笔记渲染只给 `pele.mount` 传了 `{zoom:{labels}}`，`config` / `autoDirection` /
   `directionBreakpoint` / `fontSize` 全是 Pele 默认值（响应式 true、自动转向阈值 **640px 容器宽**、字号 16）。
   `mermaidAPI.setConfig()` 只影响插件调 `mermaid.render()` 的路径，不影响笔记内渲染。
