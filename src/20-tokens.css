@@ -271,7 +271,7 @@ body:not(.block-width-off) {
    所以这里只覆盖 `--mermaid-*`（不要同时写 `--pele-*`，否则默认值有两份）。
 
    取值照 onepage-diagrams 插件（它给 Pele 做的那套 OnePage 适配）：
-   - 元素底 = 页面纸色，靠 26% 弱化色描边勾形 → 节点像纸面卡片，不是灰块；
+   - 元素底 = 纸面兑四层次级底（比纸面深/亮一档），靠 26% 弱化色描边勾形 → 像纸面卡片，不是灰块；
    - 层带底 = 次级底兑六成页面色；连线 = 正文色 55% 透明（比正文软一档）；
    - 元素文字 = 弱化色 55% + 正文 45%；强调 / 语义标签走强调色与 Callout 墨色。
    结构性规则（圆角、层带卡片、:::key 等标签）在 90-onepage.css §19。 */
@@ -280,7 +280,7 @@ body {
   --mermaid-text-color: color-mix(in srgb, var(--onepage-text-muted) 55%, var(--onepage-text-normal));
   --mermaid-muted-color: var(--onepage-text-muted);
   --mermaid-line-color: color-mix(in srgb, var(--onepage-text-normal) 55%, transparent);
-  --mermaid-surface: var(--onepage-bg-primary);
+  --mermaid-surface: color-mix(in srgb, var(--onepage-bg-secondary) 40%, var(--onepage-bg-primary));
   --mermaid-surface-alt: color-mix(in srgb, var(--onepage-bg-secondary) 60%, var(--onepage-bg-primary));
   --mermaid-border-color: color-mix(in srgb, var(--onepage-text-muted) 26%, transparent);
   --mermaid-accent: var(--text-accent);
