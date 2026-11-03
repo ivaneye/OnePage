@@ -274,6 +274,7 @@ Obsidian 在 app.css 的 `body` 里提供 `--mermaid-*`，再由 `body, .mermaid
 → 主题**只覆盖 `--mermaid-*`**，不要另写一套 `--pele-*`（双份默认值，还会绕过 Obsidian 的映射）。
 
 - 接线在 `src/20-tokens.css` §7：背景 / 文字 / 墨线 / 面 / 边框 / 强调 / 错误 + 8 个分类色；
+  浅色分类色 = 标题/Callout 色**兑 35% 纸面**（满色铺大面积饼图/树图太沉；暗色本来就是提亮版，不兑）；
   结构性规则（层带卡片、元素描边/圆角、`:::key` 语义标签、时序 note/critical、`==>` 主线）在 `src/90-onepage.css` §19。
 - Style Settings「配色 → Mermaid 图表配色」：`mermaid-custom` 开关 + 13 个 `variable-themed-color`
   （元素底 / 层带底 / 描边 / 文字 / 连线 + 8 个分类色）。**开关关闭时走派生值**（跟随纸面/标题/Callout），

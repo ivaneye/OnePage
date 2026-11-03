@@ -556,81 +556,81 @@ settings:
         id: onepage-mermaid-color-1
         title: '分类色 1（藏青）'
         title.en: 'Series 1 (Navy)'
-        description: '默认 #1d345c（浅色） / #4f74af（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description: '默认 #6a7890（浅色） / #4f74af（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
         description.en: 'Default #1d345c (light) / #4f74af (dark); the swatch in the picker is the default — click it to restore.'
         type: variable-themed-color
         format: hex
-        default-light: '#1d345c'
+        default-light: '#6a7890'
         default-dark: '#4f74af'
     -
         id: onepage-mermaid-color-2
         title: '分类色 2（玫红）'
         title.en: 'Series 2 (Rose)'
-        description: '默认 #ce5567（浅色） / #c0765e（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description: '默认 #dd8e97（浅色） / #c0765e（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
         description.en: 'Default #ce5567 (light) / #c0765e (dark); the swatch in the picker is the default — click it to restore.'
         type: variable-themed-color
         format: hex
-        default-light: '#ce5567'
+        default-light: '#dd8e97'
         default-dark: '#c0765e'
     -
         id: onepage-mermaid-color-3
         title: '分类色 3（深青）'
         title.en: 'Series 3 (Teal)'
-        description: '默认 #0e6e63（浅色） / #4e9a8a（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description: '默认 #619e95（浅色） / #4e9a8a（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
         description.en: 'Default #0e6e63 (light) / #4e9a8a (dark); the swatch in the picker is the default — click it to restore.'
         type: variable-themed-color
         format: hex
-        default-light: '#0e6e63'
+        default-light: '#619e95'
         default-dark: '#4e9a8a'
     -
         id: onepage-mermaid-color-4
         title: '分类色 4（赭石）'
         title.en: 'Series 4 (Ochre)'
-        description: '默认 #9c6b1e（浅色） / #c99b5e（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description: '默认 #bd9c68（浅色） / #c99b5e（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
         description.en: 'Default #9c6b1e (light) / #c99b5e (dark); the swatch in the picker is the default — click it to restore.'
         type: variable-themed-color
         format: hex
-        default-light: '#9c6b1e'
+        default-light: '#bd9c68'
         default-dark: '#c99b5e'
     -
         id: onepage-mermaid-color-5
         title: '分类色 5（紫）'
         title.en: 'Series 5 (Purple)'
-        description: '默认 #52377a（浅色） / #8567bd（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description: '默认 #8d7aa4（浅色） / #8567bd（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
         description.en: 'Default #52377a (light) / #8567bd (dark); the swatch in the picker is the default — click it to restore.'
         type: variable-themed-color
         format: hex
-        default-light: '#52377a'
+        default-light: '#8d7aa4'
         default-dark: '#8567bd'
     -
         id: onepage-mermaid-color-6
         title: '分类色 6（苔绿）'
         title.en: 'Series 6 (Moss)'
-        description: '默认 #4e7a4e（浅色） / #84b489（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description: '默认 #8aa687（浅色） / #84b489（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
         description.en: 'Default #4e7a4e (light) / #84b489 (dark); the swatch in the picker is the default — click it to restore.'
         type: variable-themed-color
         format: hex
-        default-light: '#4e7a4e'
+        default-light: '#8aa687'
         default-dark: '#84b489'
     -
         id: onepage-mermaid-color-7
         title: '分类色 7（钢蓝）'
         title.en: 'Series 7 (Steel Blue)'
-        description: '默认 #3d6b85（浅色） / #7fa7c4（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description: '默认 #7f9cab（浅色） / #7fa7c4（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
         description.en: 'Default #3d6b85 (light) / #7fa7c4 (dark); the swatch in the picker is the default — click it to restore.'
         type: variable-themed-color
         format: hex
-        default-light: '#3d6b85'
+        default-light: '#7f9cab'
         default-dark: '#7fa7c4'
     -
         id: onepage-mermaid-color-8
         title: '分类色 8（暖灰）'
         title.en: 'Series 8 (Warm Gray)'
-        description: '默认 #8a8378（浅色） / #8a8478（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
+        description: '默认 #b1aca2（浅色） / #8a8478（暗色）；拾色器里的色块就是默认色，点一下即可恢复'
         description.en: 'Default #8a8378 (light) / #8a8478 (dark); the swatch in the picker is the default — click it to restore.'
         type: variable-themed-color
         format: hex
-        default-light: '#8a8378'
+        default-light: '#b1aca2'
         default-dark: '#8a8478'
 
     -

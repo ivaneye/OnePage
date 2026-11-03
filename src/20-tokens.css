@@ -289,15 +289,17 @@ body {
   --mermaid-radius: 10px;
 
   /* 图表分类色（饼图 / XY / git 分支 / 时间线）：复用「彩色排版」标题色 +
-     Callout 的成功 / 钢蓝墨色，不另造一套色板。 */
-  --mermaid-color-1: var(--onepage-typo-h1);
-  --mermaid-color-2: var(--onepage-typo-h4);
-  --mermaid-color-3: var(--onepage-typo-h3);
-  --mermaid-color-4: var(--onepage-typo-h5);
-  --mermaid-color-5: var(--onepage-typo-h2);
-  --mermaid-color-6: var(--onepage-callout-success);
-  --mermaid-color-7: var(--onepage-callout-default);
-  --mermaid-color-8: var(--onepage-typo-h6);
+     Callout 的成功 / 钢蓝墨色，不另造一套色板。
+     浅色下再兑 35% 纸面：满色铺在大面积（饼图/树图）时太沉，兑纸后接近
+     Cynefin / 事件建模那种淡染的舒服程度；暗色本来就是提亮版，不兑（见下）。 */
+  --mermaid-color-1: color-mix(in srgb, var(--onepage-typo-h1) 65%, var(--onepage-bg-primary));
+  --mermaid-color-2: color-mix(in srgb, var(--onepage-typo-h4) 65%, var(--onepage-bg-primary));
+  --mermaid-color-3: color-mix(in srgb, var(--onepage-typo-h3) 65%, var(--onepage-bg-primary));
+  --mermaid-color-4: color-mix(in srgb, var(--onepage-typo-h5) 65%, var(--onepage-bg-primary));
+  --mermaid-color-5: color-mix(in srgb, var(--onepage-typo-h2) 65%, var(--onepage-bg-primary));
+  --mermaid-color-6: color-mix(in srgb, var(--onepage-callout-success) 65%, var(--onepage-bg-primary));
+  --mermaid-color-7: color-mix(in srgb, var(--onepage-callout-default) 65%, var(--onepage-bg-primary));
+  --mermaid-color-8: color-mix(in srgb, var(--onepage-typo-h6) 65%, var(--onepage-bg-primary));
 
   /* 可选：固定一套图表配色（Style Settings「自定义图表配色」开关 → body.mermaid-custom）。
      默认路径全部是派生值，跟随纸面 / 标题色 / Callout；打开开关才切到下面这组实色。
@@ -307,17 +309,27 @@ body {
   --onepage-mermaid-border: #dcd7cf;
   --onepage-mermaid-text: #655e53;
   --onepage-mermaid-line: #928d87;
-  --onepage-mermaid-color-1: #1d345c;
-  --onepage-mermaid-color-2: #ce5567;
-  --onepage-mermaid-color-3: #0e6e63;
-  --onepage-mermaid-color-4: #9c6b1e;
-  --onepage-mermaid-color-5: #52377a;
-  --onepage-mermaid-color-6: #4e7a4e;
-  --onepage-mermaid-color-7: #3d6b85;
-  --onepage-mermaid-color-8: #8a8378;
+  --onepage-mermaid-color-1: #6a7890;
+  --onepage-mermaid-color-2: #dd8e97;
+  --onepage-mermaid-color-3: #619e95;
+  --onepage-mermaid-color-4: #bd9c68;
+  --onepage-mermaid-color-5: #8d7aa4;
+  --onepage-mermaid-color-6: #8aa687;
+  --onepage-mermaid-color-7: #7f9cab;
+  --onepage-mermaid-color-8: #b1aca2;
 }
 
 body.theme-dark {
+  /* 分类色在暗色下已是提亮版，不再兑纸 */
+  --mermaid-color-1: var(--onepage-typo-h1);
+  --mermaid-color-2: var(--onepage-typo-h4);
+  --mermaid-color-3: var(--onepage-typo-h3);
+  --mermaid-color-4: var(--onepage-typo-h5);
+  --mermaid-color-5: var(--onepage-typo-h2);
+  --mermaid-color-6: var(--onepage-callout-success);
+  --mermaid-color-7: var(--onepage-callout-default);
+  --mermaid-color-8: var(--onepage-typo-h6);
+
   --onepage-mermaid-surface: #2a2726;
   --onepage-mermaid-surface-alt: #2d2a29;
   --onepage-mermaid-border: #433f3b;
