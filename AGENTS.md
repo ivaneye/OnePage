@@ -275,6 +275,10 @@ Obsidian 在 app.css 的 `body` 里提供 `--mermaid-*`，再由 `body, .mermaid
 
 - 接线在 `src/20-tokens.css` §7：背景 / 文字 / 墨线 / 面 / 边框 / 强调 / 错误 + 8 个分类色；
   结构性规则（层带卡片、元素描边/圆角、`:::key` 语义标签、时序 note/critical、`==>` 主线）在 `src/90-onepage.css` §19。
+- Style Settings「配色 → Mermaid 图表配色」：`mermaid-custom` 开关 + 13 个 `variable-themed-color`
+  （元素底 / 层带底 / 描边 / 文字 / 连线 + 8 个分类色）。**开关关闭时走派生值**（跟随纸面/标题/Callout），
+  打开才切到 `--onepage-mermaid-*` 实色。别把这组实色直接接到默认路径 —— 否则用户改背景时图不跟随
+  （「暴露变量别依赖暴露变量」的镜像问题）。新增颜色项时记得 `@settings` default 与 `body`/`body.theme-dark` 的令牌逐字一致。
   配色与结构**照 `~/Documents/ob-dev/.obsidian/plugins/onepage-diagrams/styles.css` 抄**（同作者的临时插件，已走查过）；
   改之前先对齐那份，别自己另调一套。分类色复用「彩色排版」标题色与 Callout 墨色 → 用户改标题 / Callout 时图表分类色跟着变（有意，别改成写死 hex）。
 - ⚠️ Obsidian 1.15 内置的是 Pele **1.8**，节点矩形圆角写在 `style="rx:var(--_r)"`（不是 `rx` 属性）→

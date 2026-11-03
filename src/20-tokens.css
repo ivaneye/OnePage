@@ -298,4 +298,55 @@ body {
   --mermaid-color-6: var(--onepage-callout-success);
   --mermaid-color-7: var(--onepage-callout-default);
   --mermaid-color-8: var(--onepage-typo-h6);
+
+  /* 可选：固定一套图表配色（Style Settings「自定义图表配色」开关 → body.mermaid-custom）。
+     默认路径全部是派生值，跟随纸面 / 标题色 / Callout；打开开关才切到下面这组实色。
+     默认值 = 当前派生结果（浅/暗各一套，verify 会逐字校验）。 */
+  --onepage-mermaid-surface: #f7f4ed;
+  --onepage-mermaid-surface-alt: #f6f2eb;
+  --onepage-mermaid-border: #dcd7cf;
+  --onepage-mermaid-text: #655e53;
+  --onepage-mermaid-line: #928d87;
+  --onepage-mermaid-color-1: #1d345c;
+  --onepage-mermaid-color-2: #ce5567;
+  --onepage-mermaid-color-3: #0e6e63;
+  --onepage-mermaid-color-4: #9c6b1e;
+  --onepage-mermaid-color-5: #52377a;
+  --onepage-mermaid-color-6: #4e7a4e;
+  --onepage-mermaid-color-7: #3d6b85;
+  --onepage-mermaid-color-8: #8a8378;
+}
+
+body.theme-dark {
+  --onepage-mermaid-surface: #2a2726;
+  --onepage-mermaid-surface-alt: #2d2a29;
+  --onepage-mermaid-border: #433f3b;
+  --onepage-mermaid-text: #afa79d;
+  --onepage-mermaid-line: #837d77;
+  --onepage-mermaid-color-1: #4f74af;
+  --onepage-mermaid-color-2: #c0765e;
+  --onepage-mermaid-color-3: #4e9a8a;
+  --onepage-mermaid-color-4: #c99b5e;
+  --onepage-mermaid-color-5: #8567bd;
+  --onepage-mermaid-color-6: #84b489;
+  --onepage-mermaid-color-7: #7fa7c4;
+  --onepage-mermaid-color-8: #8a8478;
+}
+
+/* 开关打开后（body.mermaid-custom）改用固定色；强调色与 ::: 语义标签仍跟随
+   「强调色 / Callout 配色」，不在这里锁死。 */
+body.mermaid-custom {
+  --mermaid-surface: var(--onepage-mermaid-surface);
+  --mermaid-surface-alt: var(--onepage-mermaid-surface-alt);
+  --mermaid-border-color: var(--onepage-mermaid-border);
+  --mermaid-text-color: var(--onepage-mermaid-text);
+  --mermaid-line-color: var(--onepage-mermaid-line);
+  --mermaid-color-1: var(--onepage-mermaid-color-1);
+  --mermaid-color-2: var(--onepage-mermaid-color-2);
+  --mermaid-color-3: var(--onepage-mermaid-color-3);
+  --mermaid-color-4: var(--onepage-mermaid-color-4);
+  --mermaid-color-5: var(--onepage-mermaid-color-5);
+  --mermaid-color-6: var(--onepage-mermaid-color-6);
+  --mermaid-color-7: var(--onepage-mermaid-color-7);
+  --mermaid-color-8: var(--onepage-mermaid-color-8);
 }
