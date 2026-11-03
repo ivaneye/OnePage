@@ -2,6 +2,28 @@
 
 > Full changelog. The README only links here — releases are append-only.
 
+### 2.2.0
+
+**Mermaid diagrams now use OnePage's paper palette (Obsidian 1.15 / Pele), plus 13 new diagram color settings.**
+
+Obsidian 1.15 renders Mermaid with Pele. Pele ignores Mermaid themes and only reads CSS variables, so OnePage now owns `--mermaid-*` and gives diagrams the same language as the paper:
+
+- **Nodes**: paper fill (one step of the secondary surface), 26% warm-ink border, 6px radius; subgraphs become the same rounded card as the Properties panel (opaque, 13px title)
+- **Edges**: 55% text color; `==>` main paths, sequence `critical` frames and `note`s use the accent color
+- **Semantic tags**: `:::key / risk / warn / ok / ext / muted` map to the accent and callout inks; `ext` gets a dashed border, `muted` a fainter one
+- **Series colors** (pie / XY / git / timeline / treemap): derived from the typographic heading colors and callout inks; in light mode each is mixed with 35% paper so large fills don't feel heavy (dark mode keeps the already-light values)
+
+**New Style Settings** (Colors → Mermaid Diagram Colors)
+
+- "Custom Diagram Colors" toggle: off by default, so diagrams keep following the paper / headings / callouts; turn it on to pin the fixed palette below
+- 13 color options, one per mode: node fill / subgraph fill / border / text / edges + eight series colors
+- The accent and `:::` tags keep following the Accent / Callout settings; the toggle does not lock them
+
+**Compatibility**
+
+- Minimum Obsidian version stays **1.14.0**; diagram styling needs **Obsidian 1.15+** (older Mermaid never reads these variables and simply keeps its previous look)
+- Verified with `build` / `verify`; `diff:style` reports zero differences in light / dark / demo / translucent; rendered flowchart, sequence, pie, gantt, cynefin, eventmodeling and treemap with the Pele 1.8 bundled in Obsidian 1.15.0
+
 ### 2.1.0
 
 **Colors and content width are now fully adjustable: 41 new Style Settings options, plus a new design-token layer.**

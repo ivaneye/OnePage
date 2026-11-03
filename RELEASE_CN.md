@@ -2,6 +2,28 @@
 
 > 完整更新日志。README 只做引用 —— 新版本持续往下追加。
 
+### 2.2.0
+
+**Mermaid 图表接入 OnePage 纸面配色（Obsidian 1.15 / Pele），并新增 13 项图表配色设置。**
+
+Obsidian 1.15 起 Mermaid 改由 Pele 渲染。Pele 不读 Mermaid 主题，只认 CSS 变量；OnePage 现在接管 `--mermaid-*`，让图和纸面用同一套语言：
+
+- **元素**：底色取纸面（兑四层次级底），26% 暖墨描边、6px 小圆角；层带做成「笔记属性」那种圆角卡片（实心、13px 标题）
+- **连线**：正文色 55% 透明；`==>` 加粗主线、时序图 `critical` 与 `note` 走强调色
+- **语义标签**：`:::key / risk / warn / ok / ext / muted` 分别取强调色 / Callout 墨色；`ext` 虚线框、`muted` 描边更淡
+- **分类色**（饼图 / XY / git / 时间线 / 树图）：复用「彩色排版」标题色 + Callout 成功/钢蓝；浅色下再兑 35% 纸面，避免大面积色块过沉；暗色本来就是提亮版，不兑
+
+**新增 Style Settings**（配色 → Mermaid 图表配色）
+
+- 「自定义图表配色」开关：默认关闭，图继续跟随纸面 / 标题 / Callout；打开才改用下面这组固定色
+- 13 个颜色项（浅/暗各一套）：元素底 / 层带底 / 描边 / 文字 / 连线 + 8 个分类色
+- 强调色与 `:::` 标签仍跟随「强调色 / Callout 配色」，不在开关里锁死
+
+**兼容性**
+
+- 主题最低版本仍是 **1.14.0**；图表样式需要 **Obsidian 1.15+**（旧版 Mermaid 不读这些变量，不会报错，只是保持原样）
+- 校验：`build` / `verify` 全绿；`diff:style` 在浅色 / 暗色 / 演示模式 / 窗口透明四场景零差异；用 Obsidian 1.15.0 内置的 Pele 1.8 实渲染 flowchart、sequence、pie、gantt、cynefin、eventmodeling、treemap 等校对
+
 ### 2.1.0
 
 **配色与宽度全面可调：新增 41 个 Style Settings 选项，并把主题拆出「设计令牌」层。**

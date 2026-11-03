@@ -28,6 +28,7 @@ a native macOS-style interface paired with VSCode-like geeky editor details, wra
 - **Refined code**: JetBrains Mono ligatures, pill-shaped inline code, rounded code-block borders
 - **Reading experience**: tightened heading letter-spacing, thin underlined links, polished blockquotes, layered typographic colors (headings / bold / italic)
 - **Native UI**: macOS capsule tabs, ultra-thin scrollbars, lightweight status bar, Notion-style file tree & properties
+- **Mermaid diagrams**: OnePage palette for Obsidian 1.15+ (Pele) — paper cards, `:::key` semantic tags, eight series colors; pin your own palette in Style Settings
 - ⚠️ **Window translucent (not recommended)**: enabling it gives frosted-glass sidebars, but a macOS Electron compositing bug causes text ghosting/residue — keep it off (see below)
 - **Demo mode**: enlarge fonts and hide sidebars / tabs / status bar for distraction-free presenting (see below)
 - **Deep customization**: optional Style Settings with all Cupertino toggles + OnePage-specific options (see below)

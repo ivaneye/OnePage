@@ -28,6 +28,7 @@ OnePage 是一款基于 [Cupertino](https://github.com/aaaaalexis/Obsidian-Cuper
 - **代码精修**：JetBrains Mono 连字、行内代码药丸化、代码块圆角边框
 - **阅读质感**：标题负字距微调、链接细下划线、精致引用块、彩色排版（标题/加粗/斜体分层配色）
 - **UI 原生感**：macOS 胶囊标签、极细滚动条、状态栏轻量、Notion 风格文件树与属性面板
+- **Mermaid 图表**：Obsidian 1.15+（Pele）配色接入主题 —— 纸面卡片、`:::key` 语义标签、8 个分类色；可在 Style Settings 单独固定一套图表配色
 - ⚠️ **窗口透明（不建议开启）**：开启 Obsidian「窗口透明」虽可呈现毛玻璃质感，但 macOS 上 Electron 的合成 bug 会导致文字重影/残影，建议保持关闭（详见下方说明）
 - **演示模式**：放大字号、隐藏侧栏/标签栏/状态栏，一键投屏阅读（见下方说明）
 - **深度自定义**：可选装 Style Settings，继承 Cupertino 全部开关 + OnePage 专属配色项（见下方说明）
