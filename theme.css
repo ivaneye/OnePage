@@ -10451,31 +10451,82 @@ body .nn-calendar-right-sidebar {
   --nn-calendar-right-sidebar-bg: transparent;
 }
 
-/* ---------- NN 悬停 Tips：浅色模式下白字透明底 ----------
+/* ---------- NN 悬停 Tips：浅色模式白字透明底 + 排版优化 ----------
 
    NN 的 `.nn-tooltip` 用 `--background-modifier-message` 做底、文字硬编码 #fafafa。
    OnePage 在 macOS 下把这个变量重绑成了 `--raised-background`（浅色下是近透明的
    玻璃色）→ 浅色模式 = 透明底 + 白字，完全看不见；暗色模式白字碰巧还能读。
-   这里把 NN 的 tooltip 接到 OnePage 的纸面/文字色，和主题的原生 `.tooltip` 同一套：
-   纸面底 + 正文标题 + 弱化次要行 + 强调色标签药丸。 */
+
+   除配色外，NN 的默认排版是「全部居中」：标题、路径（根目录就一个 "/"）、两行日期
+   挤在一起，信息层级弱。这里按 OnePage 的卡片语言重排：
+   - 纸面底 + 发丝描边 + 柔和投影，去掉 NN 的小三角（popover 观感）；
+   - 标题 600 / 正文色；路径改成标题行右对齐的小字（过长省略）；
+   - 日期块用一条发丝分隔线隔开，字号降一档、弱化色；
+   - 标签药丸沿用主题的 --tag-* 青色（NN 为深色气泡硬编码的 #fafafa 系不再适用）。 */
 .nn-tooltip {
   background-color: var(--background-primary);
   color: var(--text-normal);
-  box-shadow: 0 6px 20px color-mix(in srgb, var(--text-muted) 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--text-muted) 14%, transparent);
+  border-radius: 10px;
+  padding: 9px 12px;
+  box-shadow:
+    0 8px 24px color-mix(in srgb, var(--text-muted) 18%, transparent),
+    0 2px 6px color-mix(in srgb, var(--text-muted) 10%, transparent);
+  text-align: left;
+  line-height: 1.45;
+  max-width: 340px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 8px;
+}
+/* 标题（NN 的 tooltip 第一个 div 就是文件名 / 目录名） */
+.nn-tooltip > div:first-child {
+  grid-column: 1;
+  grid-row: 1;
+  min-width: 0;
+  font-size: var(--font-ui-small);
+  font-weight: 600;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+/* 路径：与标题同一行、右对齐，过长省略 */
+.nn-tooltip > .nn-tooltip-muted:not(.nn-tooltip-dates):not(.nn-tooltip-tags) {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: end;
+  justify-self: end;
+  max-width: 60%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: right;
+  font-size: 0.92em;
 }
 .nn-tooltip-muted {
   color: var(--text-muted);
 }
-.nn-tooltip[data-placement='right'] .nn-tooltip-arrow {
-  border-right-color: var(--background-primary);
+/* 日期块：发丝线分隔 + 紧凑两行 */
+.nn-tooltip-dates {
+  grid-column: 1 / -1;
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px solid color-mix(in srgb, var(--text-muted) 12%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  font-size: 0.92em;
+  line-height: 1.4;
 }
-.nn-tooltip[data-placement='left'] .nn-tooltip-arrow {
-  border-left-color: var(--background-primary);
+.nn-tooltip-tags {
+  grid-column: 1 / -1;
 }
-/* 小药丸：NN 在 tooltip 里把标签强制成 #fafafa 系（为深色气泡准备），
-   纸面底上改用主题的青色标签（--tag-* 与正文 .tag 同源） */
+/* 标签药丸：纸面底上用主题标签色 */
 .nn-tooltip .nn-file-tag {
   --nn-theme-file-tag-color: var(--tag-color);
   --nn-theme-file-tag-border-color: color-mix(in srgb, var(--text-accent) 16%, transparent);
   --nn-theme-file-tag-bg: var(--tag-background);
+}
+/* 去掉 NN 的小三角：纸面卡片 + 投影更贴近 OnePage 的浮层语言 */
+.nn-tooltip-arrow {
+  display: none;
 }

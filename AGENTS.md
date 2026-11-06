@@ -566,10 +566,14 @@ Obsidian 的加载顺序是「插件样式 → 主题样式」，所以主题里
 ⚠️ **悬停 Tips（`.nn-tooltip`）**：NN 用 `--background-modifier-message` 做底、文字硬编码 `#fafafa`。
 OnePage 在 macOS 下把这个变量重绑成 `--raised-background`（浅色下是近透明的玻璃色）→
 浅色模式变成「透明底 + 白字」，完全看不见；暗色模式白字碰巧可读（用户反馈）。
-§22 把 `.nn-tooltip` 接到 `--background-primary` / `--text-normal` / `--text-muted`，
-箭头（`--background-modifier-message`）和标签药丸（`#fafafa` 系）一并覆盖。
+§22 把 `.nn-tooltip` 重做成 OnePage 的卡片，而不是只换颜色：
+- 纸面底（`--background-primary`）+ 发丝描边 + 柔和投影，去掉 NN 的小三角（popover 观感）；
+- `display: grid`：标题（600 / 正文色）与路径同一行、路径右对齐且在 60% 宽处省略；
+- 日期块用发丝线分隔、字号降一档（0.92em）+ `--text-muted`；
+- 标签药丸改用 `--tag-*`（NN 为深色气泡硬编码的 `#fafafa` 系不再适用）。
 验证：浅色下 tooltip bg = `#faf7f1`、title = `#3d3730`、muted = `#857d70`；
 暗色 = `#262322` / `#cfc7bd` / `#948d83`。tooltip 只在窗口**聚焦**时出现（后台窗口不弹，别误判成没修好）。
+⚠️ 截图时 `Page.bringToFront` 可能让 tooltip 收起；先用 `Runtime.evaluate` 读 computed style，再单独截图。
 
 ---
 
