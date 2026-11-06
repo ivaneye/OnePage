@@ -1934,3 +1934,18 @@ body .nn-calendar-right-sidebar {
 .nn-tooltip-arrow {
   display: none;
 }
+
+/* ---------- NN 文件列表「按日期分组」的吸顶标题没有遮罩 ----------
+
+   NN 的吸顶分组头（今天 / 昨天 …）用 `--nn-theme-list-bg` 做底，而 Cupertino 把
+   `--nn-theme-list-bg` 设成了 transparent（为了让列表透出侧栏卡片）。
+   结果吸顶时没有遮罩：文件名从标题文字下面穿过去，两行字叠在一起。
+   把该变量**只在吸顶头子树里**换回来（不影响列表整体透明/毛玻璃）：
+   - 非透明模式：直接用侧栏卡片色，和列表底完全一致（看不出接缝）；
+   - 透明模式：96% 卡片色（近不透明，保证遮得住；与其它浮层同一档，不 blur）。 */
+.nn-list-sticky-header {
+  --nn-theme-list-bg: var(--onepage-sidebar-bg);
+}
+body.is-translucent .nn-list-sticky-header {
+  --nn-theme-list-bg: color-mix(in srgb, var(--onepage-sidebar-bg) 96%, transparent);
+}

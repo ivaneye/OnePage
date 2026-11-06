@@ -575,6 +575,13 @@ OnePage 在 macOS 下把这个变量重绑成 `--raised-background`（浅色下�
 暗色 = `#262322` / `#cfc7bd` / `#948d83`。tooltip 只在窗口**聚焦**时出现（后台窗口不弹，别误判成没修好）。
 ⚠️ 截图时 `Page.bringToFront` 可能让 tooltip 收起；先用 `Runtime.evaluate` 读 computed style，再单独截图。
 
+⚠️ **吸顶分组标题没有遮罩**：NN 的「按日期分组」吸顶标题用 `--nn-theme-list-bg` 做底，
+而 Cupertino 把它设成 `transparent`（让列表透出侧栏卡片）→ 吸顶时文件名从标题文字下面穿过去，两行字叠一起。
+§22 把这个变量**只在 `.nn-list-sticky-header` 子树里**换回来：
+非透明模式 = `--onepage-sidebar-bg`（与列表底完全一致），透明模式 = 96% 卡片色（近不透明、不 blur）。
+**不要全局改 `--nn-theme-list-bg`**，否则整个列表会失去透明/毛玻璃效果。
+验证：滚到有吸顶头的位置，`getComputedStyle(吸顶头).backgroundColor` 必须是不透明色（非透明模式等于卡片色）。
+
 ---
 
 ## 性能：不要让选择器触发「全文档样式重算」（⚠️ 2.0.0 踩过，用户反馈"慢"）
