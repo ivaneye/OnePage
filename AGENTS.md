@@ -563,6 +563,14 @@ Obsidian 的加载顺序是「插件样式 → 主题样式」，所以主题里
 `transparent`，让卡片自己透出来；`--nn-calendar-cell-surface-bg` 会跟随同一个变量。
 验证：透明模式下量日历外壳的 computed `background-color` 必须是 `rgba(0,0,0,0)`。
 
+⚠️ **悬停 Tips（`.nn-tooltip`）**：NN 用 `--background-modifier-message` 做底、文字硬编码 `#fafafa`。
+OnePage 在 macOS 下把这个变量重绑成 `--raised-background`（浅色下是近透明的玻璃色）→
+浅色模式变成「透明底 + 白字」，完全看不见；暗色模式白字碰巧可读（用户反馈）。
+§22 把 `.nn-tooltip` 接到 `--background-primary` / `--text-normal` / `--text-muted`，
+箭头（`--background-modifier-message`）和标签药丸（`#fafafa` 系）一并覆盖。
+验证：浅色下 tooltip bg = `#faf7f1`、title = `#3d3730`、muted = `#857d70`；
+暗色 = `#262322` / `#cfc7bd` / `#948d83`。tooltip 只在窗口**聚焦**时出现（后台窗口不弹，别误判成没修好）。
+
 ---
 
 ## 性能：不要让选择器触发「全文档样式重算」（⚠️ 2.0.0 踩过，用户反馈"慢"）

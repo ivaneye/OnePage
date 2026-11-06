@@ -10450,3 +10450,32 @@ body {
 body .nn-calendar-right-sidebar {
   --nn-calendar-right-sidebar-bg: transparent;
 }
+
+/* ---------- NN 悬停 Tips：浅色模式下白字透明底 ----------
+
+   NN 的 `.nn-tooltip` 用 `--background-modifier-message` 做底、文字硬编码 #fafafa。
+   OnePage 在 macOS 下把这个变量重绑成了 `--raised-background`（浅色下是近透明的
+   玻璃色）→ 浅色模式 = 透明底 + 白字，完全看不见；暗色模式白字碰巧还能读。
+   这里把 NN 的 tooltip 接到 OnePage 的纸面/文字色，和主题的原生 `.tooltip` 同一套：
+   纸面底 + 正文标题 + 弱化次要行 + 强调色标签药丸。 */
+.nn-tooltip {
+  background-color: var(--background-primary);
+  color: var(--text-normal);
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--text-muted) 18%, transparent);
+}
+.nn-tooltip-muted {
+  color: var(--text-muted);
+}
+.nn-tooltip[data-placement='right'] .nn-tooltip-arrow {
+  border-right-color: var(--background-primary);
+}
+.nn-tooltip[data-placement='left'] .nn-tooltip-arrow {
+  border-left-color: var(--background-primary);
+}
+/* 小药丸：NN 在 tooltip 里把标签强制成 #fafafa 系（为深色气泡准备），
+   纸面底上改用主题的青色标签（--tag-* 与正文 .tag 同源） */
+.nn-tooltip .nn-file-tag {
+  --nn-theme-file-tag-color: var(--tag-color);
+  --nn-theme-file-tag-border-color: color-mix(in srgb, var(--text-accent) 16%, transparent);
+  --nn-theme-file-tag-bg: var(--tag-background);
+}
