@@ -2,6 +2,30 @@
 
 > Full changelog. The README only links here — releases are append-only.
 
+### 2.3.0
+
+**Hover sidebars are usable again, and Notebook Navigator now speaks OnePage's palette.**
+
+**Hover sidebar (base `hover-sidedock`)**
+
+- The overlay no longer flickers when the pointer moves along the window edge: an invisible hit area now bridges the sidebar card's 8px gap, the rounded corner and the top/bottom edges.
+- The sidebar's own tab bar is interactive again — hover the edge, move up and click Outline / Calendar. A static `-webkit-app-region: no-drag` rule restores it without the per-class-change cost that made it unusable before.
+- Collapsing no longer re-opens the overlay or flashes: a 340ms cooldown keeps the collapsed panel out of hit-testing and invisible while it slides off-screen.
+- Expanding no longer plays twice or lags behind the width: the expanded state drops the CSS transition, so the content and the layout width move together like the stock sidebar.
+
+**Notebook Navigator**
+
+- The 64px bottom reserve now only applies when "Always show vault switcher" is enabled. With it off the switcher is a hover overlay and the list keeps its full height.
+- Colors are mapped to OnePage: selected rows use the same accent tint as the native file tree, secondary text follows the theme's muted/faint levels, separators and borders become warm hairlines, search highlights and the calendar's weekend/today states use the accent.
+- The right-sidebar calendar no longer paints an opaque grey rectangle over the translucent sidebar card.
+- Hover tooltips were rebuilt as paper cards: hairline border + soft shadow, left-aligned title, right-aligned path, dates below a divider and tag pills in the theme accent. The light-mode "white text on a transparent background" bug is gone.
+- Sticky date group headers in the file list now have an opaque mask, so scrolling file names no longer show through the header text.
+
+**Compatibility**
+
+- Minimum Obsidian version stays **1.14.0**.
+- Verified with `build` / `verify`; `diff:style` reports zero differences in light / dark / demo / translucent; `perf` stays within thresholds.
+
 ### 2.2.0
 
 **Mermaid diagrams now use OnePage's paper palette (Obsidian 1.15 / Pele), plus 13 new diagram color settings.**
