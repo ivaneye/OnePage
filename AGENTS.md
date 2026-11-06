@@ -341,6 +341,14 @@ Cupertino 基座里有一段第三方插件兼容层（上游 `src/app/community
 
 - `Relative Line Numbers`（`nadavspi/obsidian-relative-line-numbers`）：基座给了 `.relative-line-numbers-mono{position:absolute;width:100%}`。该标记只在**当前行**渲染，而它最近的 positioned 祖先是 `.cm-scroller`（CM6 基座 `position: relative`；`.cm-gutters`/`.cm-gutter` 均无 position），于是命中区 = 整个编辑区宽，盖在正文上抢鼠标事件 → 同一段落内重复点击/选字丢失焦点。
   主题已在定制层加 `pointer-events: none`（**不要删**）；后续从上游合并 Cupertino 时注意别把这条覆盖回去，也建议顺手给上游提 issue（baseline / lumin 等衍生主题同样中招）。
+- `Notebook Navigator`（`johansan/notebook-navigator`）：基座把左侧栏底部的 Vault 选择做成**绝对定位浮层**
+  （`inset: auto 0 0`），再用 `body:not(.is-mobile) .mod-sidedock.mod-left-split .workspace-leaf-content > .view-content{padding-bottom:64px}`
+  把内容顶上去；可基座的 NN 兼容层又写了 `body:not(.is-mobile) .view-content.notebook-navigator{padding:0 !important}`（NN 要全出血）。
+  两条一抵消 → NN 的列表 / 底部工具栏画到卡片最底，被 Vault 选择盖住最后几行（实测 NN 列表 bottom=791，Vault 选择 top=739）。
+  修法：`src/90-onepage.css` §20 用更高特异性把 64px 补回来，**只作用于 `.view-content.notebook-navigator`**，不影响其它视图；
+  且**只在 `body.vault-switcher-always` 时生效**——关掉「始终显示 Vault 选择」时 Vault 选择只是悬停浮层、平时不挡内容，
+  预留在下方就是一块死白。以后 NN 改布局 / 换基座后要先量：开着该开关时 NN 容器 bottom 必须 < Vault 选择 top。
+- `Notebook Navigator` 的**配色**：另见下文「Notebook Navigator 配色适配」（§22）。
 - 排查同类问题的手法：定位元素 → 看 class → 在 `vendor/` 基座里 grep 该 class（3.2.12 是压缩两行要用 python；4.1.0 已是格式化输出，`grep -n` 即可）→ 优先在 `src/90-onepage.css` 里加修正。
 
 ---
@@ -416,6 +424,144 @@ Cupertino 基座里有一段第三方插件兼容层（上游 `src/app/community
   用合成 DOM 容易漏 DOM 结构；而且基座给 `.workspace-split` 挂了 `transition: all .32s`，
   后台窗口里 transition 可能不推进，`getComputedStyle` 会一直返回旧值 → **量之前先注入
   `*{transition:none!important}`**（否则会误判成「透明模式也合并了」）。
+
+---
+
+## 「悬停侧边栏」（hover-sidedock）在 OnePage 里会抖动（⚠️ 已修）
+
+基座 `hover-sidedock` 的几何假设是**侧栏贴窗口边缘**：收起态 `translate(width - 4px)`，窗口最右/最左 4px 是触发带；
+悬停后 `transform: none`，面板边缘 = 窗口边缘 → 鼠标仍在面板上，`:hover` 保持。
+
+但 OnePage 的侧栏卡片有 `--onepage-sidebar-gap`（默认 8px）外边距（透明模式还有 1px 边框）：
+
+| | 基座/无留白 | OnePage（8px 留白） |
+| --- | --- | --- |
+| 收起态可视触发带 | 4px（贴边） | 8 + 4 = 12px（正常） |
+| 悬停后面板缘 | 贴窗口边缘 | 缩回窗口内 8px |
+| 鼠标停在最后 8px | 仍在面板上 → 稳定 | **落在留白里 → hover 丢失** |
+
+后果：面板收起 → 鼠标又落回触发带 → 弹出 → 再收起 ……（用户报「浮层不停出现消失」）。
+鼠标压在边缘时 Blink 会一直跑过渡帧，**连 CDP 的 `Input.dispatchMouseEvent` 都会超时**（实测卡死）。
+
+修法（`src/90-onepage.css` §21）：给悬停中的面板补一块**透明命中区**（`::after`），
+把卡片留白接到窗口边缘，并额外衬到窗口外 6px（避免光标压最后一像素时落空）、
+内侧多盖 10px（盖住卡片圆角切掉的命中区）、纵向多探出 6px（盖住面板上下缘与窗口边缘的留白）。
+只扩大命中区、不改视觉；基座用 `::before` 画渐变，所以这里用 `::after`。
+
+- 范围：`body.hover-sidedock` + `.is-sidedock-collapsed[style*=display]`，左右两侧都补。
+- 改了 `--onepage-sidebar-gap`（0~16）也自动跟随；`0` 时命中区只有衬到窗口外的 6px，无副作用。
+- 验证：真机 + CDP，在 x=1014 / 1020 / 1023（窗口 1024 宽）各做 ±1px 抖动，面板 `x` 必须稳定在 696、
+  `:hover` 恒为 true；**注意不要把鼠标 dispatch 到 x=窗口宽**（越界会人为制造 hide，误判成抖动）。
+- 排查同类问题时先量「收起态可视触发带」与「悬停后面板缘」是否重合。
+
+### 第二个坑：标签栏是 `-webkit-app-region: drag`，浮层够不到切换图标
+
+浮层展开后，鼠标往上去点侧栏的标签图标（大纲 / 日历 …）时，会先经过
+`.workspace-tab-header-container` 的 **窗口拖拽区**（`-webkit-app-region: drag`）。
+Chromium 对 drag 区域不派发正常 mouse 事件 → 侧栏的 `:hover` 丢失 → 浮层在碰到图标之前就收回去，
+用户表现为「切不了 tab」。
+
+基座原本有一条「四段选择器」的规则把这块设成 `-webkit-app-region: no-drag`，
+但构建期为了性能把整块删掉了（其中三段带 `:hover` / `:has` / 兄弟组合子）。§21 补回一条静态规则：
+
+```css
+body:not(.is-mobile).hover-sidedock .mod-sidedock
+  :is(.workspace-tab-header-container, .workspace-tab-header-container-inner) {
+  -webkit-app-region: no-drag;
+}
+```
+
+⚠️ **不要**把 `.is-sidedock-collapsed` 写进选择器（基座原版就是那样）：
+`perf-probe` 的 `sidebar_toggle` 场景会切换这个 class，选择器里有它就要求在侧栏子树里
+重新匹配 `div:is(...)` → 实测 240µs 飙到 **11.6ms**（比原生高两个数量级）。
+改成只依赖 `body.hover-sidedock`（用户设置，几乎不变）后恢复 240µs。
+副作用：开启「悬停侧边栏」后侧栏的标签栏不再能拖窗口（主编辑区标签栏不受影响），可以接受。
+
+验证：`getComputedStyle(侧栏内 .workspace-tab-header-container).webkitAppRegion === "no-drag"`。
+（这类问题在后台/非聚焦窗口里不一定复现：drag 区域会保留上一次的 hover 状态，必须真机聚焦窗口测。）
+
+### 第三个坑：点展开按钮时侧栏「出现两次」
+
+hover-sidedock 收起态把侧栏宽度强制成 320px（为了做屏幕外的浮层），并且带着 `transition: all`。
+点展开按钮时：class 去掉 → 宽度从 320 开始过渡，而 Obsidian 的展开动画会把 inline width
+先设 0 再设 300 → 宽度先缩回 0 再展开，肉眼就是「出现两次」。
+
+修法（§21）：展开态**不做任何 CSS 过渡**（宽度由 Obsidian 自己逐帧动画 0 → 300）：
+
+```css
+body:not(.is-mobile).hover-sidedock .mod-sidedock:not(.is-sidedock-collapsed) {
+  transform: none !important;
+  opacity: 1 !important;
+  transition: none !important;
+}
+```
+
+两条都不能恢复：
+- **width 过渡**：收起态宽 320，会先缩回 0 再展开（出现两次）；
+- **transform / opacity 过渡**：面板会从屏幕外滑进来，而布局宽度已经开始变 →
+  内容明显比边栏慢一截（用户反馈）。
+
+实测（真机 CDP，点按钮后每 35ms 采样 `[x, width, opacity, collapsed]`）：
+修复前 `2/194/266/293 → 73/42/18/2 → 300`；只留 transform 过渡时 `1330/2 → … → 716/300`
+（面板从屏幕外滑入，内容滞后）；现在 `1014/2 → 803/213 → 750/266 → 720/296 → 716/300`，
+与未开启浮层时的展开曲线一致（宽度和内容同步）。
+
+### 第四个坑：点「收起」后浮层立刻又出现
+
+收起时鼠标还停在侧栏的标签栏里（正是收起后面板的命中区）。class 刚变成
+`.is-sidedock-collapsed` 时 `:hover` 仍然成立 → 收起态浮层立刻按「悬停展开」显示，
+看起来像收起没生效、浮层又冒出来。
+
+修法（§21）：收起后 340ms 内让面板不参与命中测试，等它滑到屏幕外再恢复；
+此时鼠标已不在右侧触发带（窗口最右 12px）上，不会再次触发。
+
+```css
+@keyframes onepage-hover-sidedock-cooldown {
+  0%, 100% { pointer-events: none; opacity: 0; }
+}
+body:not(.is-mobile).hover-sidedock .mod-sidedock.is-sidedock-collapsed[style*=display] {
+  animation: onepage-hover-sidedock-cooldown 340ms linear;
+}
+```
+
+单纯屏蔽命中（`pointer-events: none`）还不够：收起落到 `display:none` 的那一刻，基座的收起态样式
+（transform translateX / opacity 0）会从展开态**过渡**过来，于是完整面板会在 696 处闪一下再淡出。
+关键帧里同时钉住 `opacity: 0`，动画优先级高于普通声明 → 面板从收起态那一刻起就不可见。
+
+实测：宽度动画 300 → 0（~150ms），之后 hover 面板在屏幕外滑动但 opacity 恒 0，**不再闪**；
+移到窗口右缘仍能正常唤出（0 → 1 的过渡不受影响）。
+⚠️ 两个关键帧**都**要写（只写 `0%,99% none; 100% auto` 会在 50% 处提前恢复，中途闪一下完整面板；
+`pointer-events` / `opacity` 的离散/连续插值端点必须一致）。
+
+
+---
+
+## Notebook Navigator 配色适配（`src/90-onepage.css` §22）
+
+NN 的配色是一整套 `--nn-theme-*` 变量，定义在**插件样式表的 `body` 块**里。
+Obsidian 的加载顺序是「插件样式 → 主题样式」，所以主题里同特异性的 `body` 声明能覆盖它
+（基座 Cupertino 就是这么把 nav/list 背景设成 transparent 的）。
+
+映射原则：**只覆盖主题默认值**，用户在自己「外观」面板里设的颜色（文件夹/标签/属性色、
+自定义背景）走别的变量或 inline style，不受影响。
+
+| NN 变量 | 接到 |
+| --- | --- |
+| `--nn-theme-nav-bg` / `list-bg` / `*-header-bg` | `transparent` → 透出 OnePage 侧栏卡片 |
+| `--nn-theme-foreground-muted` / `faded` / `faint` | `--onepage-text-muted` / muted 72% / muted 32% |
+| `navitem-selected-bg` / `file-selected-bg` | accent × `--onepage-active-tint`（与原生文件树一致） |
+| `*-selected-name-color` | accent × `--onepage-active-text` 与 text-normal 混色 |
+| `*-selected-inactive-bg` | `--background-modifier-hover`（失焦中性色） |
+| `divider-border-color` / `list-separator-color` / 搜索框 / 快捷工具栏边框 | muted 14% 暖色发丝线（4.1.0 的 `--background-modifier-border` 是冷灰） |
+| `list-search-active-bg` | accent 18%（OnePage 没有 `--text-highlight-bg`，NN 默认会解析成透明） |
+| `calendar-weekend-bg` / `day-today-bg` / `day-today-color` | muted 8% / accent 14% / accent 文字 |
+
+⚠️ **日历底**：`--nn-calendar-right-sidebar-bg` 是 NN 定义在 `.nn-calendar-right-sidebar`
+**元素自身**上的（不是继承链），`body` 级覆盖不到。它默认是 `--background-secondary`
+（一块不透明的冷灰）——非透明模式下只是略有色差，但**透明模式下会变成一块不透明的灰色矩形**，
+和半透明卡片明显不搭（用户反馈的正是这里）。必须用 `.nn-calendar-right-sidebar` 选择器把它改成
+`transparent`，让卡片自己透出来；`--nn-calendar-cell-surface-bg` 会跟随同一个变量。
+验证：透明模式下量日历外壳的 computed `background-color` 必须是 `rgba(0,0,0,0)`。
 
 ---
 

@@ -10293,3 +10293,160 @@ body.theme-dark {
 .mermaid .pele-edge-label rect {
   fill: var(--onepage-bg-primary) !important;
 }
+
+/* ---------- 20. 插件兼容: Notebook Navigator 底部不被 Vault 选择压住 ----------
+
+   基座把左侧栏底部的 Vault 选择做成绝对定位浮层（inset: auto 0 0），
+   再给 `.view-content` 补 64px 下内边距把内容顶上去：
+
+     body:not(.is-mobile) .mod-sidedock.mod-left-split
+       .workspace-leaf-content > .view-content { padding-bottom: 64px }
+
+   但基座的 Notebook Navigator 适配层又写了
+     body:not(.is-mobile) .view-content.notebook-navigator { padding: 0 !important }
+   （NN 要求全出血）。两条一抵消 → NN 的列表 / 底部工具栏一直画到卡片底，
+   被 Vault 选择（52px 高 + 悬停底）盖住最后几行。
+
+   只给 NN 的 view-content 补回下内边距，并且**只在「始终显示 Vault 选择」打开时**：
+   - 关闭（默认）：Vault 选择是「悬停才浮现」的浮层，平时不挡内容 → 不需要预留高度；
+   - 打开：它常驻显示，必须把 NN 的列表顶上去，否则最后几行一直被盖住。
+   64px 与基座一致（Vault 选择自身高度 + 12px 呼吸）。 */
+body:not(.is-mobile).vault-switcher-always .workspace-leaf-content > .view-content.notebook-navigator {
+  padding-bottom: 64px !important;
+}
+
+/* ---------- 21. 修复基座「悬停侧边栏」在 OnePage 卡片留白下的抖动 ----------
+
+   基座 hover-sidedock 的几何假设是「侧栏贴窗口边缘」：
+     - 收起态 translate(width - 4px)，窗口最右/最左 4px 是触发带；
+     - 悬停后 transform: none，面板右/左缘 = 窗口边缘 → 鼠标仍在面板上，hover 保持。
+   但 OnePage 的侧栏卡片有 --onepage-sidebar-gap（默认 8px）外边距（透明模式还有 1px 边框）：
+     - 收起态可视触发带 = 8 + 4 = 12px（正常）；
+     - 悬停后面板缘缩回窗口内 8px → 鼠标若停在最后 8px 里，:hover 丢失
+       → 面板收起 → 鼠标又落回触发带 → 弹出 ……（实测来回闪；光标压在边缘时
+       Blink 会一直跑过渡帧，连输入都会卡住）。
+   修法：给悬停中的面板补一块**透明命中区**（伪元素），把卡片留白接到窗口边缘。
+   只扩大命中区、不改视觉；额外衬到窗口外 6px，避免光标压最后一像素时落空。
+   （基座用 ::before 画渐变，这里用 ::after，互不覆盖。） */
+body:not(.is-mobile).hover-sidedock .mod-sidedock.is-sidedock-collapsed[style*=display]::after {
+  content: "";
+  position: absolute;
+  /* 纵向多探出 6px，盖住面板上下缘与窗口边缘之间的留白 */
+  inset-block: calc(-1 * var(--onepage-sidebar-gap) - 6px);
+  /* 横向：内侧多盖 10px（盖住卡片圆角切掉的命中区），外侧探出窗口 6px */
+  width: calc(var(--onepage-sidebar-gap) + 16px);
+  background: transparent;
+}
+body:not(.is-mobile).hover-sidedock .mod-sidedock.is-sidedock-collapsed[style*=display].mod-right-split::after {
+  inset-inline-end: calc(-1 * var(--onepage-sidebar-gap) - 6px);
+  inset-inline-start: auto;
+}
+body:not(.is-mobile).hover-sidedock .mod-sidedock.is-sidedock-collapsed[style*=display].mod-left-split::after {
+  inset-inline-start: calc(-1 * var(--onepage-sidebar-gap) - 6px);
+  inset-inline-end: auto;
+}
+
+/* 点「展开」时侧栏会滑入两次：
+   收起态（hover-sidedock）给侧栏写了 transform/opacity，并让 `transition: all` 过渡；
+   一点展开，class 去掉 → transform/opacity 从收起态往自然值过渡（第一次滑动），
+   紧接着 Obsidian 的宽度动画（width 0 → 300）又带着整块滑一次（第二次滑动）。
+   展开态只保留宽度类属性的过渡，transform/opacity 直接落位，就只剩一次正常的展开动画。 */
+body:not(.is-mobile).hover-sidedock .mod-sidedock:not(.is-sidedock-collapsed) {
+  transform: none !important;
+  opacity: 1 !important;
+  /* 展开态不做任何 CSS 过渡：宽度由 Obsidian 自己逐帧动画（0 → 300），
+     若这里再让 transform/opacity 从收起态过渡，面板会先从屏幕外滑进来，
+     而布局宽度已经变好 → 内容看起来比边栏慢一截。
+     也不要 width 过渡（收起态宽 320，会先缩回 0 再展开 = 出现两次）。 */
+  transition: none !important;
+}
+
+/* 点「收起」后浮层立刻又出现：
+   收起时鼠标还停在侧栏标签栏里（正好落在收起后面板的命中区上），class 刚变成
+   `.is-sidedock-collapsed`，`:hover` 仍然成立 → 收起态浮层立刻按「悬停展开」显示，
+   看起来像收起没生效。收起后 340ms 内让面板不参与命中测试（pointer-events: none），
+   等它滑出屏幕外再恢复；此时鼠标位置已不在右侧触发带（窗口最右 12px）上，不会再触发。 */
+@keyframes onepage-hover-sidedock-cooldown {
+  0%,
+  100% {
+    pointer-events: none;
+    opacity: 0;
+  }
+}
+body:not(.is-mobile).hover-sidedock .mod-sidedock.is-sidedock-collapsed[style*=display] {
+  animation: onepage-hover-sidedock-cooldown 340ms linear;
+}
+
+/* 悬停侧边栏展开后，侧栏自己的标签栏（大纲 / 日历 …）必须是 no-drag：
+   那块区域原生是 `-webkit-app-region: drag`（窗口拖拽区），鼠标一旦移进去就收不到
+   正常的 mouse 事件 → `:hover` 丢失 → 浮层在够到切换图标之前就自动收回去。
+   基座本来有一条「四段选择器」的 no-drag 规则，构建期为了性能整块删掉了；
+   这里只补回其中**静态**的一段（无 :hover、无兄弟组合子，不产生 hover 失效开销）。 */
+body:not(.is-mobile).hover-sidedock .mod-sidedock :is(.workspace-tab-header-container, .workspace-tab-header-container-inner) {
+  /* !important：core 有一条 `body:not(.is-grabbing):not(.is-fullscreen).is-hidden-frameless
+     .mod-top .workspace-tab-header-container { -webkit-app-region: drag }`（5 类 + body），
+     普通静态选择器压不过它；加 !important 比再堆一层 `.workspace-tabs + div` 更稳。 */
+  -webkit-app-region: no-drag !important;
+}
+
+/* ---------- 22. Notebook Navigator 配色适配 ----------
+
+   NN 的配色是一整套 `--nn-theme-*` 变量（定义在插件样式表的 `body` 块里）。
+   Obsidian 加载顺序是「插件样式 → 主题样式」，所以主题里同特异性的 `body`
+   声明可以覆盖它（基座 Cupertino 也是这么做的：nav/list 背景设为 transparent）。
+
+   这里把 NN 的语义变量接到 OnePage 的调色板上。**只覆盖主题默认值**：
+   NN 自己的「外观」面板里用户显式设置的颜色（文件夹色 / 标签色 / 背景色等）
+   走别的变量或 inline style，不受影响。
+
+   ⚠️ `--nn-calendar-right-sidebar-bg` 是 NN 定义在 `.nn-calendar-right-sidebar`
+   **元素自身**上的（不是继承链），body 级覆盖不到 —— 必须用同/更高特异性写到该类上。
+   它默认是 `--background-secondary`（一块不透明的冷灰），而 OnePage 的侧栏卡片
+   在透明模式下是半透明纸面 → 日历区会变成一块突兀的实色矩形。改成 transparent
+   让卡片本身透出来（`--nn-calendar-cell-surface-bg` 会跟着同一个变量）。 */
+
+body {
+  /* 面板底：交给侧栏卡片，不要 NN 自己的 secondary 底 */
+  --nn-theme-nav-bg: transparent;
+  --nn-theme-list-bg: transparent;
+  --nn-theme-nav-header-bg: transparent;
+  --nn-theme-list-header-bg: transparent;
+
+  /* 文字层次：正文 / 次要 / 更弱，直接复用 OnePage 的三档文字色 */
+  --nn-theme-foreground: var(--text-normal);
+  --nn-theme-foreground-muted: var(--onepage-text-muted);
+  --nn-theme-foreground-faded: color-mix(in srgb, var(--onepage-text-muted) 72%, transparent);
+  --nn-theme-foreground-faint: color-mix(in srgb, var(--onepage-text-muted) 32%, transparent);
+
+  /* 选中态：与原生文件树 / 大纲一致（accent 10% 底 + accent 72% 文字） */
+  --nn-theme-navitem-selected-bg: color-mix(in srgb, var(--text-accent) var(--onepage-active-tint), transparent);
+  --nn-theme-navitem-selected-name-color: color-mix(in srgb, var(--text-accent) var(--onepage-active-text), var(--text-normal));
+  --nn-theme-file-selected-bg: color-mix(in srgb, var(--text-accent) var(--onepage-active-tint), transparent);
+  --nn-theme-file-selected-name-color: color-mix(in srgb, var(--text-accent) var(--onepage-active-text), var(--text-normal));
+  /* 失焦选中保持中性悬停色（和 Obsidian 其它列表一致） */
+  --nn-theme-navitem-selected-inactive-bg: var(--background-modifier-hover);
+  --nn-theme-file-selected-inactive-bg: var(--background-modifier-hover);
+
+  /* 分隔线 / 描边：4.1.0 的 --background-modifier-border 是冷灰，
+     NN 的列表分隔、搜索框、快捷工具栏全用它 → 统一换成暖色发丝线 */
+  --nn-theme-divider-border-color: color-mix(in srgb, var(--onepage-text-muted) 14%, transparent);
+  --nn-theme-list-separator-color: color-mix(in srgb, var(--onepage-text-muted) 14%, transparent);
+  --nn-theme-list-search-border-color: color-mix(in srgb, var(--onepage-text-muted) 14%, transparent);
+  --nn-theme-quick-actions-border: color-mix(in srgb, var(--onepage-text-muted) 14%, transparent);
+  --nn-theme-quick-actions-separator-color: color-mix(in srgb, var(--onepage-text-muted) 14%, transparent);
+  --nn-theme-file-tag-border-color: color-mix(in srgb, var(--text-accent) 16%, transparent);
+  --nn-theme-file-property-border-color: color-mix(in srgb, var(--text-accent) 16%, transparent);
+
+  /* 搜索命中：OnePage 没有 --text-highlight-bg（NN 默认会解析成透明） */
+  --nn-theme-list-search-active-bg: color-mix(in srgb, var(--text-accent) 18%, transparent);
+
+  /* 日历：周末列 / 今天 / 今天文字，跟主题的「强调色淡染」同一套语言 */
+  --nn-theme-calendar-weekend-bg: color-mix(in srgb, var(--onepage-text-muted) 8%, transparent);
+  --nn-theme-calendar-day-today-bg: color-mix(in srgb, var(--text-accent) 14%, transparent);
+  --nn-theme-calendar-day-today-color: color-mix(in srgb, var(--text-accent) var(--onepage-active-text), var(--text-normal));
+}
+
+/* 日历右栏外壳：透出侧栏卡片（见上方 ⚠️）。放在元素类上才能盖过 NN 自己的声明。 */
+body .nn-calendar-right-sidebar {
+  --nn-calendar-right-sidebar-bg: transparent;
+}
